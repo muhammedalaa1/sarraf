@@ -1,3 +1,5 @@
+<!-- PR title: type(scope): subject, e.g. "fix(kashier): sort keys before signing". CI checks it; see CONTRIBUTING.md#commit-messages-and-pr-titles -->
+
 ## What
 
 <!-- What does this change and why? Link issues. -->
