@@ -47,10 +47,11 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Biome (format + lint)
         run: pnpm biome ci .
-      - name: Secret scan
-        run: pnpm check-secrets
       - name: Build everything
         run: pnpm turbo run build
+      # After the build: scripts/env.ts imports @sarraf/core from its dist.
+      - name: Secret scan
+        run: pnpm check-secrets
       - name: ESLint (type-aware rules)
         run: pnpm eslint --max-warnings 0
       - name: Typecheck (packages, apps, examples, scripts)
