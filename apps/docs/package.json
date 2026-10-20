@@ -20,6 +20,6 @@
     "@sarraf/kashier": "workspace:*",
     "@sarraf/paymob": "workspace:*",
     "@sarraf/testing": "workspace:*",
-    "typedoc": "0.27.6"
+    "typedoc": "0.28.20"
   }
 }
