@@ -1,0 +1,27 @@
+name: Bug report
+description: Something does not work as documented
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "**Never paste API keys, secrets, full card numbers or customer data.** Use sandbox values and redact."
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package
+      options: ["@sarraf/core", "@sarraf/paymob", "@sarraf/kashier", "@sarraf/fawry", "@sarraf/express", "@sarraf/testing", "dashboard", "docs"]
+    validations: { required: true }
+  - type: input
+    id: version
+    attributes: { label: Version, placeholder: "0.1.0" }
+    validations: { required: true }
+  - type: textarea
+    id: what
+    attributes: { label: What happened, description: "Expected vs actual. Include the SarrafError code if any." }
+    validations: { required: true }
+  - type: textarea
+    id: repro
+    attributes: { label: Reproduction, description: "Minimal code. For signature issues, include `pay.webhooks.inspect()` output (it contains no secrets)." }
+  - type: input
+    id: node
+    attributes: { label: Node version }

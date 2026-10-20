@@ -1,0 +1,14 @@
+{
+  "provider": "fawry",
+  "scenario": "signature-cancel",
+  "source": "synthetic",
+  "secret": "test_secure_key_do_not_use",
+  "description": "Cancel unpaid order signature (to verify).",
+  "signedString": "TESTMERCHANT01970177en-gb",
+  "expectedSignature": "f9518e1c234279ff465e5ac061719389ad5159e75e767089f113f19aeaa2cfcb",
+  "data": {
+    "merchantAccount": "TESTMERCHANT01",
+    "orderRefNo": "970177",
+    "lang": "en-gb"
+  }
+}

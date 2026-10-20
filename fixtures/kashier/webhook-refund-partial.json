@@ -1,0 +1,16 @@
+{
+  "provider": "kashier",
+  "scenario": "webhook-refund-partial",
+  "source": "synthetic",
+  "description": "Partial refund of 100.00 EGP on a 250.00 EGP order. Synthetic, shaped from Kashier's webhook docs. Replace with a recorded sandbox fixture.",
+  "secret": "test_payment_api_key_do_not_use",
+  "signedString": "amount=100&creationDate=2026-10-20T13%3A37%3A02.118Z&currency=EGP&kashierOrderId=ko_6527a1b2c3&merchantOrderId=order_8841&method=card&orderReference=TEST-ORD-18213&status=SUCCESS&totalRefundedAmount=100&transactionId=TX-2491820499",
+  "expectedSignature": "194e19e46d6a12b46bb25931e3f00106e376accfb8f44987452c7794668a88fd",
+  "webhook": {
+    "headers": {
+      "content-type": "application/json",
+      "x-kashier-signature": "194e19e46d6a12b46bb25931e3f00106e376accfb8f44987452c7794668a88fd"
+    },
+    "rawBody": "{\"event\":\"refund\",\"data\":{\"merchantOrderId\":\"order_8841\",\"kashierOrderId\":\"ko_6527a1b2c3\",\"orderReference\":\"TEST-ORD-18213\",\"transactionId\":\"TX-2491820499\",\"status\":\"SUCCESS\",\"method\":\"card\",\"creationDate\":\"2026-10-20T13:37:02.118Z\",\"amount\":100,\"currency\":\"EGP\",\"card\":{\"cardInfo\":{\"cardBrand\":\"Visa\",\"maskedCard\":\"411111******1111\"}},\"transactionResponseCode\":\"00\",\"transactionResponseMessage\":{\"en\":\"Approved\",\"ar\":\"تمت الموافقة\"},\"signatureKeys\":[\"merchantOrderId\",\"kashierOrderId\",\"orderReference\",\"transactionId\",\"status\",\"method\",\"creationDate\",\"amount\",\"currency\",\"totalRefundedAmount\"],\"orderAmount\":250,\"totalRefundedAmount\":100}}"
+  }
+}

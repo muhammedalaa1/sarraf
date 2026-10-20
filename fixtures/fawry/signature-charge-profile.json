@@ -1,0 +1,16 @@
+{
+  "provider": "fawry",
+  "scenario": "signature-charge-profile",
+  "source": "synthetic",
+  "secret": "test_secure_key_do_not_use",
+  "description": "Charge signature with customerProfileId.",
+  "signedString": "TESTMERCHANT01order_8842cust_77PAYATFAWRY1000.50",
+  "expectedSignature": "e9866ce7822a33a6d19cf1ab6670b1de3985b64205e7d24ee977a7f168ee025f",
+  "data": {
+    "merchantCode": "TESTMERCHANT01",
+    "merchantRefNum": "order_8842",
+    "customerProfileId": "cust_77",
+    "paymentMethod": "PAYATFAWRY",
+    "amount": 1000.5
+  }
+}

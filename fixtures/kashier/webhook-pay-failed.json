@@ -1,0 +1,16 @@
+{
+  "provider": "kashier",
+  "scenario": "webhook-pay-failed",
+  "source": "synthetic",
+  "description": "Declined card payment. Synthetic, shaped from Kashier's webhook docs. Replace with a recorded sandbox fixture.",
+  "secret": "test_payment_api_key_do_not_use",
+  "signedString": "amount=250&creationDate=2026-10-20T13%3A37%3A02.118Z&currency=EGP&kashierOrderId=ko_6527a1b2c3&merchantOrderId=order_8841&method=card&orderReference=TEST-ORD-18213&status=FAILURE&transactionId=TX-2491820432",
+  "expectedSignature": "9b3ef072cf13c3b5a4bf0ee884edf8cebe29acb51409629677a5e944909ad833",
+  "webhook": {
+    "headers": {
+      "content-type": "application/json",
+      "x-kashier-signature": "9b3ef072cf13c3b5a4bf0ee884edf8cebe29acb51409629677a5e944909ad833"
+    },
+    "rawBody": "{\"event\":\"pay\",\"data\":{\"merchantOrderId\":\"order_8841\",\"kashierOrderId\":\"ko_6527a1b2c3\",\"orderReference\":\"TEST-ORD-18213\",\"transactionId\":\"TX-2491820432\",\"status\":\"FAILURE\",\"method\":\"card\",\"creationDate\":\"2026-10-20T13:37:02.118Z\",\"amount\":250,\"currency\":\"EGP\",\"card\":{\"cardInfo\":{\"cardBrand\":\"Visa\",\"maskedCard\":\"411111******1111\"}},\"transactionResponseCode\":\"05\",\"transactionResponseMessage\":{\"en\":\"Do not honor\"},\"signatureKeys\":[\"merchantOrderId\",\"kashierOrderId\",\"orderReference\",\"transactionId\",\"status\",\"method\",\"creationDate\",\"amount\",\"currency\"]}}"
+  }
+}

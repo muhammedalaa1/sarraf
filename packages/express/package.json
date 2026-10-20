@@ -1,0 +1,62 @@
+{
+  "name": "@sarraf/express",
+  "version": "0.1.0",
+  "description": "Express helpers for Sarraf: raw-body middleware and a verified webhook handler.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sarraf-dev/sarraf.git",
+    "directory": "packages/express"
+  },
+  "keywords": ["express", "webhooks", "payments", "sarraf"],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "lint:package": "publint --strict"
+  },
+  "dependencies": {
+    "@sarraf/core": "workspace:^"
+  },
+  "peerDependencies": {
+    "express": ">=4"
+  },
+  "peerDependenciesMeta": {
+    "express": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@sarraf/testing": "workspace:*",
+    "express": "4.21.2",
+    "@types/express": "4.17.21",
+    "supertest": "7.0.0",
+    "@types/supertest": "6.0.2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

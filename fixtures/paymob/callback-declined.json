@@ -1,0 +1,18 @@
+{
+  "provider": "paymob",
+  "scenario": "callback-declined",
+  "source": "synthetic",
+  "description": "Declined card payment callback. Synthetic, shaped from Paymob's documented callback. Replace with a recorded sandbox fixture (scripts/record-fixtures.ts).",
+  "secret": "test_hmac_secret_do_not_use",
+  "signedString": "250002026-10-20T13:37:02.118146EGPfalsefalse192036466123456truefalsefalsefalsetruefalse217503754302852false2346MasterCardcardfalse",
+  "expectedSignature": "8a5a46fc689f69a01ccb6f367e6f661f4eda479769c2ab37cf7f4f484640efdb73ab9a041bd8fd528fe168c82e52e94bab78dc200407cb3a789afd724b34b078",
+  "webhook": {
+    "headers": {
+      "content-type": "application/json"
+    },
+    "query": {
+      "hmac": "8a5a46fc689f69a01ccb6f367e6f661f4eda479769c2ab37cf7f4f484640efdb73ab9a041bd8fd528fe168c82e52e94bab78dc200407cb3a789afd724b34b078"
+    },
+    "rawBody": "{\"type\":\"TRANSACTION\",\"obj\":{\"id\":192036466,\"pending\":false,\"amount_cents\":25000,\"success\":false,\"is_auth\":false,\"is_capture\":false,\"is_standalone_payment\":true,\"is_voided\":false,\"is_refunded\":false,\"is_3d_secure\":true,\"integration_id\":123456,\"profile_id\":98765,\"has_parent_transaction\":false,\"order\":{\"id\":217503754,\"merchant_order_id\":\"order_8841\",\"amount_cents\":25000},\"created_at\":\"2026-10-20T13:37:02.118146\",\"currency\":\"EGP\",\"source_data\":{\"type\":\"card\",\"pan\":\"2346\",\"sub_type\":\"MasterCard\"},\"error_occured\":false,\"owner\":302852,\"data\":{\"message\":\"Do not honour\",\"txn_response_code\":\"05\"}}}"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "provider": "fawry",
+  "scenario": "signature-status",
+  "source": "synthetic",
+  "secret": "test_secure_key_do_not_use",
+  "description": "Status v2 signature.",
+  "signedString": "TESTMERCHANT01order_8841",
+  "expectedSignature": "19817f94cbf2d80354297996a6e60452ab3b29de8f0081bd82bb7553a6fa795c",
+  "data": {
+    "merchantCode": "TESTMERCHANT01",
+    "merchantRefNumber": "order_8841"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "provider": "fawry",
+  "scenario": "notification-paid",
+  "source": "synthetic",
+  "secret": "test_secure_key_do_not_use",
+  "description": "PAID cash notification. JSON carries 250, the signature uses 250.00. Synthetic V2 notification; verify against a real one before trusting.",
+  "signedString": "970177order_8841250.00250.00PAIDPAYATFAWRY2283311",
+  "expectedSignature": "6f09a2ee507ed40ae389c5eac64fa8c8473f41872da003fca386a716a1de8a19",
+  "webhook": {
+    "headers": {
+      "content-type": "application/json"
+    },
+    "rawBody": "{\"requestId\":\"c72827d084ea4b88949d91dd2db4996e\",\"fawryRefNumber\":\"970177\",\"merchantRefNumber\":\"order_8841\",\"customerMobile\":\"01001234567\",\"customerMail\":\"sara@example.com\",\"paymentAmount\":250,\"orderAmount\":250,\"fawryFees\":0,\"orderStatus\":\"PAID\",\"paymentMethod\":\"PAYATFAWRY\",\"paymentTime\":1760960000000,\"paymentRefrenceNumber\":\"2283311\",\"orderExpiryDate\":1761046400000,\"orderItems\":[{\"itemCode\":\"order_8841\",\"price\":250,\"quantity\":1}],\"messageSignature\":\"6f09a2ee507ed40ae389c5eac64fa8c8473f41872da003fca386a716a1de8a19\"}"
+  }
+}

@@ -1,0 +1,112 @@
+import { isSarrafError } from "@sarraf/core";
+/**
+ * Contract tests against the real provider sandboxes. Run locally with `pnpm test:sandbox`
+ * (reads .env.sandbox) and nightly in CI with repository secrets. Each provider is skipped
+ * when its credentials are missing.
+ */
+import { describe, expect, it } from "vitest";
+import { env, hasFawry, hasKashier, hasPaymob, loadSandboxEnv } from "../../scripts/env.js";
+import { sandboxSarraf } from "../../scripts/providers.js";
+
+loadSandboxEnv();
+
+const customer = { name: "Sandbox Tester", email: "tester@example.com", phone: "+201000000000" };
+const amount = { value: 1000, currency: "EGP" as const };
+const ref = (p: string) => `sarraf_ct_${p}_${Date.now()}_${Math.floor(Math.random() * 1e4)}`;
+
+describe.skipIf(!hasPaymob())("@sandbox paymob", () => {
+  it("creates an intention and a unified checkout URL", async () => {
+    const pay = sandboxSarraf();
+    const checkout = await pay.checkout.create({
+      provider: "paymob",
+      amount,
+      reference: ref("pm"),
+      customer,
+      returnUrl: "https://example.com/return",
+    });
+    expect(checkout.redirectUrl).toMatch(/\/unifiedcheckout\/\?publicKey=.+&clientSecret=.+/);
+    const page = await fetch(checkout.redirectUrl!, { redirect: "manual" });
+    expect(page.status).toBeLessThan(500);
+  });
+
+  it.skipIf(!env("PAYMOB_API_KEY") || !env("PAYMOB_SANDBOX_TRANSACTION_ID"))(
+    "reads a known transaction",
+    async () => {
+      const pay = sandboxSarraf();
+      const p = await pay.payments.get({
+        provider: "paymob",
+        providerPaymentId: env("PAYMOB_SANDBOX_TRANSACTION_ID")!,
+      });
+      expect(p.providerPaymentId).toBe(env("PAYMOB_SANDBOX_TRANSACTION_ID"));
+      expect(p.amount.value).toBeGreaterThan(0);
+    },
+  );
+
+  it("rejects a bad secret key with AUTHENTICATION_FAILED", async () => {
+    const { paymob } = await import("@sarraf/paymob");
+    const { Sarraf } = await import("@sarraf/core");
+    const pay = new Sarraf({
+      providers: {
+        paymob: paymob({
+          secretKey: "sk_test_invalid",
+          publicKey: env("PAYMOB_PUBLIC_KEY")!,
+          hmacSecret: "x",
+          integrationIds: { card: Number(env("PAYMOB_CARD_INTEGRATION_ID") ?? 1) },
+        }),
+      },
+    });
+    const err = await pay.checkout
+      .create({ provider: "paymob", amount, reference: ref("pm"), customer })
+      .catch((e) => e);
+    expect(isSarrafError(err)).toBe(true);
+    expect(["AUTHENTICATION_FAILED", "INVALID_REQUEST"]).toContain(err.code);
+  });
+});
+
+describe.skipIf(!hasKashier())("@sandbox kashier", () => {
+  it("builds a hosted payment page the sandbox accepts", async () => {
+    const pay = sandboxSarraf();
+    const checkout = await pay.checkout.create({
+      provider: "kashier",
+      amount,
+      reference: ref("ks"),
+      customer,
+      returnUrl: "https://example.com/return",
+    });
+    const res = await fetch(checkout.redirectUrl!);
+    expect(res.status).toBeLessThan(500);
+    const html = await res.text();
+    expect(html.toLowerCase()).not.toContain("invalid hash");
+  });
+
+  it.skipIf(!env("KASHIER_SECRET_KEY") || !env("KASHIER_SANDBOX_ORDER_ID"))(
+    "looks up a known order (beta)",
+    async () => {
+      const pay = sandboxSarraf();
+      const p = await pay.payments.get({
+        provider: "kashier",
+        providerPaymentId: env("KASHIER_SANDBOX_ORDER_ID")!,
+      });
+      expect(p.provider).toBe("kashier");
+    },
+  );
+});
+
+describe.skipIf(!hasFawry())("@sandbox fawry", () => {
+  it("creates a PayAtFawry reference code and reads it back as awaiting payment", async () => {
+    const pay = sandboxSarraf();
+    const reference = ref("fw");
+    const checkout = await pay.checkout.create({
+      provider: "fawry",
+      amount,
+      reference,
+      customer,
+      expiresInSeconds: 3600,
+    });
+    expect(checkout.kind).toBe("reference_code");
+    expect(checkout.referenceCode).toMatch(/^\d+$/);
+    const status = await pay.payments.get({ provider: "fawry", reference });
+    expect(["awaiting_payment", "pending"]).toContain(status.status);
+    expect(status.amount).toEqual(amount);
+  });
+});

@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [18, 20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo run build --filter=./packages/*
+      # CI=true: missing snapshots fail instead of being written; coverage thresholds are enforced.
+      - run: pnpm turbo run typecheck test --filter=./packages/*
+
+  quality:
+    name: Lint, types, packages, secrets, apps
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Biome (format + lint)
+        run: pnpm biome ci .
+      - name: Secret scan
+        run: pnpm check-secrets
+      - name: Build everything
+        run: pnpm turbo run build
+      - name: ESLint (type-aware rules)
+        run: pnpm eslint --max-warnings 0
+      - name: Typecheck (packages, apps, examples, scripts)
+        run: pnpm typecheck
+      - name: Tests (all workspaces + scripts)
+        run: pnpm turbo run test && pnpm test:scripts
+      - name: Package exports (publint)
+        run: pnpm lint:packages
+      - name: Package types (are-the-types-wrong)
+        run: |
+          for dir in packages/*/; do
+            echo "::group::attw $dir"
+            (cd "$dir" && pnpm dlx @arethetypeswrong/cli@0.17.2 --pack . --profile node16)
+            echo "::endgroup::"
+          done
+      - name: Lockfile is up to date
+        run: git diff --exit-code pnpm-lock.yaml
+
+  changeset:
+    name: Changeset present
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Fails when a published package changed without a changeset. Docs/CI-only PRs: `pnpm changeset --empty`.
+      - run: pnpm changeset status --since=origin/${{ github.base_ref }}

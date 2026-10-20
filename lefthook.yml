@@ -1,0 +1,18 @@
+# Git hooks, installed automatically by `pnpm install` (the `prepare` script).
+# Skip in an emergency with `LEFTHOOK=0 git commit ...`; CI runs the same checks anyway.
+pre-commit:
+  parallel: true
+  commands:
+    biome:
+      glob: "*.{js,ts,tsx,mjs,cjs,json,jsonc,css}"
+      run: pnpm biome check --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
+    secrets:
+      run: pnpm check-secrets
+
+pre-push:
+  parallel: true
+  commands:
+    typecheck:
+      run: pnpm typecheck
+    eslint:
+      run: pnpm eslint

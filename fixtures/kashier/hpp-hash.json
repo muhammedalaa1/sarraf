@@ -1,0 +1,15 @@
+{
+  "provider": "kashier",
+  "scenario": "hpp-hash",
+  "source": "synthetic",
+  "description": "Hosted payment page order hash (path format from Kashier's official demo).",
+  "secret": "test_payment_api_key_do_not_use",
+  "signedString": "/?payment=MID-0000-0000.order_8841.250.00.EGP",
+  "expectedSignature": "91f3cfbdf27168612113eb7f8f52c25333193fbf2e9603927baadb3a46e56a28",
+  "data": {
+    "merchantId": "MID-0000-0000",
+    "orderId": "order_8841",
+    "amount": "250.00",
+    "currency": "EGP"
+  }
+}

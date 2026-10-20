@@ -1,0 +1,6 @@
+# Every change needs a maintainer review. Signature and money code gets an extra pair of eyes.
+* @sarraf-dev/maintainers
+/packages/core/src/money.ts @sarraf-dev/maintainers @sarraf-dev/payments-reviewers
+/packages/*/src/signature.ts @sarraf-dev/maintainers @sarraf-dev/payments-reviewers
+/packages/*/src/mappers.ts @sarraf-dev/maintainers @sarraf-dev/payments-reviewers
+/.github/ @sarraf-dev/maintainers

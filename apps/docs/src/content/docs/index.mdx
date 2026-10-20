@@ -1,0 +1,25 @@
+---
+title: Sarraf
+description: One payment API for Egypt and the Middle East. Paymob, Kashier and Fawry behind one typed TypeScript interface.
+template: splash
+hero:
+  tagline: One payment API for Egypt, then the Middle East. Paymob, Kashier and Fawry behind one typed interface, with verified, normalized webhooks.
+  actions:
+    - text: Quick start
+      link: /getting-started/quick-start/
+      icon: right-arrow
+    - text: GitHub
+      link: https://github.com/sarraf-dev/sarraf
+      variant: minimal
+---
+
+import { Card, CardGrid } from "@astrojs/starlight/components";
+
+<CardGrid>
+  <Card title="One checkout call">`pay.checkout.create({ provider, amount, reference, customer })` returns a redirect URL or a Fawry reference code.</Card>
+  <Card title="One webhook shape">Three signature schemes, one `SarrafEvent`. Verified over the raw body with constant-time comparison.</Card>
+  <Card title="Money done right">Integer minor units with string math. KWD, BHD, OMR and JOD use 3 decimals.</Card>
+  <Card title="Safe by default">No card data, server-side only, redacted logs, and no blind retries of money-moving calls.</Card>
+</CardGrid>
+
+> Sarraf is **not affiliated** with Paymob, Kashier, Fawry or any other provider. You use your own accounts and keys.

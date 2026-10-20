@@ -1,0 +1,5 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": { "declaration": false, "experimentalDecorators": true, "emitDecoratorMetadata": true },
+  "include": ["src", "test"]
+}

@@ -1,0 +1,16 @@
+{
+  "provider": "kashier",
+  "scenario": "webhook-pay-success",
+  "source": "synthetic",
+  "description": "Successful card payment. Synthetic, shaped from Kashier's webhook docs. Replace with a recorded sandbox fixture.",
+  "secret": "test_payment_api_key_do_not_use",
+  "signedString": "amount=250&creationDate=2026-10-20T13%3A37%3A02.118Z&currency=EGP&kashierOrderId=ko_6527a1b2c3&merchantOrderId=order_8841&method=card&orderReference=TEST-ORD-18213&status=SUCCESS&transactionId=TX-2491820431",
+  "expectedSignature": "d0929d3c5418da49fbfc14ffe4286d4c879100270f81eba88e1222f2b80b6975",
+  "webhook": {
+    "headers": {
+      "content-type": "application/json",
+      "x-kashier-signature": "d0929d3c5418da49fbfc14ffe4286d4c879100270f81eba88e1222f2b80b6975"
+    },
+    "rawBody": "{\"event\":\"pay\",\"data\":{\"merchantOrderId\":\"order_8841\",\"kashierOrderId\":\"ko_6527a1b2c3\",\"orderReference\":\"TEST-ORD-18213\",\"transactionId\":\"TX-2491820431\",\"status\":\"SUCCESS\",\"method\":\"card\",\"creationDate\":\"2026-10-20T13:37:02.118Z\",\"amount\":250,\"currency\":\"EGP\",\"card\":{\"cardInfo\":{\"cardBrand\":\"Visa\",\"maskedCard\":\"411111******1111\"}},\"transactionResponseCode\":\"00\",\"transactionResponseMessage\":{\"en\":\"Approved\",\"ar\":\"تمت الموافقة\"},\"signatureKeys\":[\"merchantOrderId\",\"kashierOrderId\",\"orderReference\",\"transactionId\",\"status\",\"method\",\"creationDate\",\"amount\",\"currency\"]}}"
+  }
+}

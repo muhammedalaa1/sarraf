@@ -1,0 +1,61 @@
+{
+  "provider": "kashier",
+  "scenario": "redirect-success",
+  "source": "synthetic",
+  "description": "merchantRedirect query params (order matters). Synthetic, from Kashier's official PHP demo.",
+  "secret": "test_payment_api_key_do_not_use",
+  "signedString": "paymentStatus=SUCCESS&cardDataToken=&maskedCard=411111******1111&merchantOrderId=order_8841&orderId=ko_6527a1b2c3&cardBrand=Visa&orderReference=TEST-ORD-18213&transactionId=TX-2491820431&amount=250.00&currency=EGP",
+  "expectedSignature": "4d15313c2c80e373be62ecaf3d9195732a513745f5c084caa8a2ba08f03a3b0d",
+  "data": {
+    "query": [
+      [
+        "paymentStatus",
+        "SUCCESS"
+      ],
+      [
+        "cardDataToken",
+        ""
+      ],
+      [
+        "maskedCard",
+        "411111******1111"
+      ],
+      [
+        "merchantOrderId",
+        "order_8841"
+      ],
+      [
+        "orderId",
+        "ko_6527a1b2c3"
+      ],
+      [
+        "cardBrand",
+        "Visa"
+      ],
+      [
+        "orderReference",
+        "TEST-ORD-18213"
+      ],
+      [
+        "transactionId",
+        "TX-2491820431"
+      ],
+      [
+        "amount",
+        "250.00"
+      ],
+      [
+        "currency",
+        "EGP"
+      ],
+      [
+        "mode",
+        "test"
+      ],
+      [
+        "signature",
+        "4d15313c2c80e373be62ecaf3d9195732a513745f5c084caa8a2ba08f03a3b0d"
+      ]
+    ]
+  }
+}

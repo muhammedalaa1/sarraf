@@ -1,0 +1,59 @@
+{
+  "name": "sarraf-monorepo",
+  "private": true,
+  "type": "module",
+  "description": "One payment API for Egypt and the Middle East: Paymob, Kashier, Fawry.",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=9"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "test:sandbox": "vitest run --config vitest.sandbox.config.ts",
+    "typecheck": "turbo run typecheck && tsc -p tsconfig.json",
+    "lint": "biome check . && eslint",
+    "format": "biome format --write .",
+    "check-secrets": "tsx scripts/check-no-secrets.ts",
+    "record-fixtures": "tsx scripts/record-fixtures.ts",
+    "changeset": "changeset",
+    "release": "turbo run build --filter=./packages/* && changeset publish",
+    "test:scripts": "vitest run --config vitest.scripts.config.ts",
+    "lint:fix": "biome check --write . && eslint --fix",
+    "lint:packages": "turbo run lint:package --filter=./packages/*",
+    "check": "pnpm build && pnpm lint && pnpm typecheck && pnpm test && pnpm test:scripts && pnpm lint:packages && pnpm check-secrets",
+    "prepare": "lefthook install"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "0.17.2",
+    "@biomejs/biome": "1.9.4",
+    "@changesets/cli": "2.27.11",
+    "@sarraf/core": "workspace:*",
+    "@sarraf/fawry": "workspace:*",
+    "@sarraf/kashier": "workspace:*",
+    "@sarraf/paymob": "workspace:*",
+    "@sarraf/testing": "workspace:*",
+    "@types/node": "22.10.2",
+    "@vitest/coverage-v8": "2.1.8",
+    "dotenv": "16.4.7",
+    "eslint": "9.17.0",
+    "expect-type": "1.1.0",
+    "fast-check": "3.23.2",
+    "lefthook": "1.10.1",
+    "publint": "0.2.12",
+    "tsup": "8.3.5",
+    "tsx": "4.19.2",
+    "turbo": "2.3.3",
+    "typescript": "5.7.2",
+    "typescript-eslint": "8.18.2",
+    "vitest": "2.1.8"
+  },
+  "pnpm": {
+    "overrides": {
+      "@astrojs/sitemap": "3.2.1",
+      "zod-to-json-schema": "3.24.1"
+    }
+  }
+}

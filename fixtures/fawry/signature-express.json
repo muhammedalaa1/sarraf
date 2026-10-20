@@ -1,0 +1,26 @@
+{
+  "provider": "fawry",
+  "scenario": "signature-express",
+  "source": "synthetic",
+  "secret": "test_secure_key_do_not_use",
+  "description": "Hosted checkout init signature; items sorted by itemId (to verify).",
+  "signedString": "TESTMERCHANT01order_8843https://shop.example.com/thanksa-mug250.00b-tee1150.00",
+  "expectedSignature": "1a2a6189112bb6592ce45efc36fddc2776346b29811928bd14b1af414b520748",
+  "data": {
+    "merchantCode": "TESTMERCHANT01",
+    "merchantRefNum": "order_8843",
+    "returnUrl": "https://shop.example.com/thanks",
+    "items": [
+      {
+        "itemId": "b-tee",
+        "quantity": 1,
+        "price": 150
+      },
+      {
+        "itemId": "a-mug",
+        "quantity": 2,
+        "price": "50"
+      }
+    ]
+  }
+}

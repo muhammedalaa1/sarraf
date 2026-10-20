@@ -1,0 +1,15 @@
+{
+  "provider": "fawry",
+  "scenario": "signature-refund",
+  "source": "synthetic",
+  "secret": "test_secure_key_do_not_use",
+  "description": "Refund signature (to verify).",
+  "signedString": "TESTMERCHANT01970177100.00damaged",
+  "expectedSignature": "e3d2f4dd5c85f6c7aaa726a43e018e87e083f217fedbc9bf0be9e69aeac3592a",
+  "data": {
+    "merchantCode": "TESTMERCHANT01",
+    "referenceNumber": "970177",
+    "refundAmount": 100,
+    "reason": "damaged"
+  }
+}

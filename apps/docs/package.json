@@ -1,0 +1,25 @@
+{
+  "name": "@sarraf/docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "pnpm api && astro build",
+    "api": "typedoc",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "0.30.6",
+    "astro": "5.1.7",
+    "sharp": "0.33.5"
+  },
+  "devDependencies": {
+    "@sarraf/core": "workspace:*",
+    "@sarraf/express": "workspace:*",
+    "@sarraf/fawry": "workspace:*",
+    "@sarraf/kashier": "workspace:*",
+    "@sarraf/paymob": "workspace:*",
+    "@sarraf/testing": "workspace:*",
+    "typedoc": "0.27.6"
+  }
+}

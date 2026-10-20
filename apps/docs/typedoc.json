@@ -1,0 +1,18 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "../../packages/core/src/index.ts",
+    "../../packages/paymob/src/index.ts",
+    "../../packages/kashier/src/index.ts",
+    "../../packages/fawry/src/index.ts",
+    "../../packages/express/src/index.ts",
+    "../../packages/testing/src/index.ts"
+  ],
+  "tsconfig": "./tsconfig.typedoc.json",
+  "out": "public/api",
+  "name": "Sarraf API",
+  "readme": "none",
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "skipErrorChecking": true
+}

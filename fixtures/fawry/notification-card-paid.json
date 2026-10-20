@@ -1,0 +1,15 @@
+{
+  "provider": "fawry",
+  "scenario": "notification-card-paid",
+  "source": "synthetic",
+  "secret": "test_secure_key_do_not_use",
+  "description": "Card payment with a fractional amount. Synthetic V2 notification; verify against a real one before trusting.",
+  "signedString": "970179order_8843250.50250.50PAIDCARD2283311",
+  "expectedSignature": "580ccd80f123fa2ab54459999525d4c73080b8799e4d42821fa58e6afa9061ea",
+  "webhook": {
+    "headers": {
+      "content-type": "application/json"
+    },
+    "rawBody": "{\"requestId\":\"c72827d084ea4b88949d91dd2db4996e\",\"fawryRefNumber\":\"970179\",\"merchantRefNumber\":\"order_8843\",\"customerMobile\":\"01001234567\",\"customerMail\":\"sara@example.com\",\"paymentAmount\":250.5,\"orderAmount\":250.5,\"fawryFees\":0,\"orderStatus\":\"PAID\",\"paymentMethod\":\"CARD\",\"paymentTime\":1760960000000,\"paymentRefrenceNumber\":\"2283311\",\"orderExpiryDate\":1761046400000,\"orderItems\":[{\"itemCode\":\"order_8841\",\"price\":250,\"quantity\":1}],\"messageSignature\":\"580ccd80f123fa2ab54459999525d4c73080b8799e4d42821fa58e6afa9061ea\"}"
+  }
+}

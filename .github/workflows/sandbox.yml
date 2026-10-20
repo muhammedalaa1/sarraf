@@ -1,0 +1,39 @@
+name: Sandbox contract tests
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sandbox:
+    runs-on: ubuntu-latest
+    # Secrets are only available on the main repository, never on forks.
+    if: github.repository_owner == 'sarraf-dev'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test:sandbox
+        env:
+          PAYMOB_REGION: egypt
+          PAYMOB_SECRET_KEY: ${{ secrets.PAYMOB_SECRET_KEY }}
+          PAYMOB_PUBLIC_KEY: ${{ secrets.PAYMOB_PUBLIC_KEY }}
+          PAYMOB_HMAC_SECRET: ${{ secrets.PAYMOB_HMAC_SECRET }}
+          PAYMOB_API_KEY: ${{ secrets.PAYMOB_API_KEY }}
+          PAYMOB_CARD_INTEGRATION_ID: ${{ secrets.PAYMOB_CARD_INTEGRATION_ID }}
+          PAYMOB_WALLET_INTEGRATION_ID: ${{ secrets.PAYMOB_WALLET_INTEGRATION_ID }}
+          PAYMOB_SANDBOX_TRANSACTION_ID: ${{ secrets.PAYMOB_SANDBOX_TRANSACTION_ID }}
+          KASHIER_MERCHANT_ID: ${{ secrets.KASHIER_MERCHANT_ID }}
+          KASHIER_API_KEY: ${{ secrets.KASHIER_API_KEY }}
+          KASHIER_SECRET_KEY: ${{ secrets.KASHIER_SECRET_KEY }}
+          KASHIER_SANDBOX_ORDER_ID: ${{ secrets.KASHIER_SANDBOX_ORDER_ID }}
+          FAWRY_MERCHANT_CODE: ${{ secrets.FAWRY_MERCHANT_CODE }}
+          FAWRY_SECURE_KEY: ${{ secrets.FAWRY_SECURE_KEY }}

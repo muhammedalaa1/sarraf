@@ -1,0 +1,16 @@
+{
+  "provider": "kashier",
+  "scenario": "webhook-special-chars",
+  "source": "synthetic",
+  "description": "Serialization parity: * ( ) ' ! ~ and Arabic in a signed field, plus a null signed field (bare key). Synthetic, shaped from Kashier's webhook docs. Replace with a recorded sandbox fixture.",
+  "secret": "test_payment_api_key_do_not_use",
+  "signedString": "amount=250&creationDate=2026-10-20T13%3A37%3A02.118Z&currency=EGP&description&kashierOrderId=ko_6527a1b2c3&merchantOrderId=order%2A%28it%27s%29%21_%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%20~-.&method=card&orderReference=TEST-ORD-18213&status=SUCCESS&transactionId=TX-2491820431",
+  "expectedSignature": "f568aa510d4587125b30c97067616d2797559ba594856ab60f9e2bed28955ae3",
+  "webhook": {
+    "headers": {
+      "content-type": "application/json",
+      "x-kashier-signature": "f568aa510d4587125b30c97067616d2797559ba594856ab60f9e2bed28955ae3"
+    },
+    "rawBody": "{\"event\":\"pay\",\"data\":{\"merchantOrderId\":\"order*(it's)!_مرحبا ~-.\",\"kashierOrderId\":\"ko_6527a1b2c3\",\"orderReference\":\"TEST-ORD-18213\",\"transactionId\":\"TX-2491820431\",\"status\":\"SUCCESS\",\"method\":\"card\",\"creationDate\":\"2026-10-20T13:37:02.118Z\",\"amount\":250,\"currency\":\"EGP\",\"card\":{\"cardInfo\":{\"cardBrand\":\"Visa\",\"maskedCard\":\"411111******1111\"}},\"transactionResponseCode\":\"00\",\"transactionResponseMessage\":{\"en\":\"Approved\",\"ar\":\"تمت الموافقة\"},\"signatureKeys\":[\"merchantOrderId\",\"kashierOrderId\",\"orderReference\",\"transactionId\",\"status\",\"method\",\"creationDate\",\"amount\",\"currency\",\"description\"],\"description\":null}}"
+  }
+}

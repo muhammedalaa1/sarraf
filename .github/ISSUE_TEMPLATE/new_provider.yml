@@ -1,0 +1,21 @@
+name: New provider
+description: Propose an adapter for another payment provider
+labels: [provider, help wanted]
+body:
+  - type: input
+    id: name
+    attributes: { label: Provider, placeholder: "Tap, HyperPay, Moyasar, PayTabs, Valu, Opay, Stripe…" }
+    validations: { required: true }
+  - type: textarea
+    id: docs
+    attributes: { label: Official docs, description: "Links to API reference, webhook signature docs, sandbox signup." }
+  - type: textarea
+    id: scope
+    attributes: { label: Scope, description: "Countries, currencies, methods, checkout style (redirect / reference code)." }
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Contribution
+      options:
+        - label: I have sandbox access and can help record fixtures
+        - label: I want to build this adapter (see CONTRIBUTING → How to add a provider)

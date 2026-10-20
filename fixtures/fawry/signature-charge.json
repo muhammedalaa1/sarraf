@@ -1,0 +1,15 @@
+{
+  "provider": "fawry",
+  "scenario": "signature-charge",
+  "source": "synthetic",
+  "secret": "test_secure_key_do_not_use",
+  "description": "PAYATFAWRY charge signature (field order from Fawry staging docs).",
+  "signedString": "TESTMERCHANT01order_8841PAYATFAWRY250.00",
+  "expectedSignature": "1797118813d8e4968e1c9a541a532cf80f58e52874590651c5e3bf240557e0b7",
+  "data": {
+    "merchantCode": "TESTMERCHANT01",
+    "merchantRefNum": "order_8841",
+    "paymentMethod": "PAYATFAWRY",
+    "amount": "250.00"
+  }
+}
