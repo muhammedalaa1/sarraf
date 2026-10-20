@@ -1,3 +1,5 @@
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { Sarraf, silentLogger } from "@sarraf/core";
 import { runConformanceTests } from "@sarraf/core/conformance";
@@ -121,6 +123,12 @@ describe("fixtures", () => {
 
   it("finds the fixtures dir by walking up", () => {
     expect(findFixturesDir(join(__dirname, "fixtures", "demo"))).toBe(root);
-    expect(() => findFixturesDir("C:/")).toThrow(/No fixtures/);
+    // A fresh temp dir has no fixtures/ above it on any OS ("C:/" is a relative path on Linux).
+    const empty = mkdtempSync(join(tmpdir(), "sarraf-no-fixtures-"));
+    try {
+      expect(() => findFixturesDir(empty)).toThrow(/No fixtures/);
+    } finally {
+      rmSync(empty, { recursive: true, force: true });
+    }
   });
 });
