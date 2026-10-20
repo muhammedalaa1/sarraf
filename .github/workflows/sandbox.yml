@@ -21,6 +21,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo run build --filter=./packages/*
       - run: pnpm test:sandbox
         env:
           PAYMOB_REGION: egypt
