@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "@sarraf/core": "workspace:^",
-    "zod": "3.25.76",
+    "zod": "4.6.7",
     "query-string": "7.1.3"
   },
   "devDependencies": {

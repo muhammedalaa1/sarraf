@@ -58,7 +58,7 @@
     "lint:package": "publint --strict"
   },
   "dependencies": {
-    "zod": "3.25.76"
+    "zod": "4.6.7"
   },
   "peerDependencies": {
     "vitest": ">=1"
