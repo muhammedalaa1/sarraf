@@ -5,7 +5,7 @@ import { Sarraf, silentLogger } from "@sarraf/core";
 import { paymobTransaction, signPaymobCallback } from "@sarraf/paymob/testing";
 import { describe, expect, it } from "vitest";
 import { Inbox, RETENTION_MS } from "../lib/inbox";
-import { RateLimiter, clientKey } from "../lib/rate-limit";
+import { clientKey, RateLimiter } from "../lib/rate-limit";
 import { assertNoLiveKeys, buildProviders } from "../lib/sarraf";
 import { captureWebhook, replayWebhook } from "../lib/webhooks";
 

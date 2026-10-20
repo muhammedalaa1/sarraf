@@ -652,7 +652,7 @@ Cancel unpaid reference: a dedicated "cancel payment" API exists ✅ (confirm pa
 - Full TypeScript types, autocomplete for providers, methods, statuses, error codes.
 - Errors that teach: `CAPABILITY_NOT_SUPPORTED: Kashier refunds are beta in v1 (docs/providers/kashier#refunds)`.
 - `debug: true` logs redacted requests/responses.
-- ESM + CJS, Node 18+, zero runtime deps in core except `zod` (and `query-string` in the Kashier adapter).
+- ESM + CJS, Node 22+, zero runtime deps in core except `zod` (and `query-string` in the Kashier adapter).
 - `@sarraf/express`: `rawBody()` middleware + `webhookHandler(pay, onEvent)`. Nest and Next helpers in v1.1.
 
 ### Sandbox dashboard (`apps/dashboard`, Next.js)
@@ -670,7 +670,7 @@ Quick start (5 min) · Concepts (money, statuses, webhooks, idempotency, reconci
 ## 12. Open-source setup
 - Apache-2.0 · `README`, `CONTRIBUTING` ("How to add a provider" checklist mirroring §3.2), `SECURITY.md`, `CODE_OF_CONDUCT`, issue/PR templates.
 - Changesets → semver + changelogs per package; GitHub Actions publish to npm **with provenance**.
-- CI: lint, typecheck, tests on Node 18/20/22, build, examples, secret scan; nightly sandbox contract tests.
+- CI: lint, typecheck, tests on Node 22/24, build, examples, secret scan; nightly sandbox contract tests.
 - Labels: `good first issue`, `provider: <name>`, `help wanted`. Open issues for Tap, HyperPay, Stripe, Moyasar, PayTabs, Valu, Opay.
 
 ---

@@ -1,5 +1,5 @@
-import { SarrafError, errorCodeForStatus } from "./errors.js";
-import { type Logger, defaultLogger } from "./logger.js";
+import { errorCodeForStatus, SarrafError } from "./errors.js";
+import { defaultLogger, type Logger } from "./logger.js";
 import { redact, redactHeaders, redactUrl } from "./redact.js";
 import type { ProviderId } from "./types.js";
 
@@ -79,8 +79,8 @@ export class HttpClient {
   private readonly sleep: (ms: number) => Promise<void>;
 
   constructor(options: HttpClientOptions = {}) {
-    const f = options.fetch ?? (globalThis.fetch as FetchLike | undefined);
-    if (!f) throw new SarrafError("CONFIGURATION_INVALID", "No fetch implementation found. Use Node 18+.");
+    const f = options.fetch ?? globalThis.fetch;
+    if (!f) throw new SarrafError("CONFIGURATION_INVALID", "No fetch implementation found. Use Node 22+.");
     this.fetchImpl = f;
     this.timeoutMs = options.timeoutMs ?? 15_000;
     this.maxRetries = options.maxRetries ?? 2;

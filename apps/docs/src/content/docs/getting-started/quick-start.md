@@ -9,7 +9,7 @@ description: Accept your first sandbox payment in five minutes.
 npm i @sarraf/core @sarraf/paymob @sarraf/kashier @sarraf/fawry @sarraf/express
 ```
 
-Node 18+. Server-side only: `@sarraf/core` throws if it is bundled for a browser.
+Node 22+. Server-side only: `@sarraf/core` throws if it is bundled for a browser.
 
 ## 2. Configure providers
 

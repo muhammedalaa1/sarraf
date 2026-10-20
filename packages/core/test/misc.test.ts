@@ -4,7 +4,7 @@ import { buildEvent, eventTypeForStatus, refundedStatus, sarrafId } from "../src
 import { MemoryStore } from "../src/idempotency/memory.js";
 import { RedisStore } from "../src/idempotency/redis.js";
 import { consoleLogger, defaultLogger, silentLogger } from "../src/logger.js";
-import { REDACTED, maskEmail, maskPhone, redact, redactUrl } from "../src/redact.js";
+import { maskEmail, maskPhone, REDACTED, redact, redactUrl } from "../src/redact.js";
 import { assertServerRuntime } from "../src/runtime.js";
 import {
   asRecord,

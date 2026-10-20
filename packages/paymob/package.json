@@ -6,14 +6,22 @@
   "type": "module",
   "sideEffects": false,
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sarraf-dev/sarraf.git",
     "directory": "packages/paymob"
   },
-  "keywords": ["paymob", "payments", "egypt", "ksa", "uae", "oman", "sarraf"],
+  "keywords": [
+    "paymob",
+    "payments",
+    "egypt",
+    "ksa",
+    "uae",
+    "oman",
+    "sarraf"
+  ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -40,7 +48,10 @@
     },
     "./package.json": "./package.json"
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsup",
     "test": "vitest run --coverage",
@@ -49,7 +60,7 @@
   },
   "dependencies": {
     "@sarraf/core": "workspace:^",
-    "zod": "3.25.76"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@sarraf/testing": "workspace:*"

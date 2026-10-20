@@ -35,7 +35,7 @@ export function signPaymobCallback(obj: PaymobTransaction, hmacSecret: string): 
   return {
     rawBody,
     headers: { "content-type": "application/json" },
-    query: { hmac: paymobTransactionHmac(obj as Record<string, unknown>, hmacSecret) },
+    query: { hmac: paymobTransactionHmac(obj, hmacSecret) },
   };
 }
 

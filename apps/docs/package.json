@@ -9,9 +9,9 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "@astrojs/starlight": "0.30.6",
-    "astro": "5.1.7",
-    "sharp": "0.33.5"
+    "@astrojs/starlight": "0.42.6",
+    "astro": "7.4.1",
+    "sharp": "0.35.5"
   },
   "devDependencies": {
     "@sarraf/core": "workspace:*",
@@ -20,6 +20,6 @@
     "@sarraf/kashier": "workspace:*",
     "@sarraf/paymob": "workspace:*",
     "@sarraf/testing": "workspace:*",
-    "typedoc": "0.27.6"
+    "typedoc": "0.28.20"
   }
 }

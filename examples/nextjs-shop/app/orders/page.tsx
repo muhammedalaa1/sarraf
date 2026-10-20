@@ -1,5 +1,5 @@
 import { orders } from "../../lib/pay";
-import { PROVIDER_INFO, formatMoney, isPending } from "../../lib/shop";
+import { formatMoney, isPending, PROVIDER_INFO } from "../../lib/shop";
 import { AutoRefresh, StatusBadge } from "../components";
 
 export const dynamic = "force-dynamic";

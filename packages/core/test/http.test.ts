@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { SarrafError, errorCodeForStatus, isSarrafError } from "../src/errors.js";
-import { type FetchLike, HttpClient, buildUrl, ensureOk } from "../src/http.js";
+import { errorCodeForStatus, isSarrafError, SarrafError } from "../src/errors.js";
+import { buildUrl, ensureOk, type FetchLike, HttpClient } from "../src/http.js";
 import { silentLogger } from "../src/logger.js";
 
 const json = (status: number, body: unknown, headers: Record<string, string> = {}) =>

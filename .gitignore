@@ -2,6 +2,7 @@ node_modules/
 dist/
 coverage/
 .next/
+next-env.d.ts
 .astro/
 .turbo/
 *.log

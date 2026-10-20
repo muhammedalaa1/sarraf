@@ -1,3 +1,5 @@
+export { type FakeProvider, type FakeProviderOptions, fakeProvider } from "./fake-provider.js";
+export { type Fixture, findFixturesDir, listFixtures, loadFixture } from "./fixtures.js";
 export {
   createMockFetch,
   type MockFetch,
@@ -5,5 +7,3 @@ export {
   type MockResponse,
   type MockRoute,
 } from "./mock-fetch.js";
-export { findFixturesDir, listFixtures, loadFixture, type Fixture } from "./fixtures.js";
-export { fakeProvider, type FakeProvider, type FakeProviderOptions } from "./fake-provider.js";

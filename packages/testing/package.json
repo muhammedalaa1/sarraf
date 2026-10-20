@@ -6,7 +6,7 @@
   "type": "module",
   "sideEffects": false,
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "repository": {
     "type": "git",
@@ -29,7 +29,10 @@
     },
     "./package.json": "./package.json"
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsup",
     "test": "vitest run --coverage",

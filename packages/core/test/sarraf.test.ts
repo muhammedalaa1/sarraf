@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { SarrafError, isSarrafError } from "../src/errors.js";
+import { isSarrafError, SarrafError } from "../src/errors.js";
 import { HttpClient } from "../src/http.js";
 import { silentLogger } from "../src/logger.js";
 import { Sarraf, stableStringify } from "../src/sarraf.js";

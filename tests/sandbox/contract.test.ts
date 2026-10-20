@@ -29,18 +29,17 @@ describe.skipIf(!hasPaymob())("@sandbox paymob", () => {
     expect(page.status).toBeLessThan(500);
   });
 
-  it.skipIf(!env("PAYMOB_API_KEY") || !env("PAYMOB_SANDBOX_TRANSACTION_ID"))(
-    "reads a known transaction",
-    async () => {
-      const pay = sandboxSarraf();
-      const p = await pay.payments.get({
-        provider: "paymob",
-        providerPaymentId: env("PAYMOB_SANDBOX_TRANSACTION_ID")!,
-      });
-      expect(p.providerPaymentId).toBe(env("PAYMOB_SANDBOX_TRANSACTION_ID"));
-      expect(p.amount.value).toBeGreaterThan(0);
-    },
-  );
+  it("reads a known transaction", {
+    skip: !env("PAYMOB_API_KEY") || !env("PAYMOB_SANDBOX_TRANSACTION_ID"),
+  }, async () => {
+    const pay = sandboxSarraf();
+    const p = await pay.payments.get({
+      provider: "paymob",
+      providerPaymentId: env("PAYMOB_SANDBOX_TRANSACTION_ID")!,
+    });
+    expect(p.providerPaymentId).toBe(env("PAYMOB_SANDBOX_TRANSACTION_ID"));
+    expect(p.amount.value).toBeGreaterThan(0);
+  });
 
   it("rejects a bad secret key with AUTHENTICATION_FAILED", async () => {
     const { paymob } = await import("@sarraf/paymob");
@@ -79,17 +78,16 @@ describe.skipIf(!hasKashier())("@sandbox kashier", () => {
     expect(html.toLowerCase()).not.toContain("invalid hash");
   });
 
-  it.skipIf(!env("KASHIER_SECRET_KEY") || !env("KASHIER_SANDBOX_ORDER_ID"))(
-    "looks up a known order (beta)",
-    async () => {
-      const pay = sandboxSarraf();
-      const p = await pay.payments.get({
-        provider: "kashier",
-        providerPaymentId: env("KASHIER_SANDBOX_ORDER_ID")!,
-      });
-      expect(p.provider).toBe("kashier");
-    },
-  );
+  it("looks up a known order (beta)", {
+    skip: !env("KASHIER_SECRET_KEY") || !env("KASHIER_SANDBOX_ORDER_ID"),
+  }, async () => {
+    const pay = sandboxSarraf();
+    const p = await pay.payments.get({
+      provider: "kashier",
+      providerPaymentId: env("KASHIER_SANDBOX_ORDER_ID")!,
+    });
+    expect(p.provider).toBe("kashier");
+  });
 });
 
 describe.skipIf(!hasFawry())("@sandbox fawry", () => {

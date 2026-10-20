@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [18, 20, 22]
+        node: [22, 24]
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -63,7 +63,7 @@ jobs:
         run: |
           for dir in packages/*/; do
             echo "::group::attw $dir"
-            (cd "$dir" && pnpm dlx @arethetypeswrong/cli@0.17.2 --pack . --profile node16)
+            (cd "$dir" && pnpm exec attw --pack . --profile node16)
             echo "::endgroup::"
           done
       - name: Lockfile is up to date

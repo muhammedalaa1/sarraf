@@ -43,7 +43,7 @@ export function signKashierWebhook(
     rawBody: JSON.stringify({ event, data }),
     headers: {
       "content-type": "application/json",
-      [KASHIER_SIGNATURE_HEADER]: kashierWebhookSignature(data as Record<string, unknown>, apiKey),
+      [KASHIER_SIGNATURE_HEADER]: kashierWebhookSignature(data, apiKey),
     },
   };
 }

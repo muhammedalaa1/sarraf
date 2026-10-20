@@ -37,8 +37,8 @@ export const createCheckoutSchema = z
     expiresInSeconds: z.number().int().positive().optional(),
     locale: z.enum(["en", "ar"]).optional(),
     idempotencyKey: z.string().min(1).max(255).optional(),
-    metadata: z.record(z.string()).optional(),
-    providerOptions: z.record(z.unknown()).optional(),
+    metadata: z.record(z.string(), z.string()).optional(),
+    providerOptions: z.record(z.string(), z.unknown()).optional(),
   })
   .superRefine((input, ctx) => {
     if (!input.items?.length) return;
@@ -83,7 +83,7 @@ function check(schema: z.ZodTypeAny, input: unknown, op: string) {
   if (result.success) return;
   const issues = result.error.issues.map((i) => `${i.path.join(".") || "input"} ${i.message}`).join("; ");
   const unsupportedCurrency = result.error.issues.some(
-    (i) => i.path[i.path.length - 1] === "currency" && i.code === "invalid_enum_value",
+    (i) => i.path[i.path.length - 1] === "currency" && i.code === "invalid_value",
   );
   throw new SarrafError(unsupportedCurrency ? "UNSUPPORTED_CURRENCY" : "INVALID_REQUEST", `${op}: ${issues}`);
 }
