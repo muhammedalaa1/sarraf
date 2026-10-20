@@ -100,7 +100,7 @@ Each adapter also ships a `/testing` subpath (`@sarraf/paymob/testing`, ...) wit
 
 ## Install
 
-Requires **Node.js 18+**. Install core plus the adapters you use:
+Requires **Node.js 22+**. Install core plus the adapters you use:
 
 ```bash
 npm install @sarraf/core @sarraf/paymob @sarraf/kashier @sarraf/fawry
@@ -619,7 +619,7 @@ flowchart LR
 
 1. **`@sarraf/core`** knows nothing about any specific provider. It owns the models, validation, capability checks, idempotency, money math, errors, the HTTP client and the `PaymentProvider` interface.
 2. **Adapters** implement `PaymentProvider` and register themselves in core's type registries through TypeScript module augmentation. That is how `providerOptions` gets a different type for each provider, and how a third-party adapter (say `@acme/sarraf-tap`) can plug in without changing core.
-3. **The HTTP client** is a thin `fetch` wrapper (Node 18+ has `fetch` built in). It adds per-request timeouts, retries only safe calls, maps a timeout on a money call to `TIMEOUT_UNKNOWN_OUTCOME`, and redacts everything it logs. Inject your own `fetch` for tests or proxies.
+3. **The HTTP client** is a thin `fetch` wrapper (Node 22+ has `fetch` built in). It adds per-request timeouts, retries only safe calls, maps a timeout on a money call to `TIMEOUT_UNKNOWN_OUTCOME`, and redacts everything it logs. Inject your own `fetch` for tests or proxies.
 
 ### Adapter anatomy
 
@@ -695,8 +695,8 @@ Without credentials, it runs on fake providers. It **refuses to start with live 
 
 ### Prerequisites
 
-- Node.js 20 (see `.nvmrc`; the packages support 18+)
-- pnpm 9: `npm i -g pnpm@9` or `corepack enable`
+- Node.js 22.12+ (see `.nvmrc`; the published packages support 22+)
+- pnpm 12: `npm i -g pnpm@12` or `corepack enable`
 
 ### Setup
 
@@ -807,7 +807,7 @@ To skip them in an emergency: `LEFTHOOK=0 git commit ...`. CI runs the same chec
 
 | Job | Runs |
 |---|---|
-| Test (Node 18 / 20 / 22) | build packages → typecheck + tests (coverage, snapshots) |
+| Test (Node 22 / 24) | build packages → typecheck + tests (coverage, snapshots) |
 | Quality | `biome ci`, secret scan, full build, ESLint (`--max-warnings 0`), typecheck everything, all tests, publint, attw, lockfile up to date |
 | Changeset (PRs) | Fails when a published package changed without a changeset |
 | Sandbox (nightly, `sandbox.yml`) | Real contract tests with repository secrets |

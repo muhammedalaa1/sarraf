@@ -5,13 +5,13 @@ Thanks for helping. Sarraf moves money, so the bar is correctness first.
 ## Setup
 
 ```bash
-corepack enable   # or: npm i -g pnpm@9
+corepack enable   # or: npm i -g pnpm@12
 pnpm install      # also installs the git hooks (lefthook)
 pnpm build
 pnpm check        # lint, typecheck, tests, package checks, secret scan: the same as CI
 ```
 
-- Node 18+ · pnpm workspaces · Turborepo · TypeScript (strictest settings) · tsup · Vitest · Biome · ESLint (type-aware) · Changesets
+- Node 22.12+ for development (published packages support 22+) · pnpm workspaces · Turborepo · TypeScript (strictest settings) · tsup · Vitest · Biome · ESLint (type-aware) · Changesets
 - Every PR that touches a published package needs a changeset: `pnpm changeset`.
 - Never commit credentials. `pnpm check-secrets` runs on every commit and in CI, and also checks every value in your local `.env.sandbox`.
 - The README has a full table of the guardrails and how to satisfy each one: [Guardrails](./README.md#guardrails-what-ci-enforces-and-why).

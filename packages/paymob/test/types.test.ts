@@ -4,13 +4,13 @@
  */
 import {
   type Checkout,
+  isSarrafError,
   type Money,
   type Payment,
   type PaymentStatus,
   Sarraf,
   type SarrafError,
   type SarrafEvent,
-  isSarrafError,
 } from "@sarraf/core";
 import { expectTypeOf } from "expect-type";
 import { describe, it } from "vitest";

@@ -1,5 +1,5 @@
 import { getPay } from "../lib/pay";
-import { MAX_QUANTITY, PRODUCT, PROVIDER_INFO, formatMoney } from "../lib/shop";
+import { formatMoney, MAX_QUANTITY, PRODUCT, PROVIDER_INFO } from "../lib/shop";
 import { checkout } from "./actions";
 import { Notice } from "./components";
 

@@ -6,14 +6,19 @@
   "type": "module",
   "sideEffects": false,
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sarraf-dev/sarraf.git",
     "directory": "packages/express"
   },
-  "keywords": ["express", "webhooks", "payments", "sarraf"],
+  "keywords": [
+    "express",
+    "webhooks",
+    "payments",
+    "sarraf"
+  ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -30,7 +35,10 @@
     },
     "./package.json": "./package.json"
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsup",
     "test": "vitest run --coverage",
@@ -50,10 +58,10 @@
   },
   "devDependencies": {
     "@sarraf/testing": "workspace:*",
-    "express": "4.21.2",
-    "@types/express": "4.17.21",
-    "supertest": "7.0.0",
-    "@types/supertest": "6.0.2"
+    "@types/express": "5.0.6",
+    "@types/supertest": "7.2.1",
+    "express": "5.3.0",
+    "supertest": "7.3.1"
   },
   "publishConfig": {
     "access": "public",

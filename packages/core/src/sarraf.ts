@@ -3,7 +3,7 @@ import { SarrafError } from "./errors.js";
 import { HttpClient, type HttpClientOptions } from "./http.js";
 import { MemoryStore } from "./idempotency/memory.js";
 import type { IdempotencyStore } from "./idempotency/store.js";
-import { type Logger, consoleLogger, defaultLogger } from "./logger.js";
+import { consoleLogger, defaultLogger, type Logger } from "./logger.js";
 import type {
   Capabilities,
   CapabilityLevel,
@@ -104,7 +104,7 @@ export class Sarraf<P extends ProvidersConfig = ProvidersConfig> {
     create: async <Id extends ProviderId & keyof P>(input: CreateCheckoutInput<Id>): Promise<Checkout> => {
       const provider = this.provider(input.provider);
       this.require(provider, "checkout");
-      validateCheckoutInput(input as CreateCheckoutInput);
+      validateCheckoutInput(input);
       const caps = provider.capabilities;
       if (!caps.currencies.includes(input.amount.currency)) {
         throw new SarrafError(

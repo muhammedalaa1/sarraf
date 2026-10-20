@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getPay, orders } from "../../../lib/pay";
-import { PRODUCT, PROVIDER_INFO, formatMoney, headline, isPending } from "../../../lib/shop";
+import { formatMoney, headline, isPending, PRODUCT, PROVIDER_INFO } from "../../../lib/shop";
 import { demoPayAtOutlet, reconcile, refund } from "../../actions";
 import { AutoRefresh, Notice, StatusBadge } from "../../components";
 

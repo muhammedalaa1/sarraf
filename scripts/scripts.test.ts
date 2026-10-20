@@ -6,7 +6,7 @@ import { kashierWebhookData, signKashierWebhook } from "@sarraf/kashier/testing"
 import { paymob } from "@sarraf/paymob";
 import { paymobTransaction, signPaymobCallback } from "@sarraf/paymob/testing";
 import { describe, expect, it } from "vitest";
-import { TEST_SECRETS, resign } from "./record-fixtures.js";
+import { resign, TEST_SECRETS } from "./record-fixtures.js";
 import { scrub, scrubUrl } from "./scrub.js";
 
 describe("scrub", () => {

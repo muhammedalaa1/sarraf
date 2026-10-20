@@ -5,7 +5,16 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: ["**/dist/**", "**/node_modules/**", "**/coverage/**", "**/test/**", "**/*.test.ts"],
+    ignores: [
+      "**/dist/**",
+      "**/.next/**",
+      "**/.astro/**",
+      "**/.turbo/**",
+      "**/node_modules/**",
+      "**/coverage/**",
+      "**/test/**",
+      "**/*.test.ts",
+    ],
   },
   {
     files: ["packages/*/src/**/*.ts"],

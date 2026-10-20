@@ -1,9 +1,7 @@
 /**
  * Sarraf handles secret keys and must never run in a browser. Throw early and clearly.
  */
-export function assertServerRuntime(
-  g: Record<string, unknown> = globalThis as Record<string, unknown>,
-): void {
+export function assertServerRuntime(g: Record<string, unknown> = globalThis): void {
   const isBrowser = typeof g.window === "object" && typeof g.document === "object";
   const proc = g.process as { versions?: { node?: string } } | undefined;
   const isNodeLike = typeof proc?.versions?.node === "string";

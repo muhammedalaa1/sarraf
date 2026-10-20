@@ -1,4 +1,4 @@
-import { Store, createApp, reconcilePending } from "./app.js";
+import { createApp, reconcilePending, Store } from "./app.js";
 import { createPay } from "./pay.js";
 
 const port = Number(process.env.PORT ?? 3000);

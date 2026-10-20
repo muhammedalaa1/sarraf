@@ -45,7 +45,12 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font: 15px / 1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font:
+    15px / 1.55 system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -342,7 +347,12 @@ dd {
 
 /* Fawry reference code */
 .code {
-  font: 600 32px / 1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font:
+    600 32px / 1.2 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Consolas,
+    monospace;
   letter-spacing: 0.12em;
   text-align: center;
   padding: 20px;

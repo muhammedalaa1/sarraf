@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { PAYMOB_STATUS_TABLE, mapPaymobStatus, toPaymobPayment } from "../src/index.js";
+import { mapPaymobStatus, PAYMOB_STATUS_TABLE, toPaymobPayment } from "../src/index.js";
 import { mapPaymobMethod, merchantReference, orderId } from "../src/mappers.js";
 import { paymobTransaction } from "../src/testing.js";
 

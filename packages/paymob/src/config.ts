@@ -24,7 +24,7 @@ export const paymobOptionsSchema = z.object({
   apiKey: z.string().min(1).optional(),
   /** One integration id per payment method. Test/live mode must match the keys. */
   integrationIds: z
-    .record(z.enum(methods), z.number().int().positive())
+    .partialRecord(z.enum(methods), z.number().int().positive())
     .refine((v) => Object.keys(v).length > 0, "at least one integration id is required"),
   /** Override the region base URL (testing / proxies). */
   baseUrl: z.string().url().optional(),

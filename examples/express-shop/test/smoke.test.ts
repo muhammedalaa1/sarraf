@@ -1,7 +1,7 @@
 import type { FakeProvider } from "@sarraf/testing";
 import request from "supertest";
 import { describe, expect, it } from "vitest";
-import { type Order, Store, createApp, reconcilePending } from "../src/app.js";
+import { createApp, type Order, reconcilePending, Store } from "../src/app.js";
 import { createPay } from "../src/pay.js";
 
 function demoShop() {

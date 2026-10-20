@@ -9,10 +9,13 @@ pre-commit:
     secrets:
       run: pnpm check-secrets
 
+# Sequential: typecheck rebuilds packages/*/dist, which type-aware ESLint reads.
 pre-push:
-  parallel: true
+  piped: true
   commands:
     typecheck:
+      priority: 1
       run: pnpm typecheck
     eslint:
+      priority: 2
       run: pnpm eslint

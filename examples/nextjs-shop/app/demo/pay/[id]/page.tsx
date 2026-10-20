@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getPay, orders } from "../../../../lib/pay";
-import { PROVIDER_INFO, formatMoney } from "../../../../lib/shop";
+import { formatMoney, PROVIDER_INFO } from "../../../../lib/shop";
 import { demoPay } from "../../../actions";
 
 export const dynamic = "force-dynamic";
