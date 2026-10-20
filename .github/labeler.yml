@@ -1,0 +1,40 @@
+# Area labels from changed files (.github/workflows/pr-labels.yml). Type labels come from the PR title.
+"provider: paymob":
+  - changed-files:
+      - any-glob-to-any-file: ["packages/paymob/**", "fixtures/paymob/**"]
+"provider: kashier":
+  - changed-files:
+      - any-glob-to-any-file: ["packages/kashier/**", "fixtures/kashier/**"]
+"provider: fawry":
+  - changed-files:
+      - any-glob-to-any-file: ["packages/fawry/**", "fixtures/fawry/**"]
+"pkg: core":
+  - changed-files:
+      - any-glob-to-any-file: packages/core/**
+"pkg: express":
+  - changed-files:
+      - any-glob-to-any-file: packages/express/**
+"pkg: testing":
+  - changed-files:
+      - any-glob-to-any-file: packages/testing/**
+"app: dashboard":
+  - changed-files:
+      - any-glob-to-any-file: apps/dashboard/**
+examples:
+  - changed-files:
+      - any-glob-to-any-file: examples/**
+# Top-level entries are OR-ed: the docs site, or a Markdown file that is not a changeset.
+documentation:
+  - changed-files:
+      - any-glob-to-any-file: apps/docs/**
+  - changed-files:
+      - all-globs-to-any-file: ["**/*.md", "!.changeset/**"]
+ci:
+  - changed-files:
+      - any-glob-to-any-file: [".github/**", "lefthook.yml", "commitlint.config.js", "scripts/**"]
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file: pnpm-lock.yaml
+changeset:
+  - changed-files:
+      - any-glob-to-any-file: .changeset/*.md

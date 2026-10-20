@@ -85,5 +85,29 @@ When a sandbox call confirms something marked ⚠️ in an adapter:
 ## Commit / PR style
 
 - Small, focused PRs, with tests in the same PR.
-- Conventional-ish commit subjects (`fix(paymob): …`, `feat(core): …`).
 - Fill in the PR template, including how you verified the change.
+
+### Commit messages and PR titles
+
+Both follow [Conventional Commits](https://www.conventionalcommits.org): `type(scope): subject`. The rules live in `commitlint.config.js`. The `commit-msg` hook checks every commit, and CI checks the PR title, which becomes the commit on `main` when the PR is squash-merged.
+
+```text
+feat(paymob): support wallet refunds
+fix(kashier): sort keys before signing the webhook
+docs: explain reference-code expiry
+chore(deps): bump zod to 4.7.0
+feat(core)!: rename createCheckout to checkout.create   ← "!" marks a breaking change
+```
+
+- **Types:** `feat`, `fix`, `perf`, `refactor`, `docs`, `test`, `build`, `ci`, `chore`, `revert`
+- **Scopes (optional):** `core`, `paymob`, `kashier`, `fawry`, `express`, `testing`, `dashboard`, `docs`, `examples`, `scripts`, `ci`, `deps`, `deps-dev`. Adding a provider? Add its scope to `commitlint.config.js` and its label to `.github/labeler.yml` in the same PR.
+- **Subject:** starts lowercase and has no trailing period (both checked). Write it in the imperative: `add`, not `added`.
+
+The version bump comes from the changeset, not from the commit type.
+
+### Labels
+
+PRs are labelled automatically; you don't need to add any by hand.
+
+- **Area**, from the changed files (`.github/labeler.yml`): `provider: paymob`, `provider: kashier`, `provider: fawry`, `pkg: core`, `pkg: express`, `pkg: testing`, `app: dashboard`, `examples`, `documentation`, `ci`, `dependencies`, `changeset`.
+- **Type**, from the PR title: `feat` → `enhancement`, `fix` → `bug`, `perf` → `performance`, `docs` → `documentation`, `test` → `tests`, `refactor` / `build` / `ci` / `chore` → `maintenance`, `revert` → `revert`, and `!` → `breaking`.

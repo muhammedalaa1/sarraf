@@ -1,0 +1,59 @@
+name: PR labels
+
+# pull_request_target so labels can be written on PRs from forks too.
+# Safe because this workflow never checks out or runs code from the PR.
+on:
+  pull_request_target:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: pr-labels-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      # Area labels from changed files: .github/labeler.yml
+      - uses: actions/labeler@v7
+        with:
+          sync-labels: true
+
+      # Type label from the conventional PR title, e.g. "fix(kashier): …" → bug
+      - uses: actions/github-script@v9
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const types = {
+              feat: "enhancement",
+              fix: "bug",
+              perf: "performance",
+              docs: "documentation",
+              test: "tests",
+              refactor: "maintenance",
+              build: "maintenance",
+              ci: "maintenance",
+              chore: "maintenance",
+              revert: "revert",
+            };
+            // "documentation" is also an area label, so it is never removed here.
+            const managed = ["enhancement", "bug", "performance", "tests", "maintenance", "revert", "breaking"];
+
+            const match = /^(\w+)(?:\([^)]*\))?(!)?:/.exec(pr.title);
+            const wanted = new Set();
+            if (match && types[match[1]]) wanted.add(types[match[1]]);
+            if (match?.[2]) wanted.add("breaking");
+
+            const current = pr.labels.map((l) => l.name);
+            const issue = { owner: context.repo.owner, repo: context.repo.repo, issue_number: pr.number };
+            for (const name of current) {
+              if (managed.includes(name) && !wanted.has(name)) {
+                await github.rest.issues.removeLabel({ ...issue, name });
+              }
+            }
+            const add = [...wanted].filter((name) => !current.includes(name));
+            if (add.length) await github.rest.issues.addLabels({ ...issue, labels: add });

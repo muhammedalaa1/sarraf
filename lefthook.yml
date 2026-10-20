@@ -9,6 +9,12 @@ pre-commit:
     secrets:
       run: pnpm check-secrets
 
+# Conventional Commits, rules in commitlint.config.js. CI checks PR titles with the same rules.
+commit-msg:
+  commands:
+    commitlint:
+      run: pnpm commitlint --edit {1}
+
 # Sequential: typecheck rebuilds packages/*/dist, which type-aware ESLint reads.
 pre-push:
   piped: true

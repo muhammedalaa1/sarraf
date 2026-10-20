@@ -1,0 +1,36 @@
+name: PR title
+
+# PRs are squash-merged, so the title becomes the commit on main.
+# Same rules as the commit-msg hook: commitlint.config.js.
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-title-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  title:
+    name: Conventional PR title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: commitlint
+        env:
+          # Passed through env, never interpolated into the script: titles are user input.
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          if ! printf '%s\n' "$TITLE" | pnpm commitlint; then
+            echo "::error title=PR title::Use 'type(scope): subject', e.g. 'fix(kashier): sort keys before signing'. See CONTRIBUTING.md#commit-messages-and-pr-titles"
+            exit 1
+          fi
