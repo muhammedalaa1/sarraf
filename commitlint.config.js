@@ -1,4 +1,4 @@
-// Conventional Commits for commit messages (lefthook commit-msg) and PR titles (.github/workflows/pr.yml).
+// Conventional Commits for commit messages (lefthook commit-msg) and PR titles (.github/workflows/pr-title.yml).
 // Format: type(scope): subject, e.g. "fix(kashier): sort keys before signing". The scope is optional.
 export default {
   extends: ["@commitlint/config-conventional"],
