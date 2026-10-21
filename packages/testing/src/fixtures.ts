@@ -19,6 +19,10 @@ export interface Fixture<T = unknown> {
     query?: Record<string, string> | undefined;
     rawBody: string;
   };
+  /** A captured customer redirect: the query params in the order they arrived. */
+  query?: Record<string, string> | undefined;
+  /** Recorded fixtures: true when the provider's real signature matched your real secret. */
+  verifiedAgainstRealSignature?: boolean | undefined;
   /** Throwaway secret used to compute `expectedSignature`. */
   secret?: string | undefined;
   expectedSignature?: string | undefined;

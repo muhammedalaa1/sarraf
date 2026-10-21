@@ -9,7 +9,7 @@ import { execSync } from "node:child_process";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { parse } from "dotenv";
-import { ENV_FILE, ROOT } from "./env.js";
+import { ENV_FILE, isPlaceholder, ROOT } from "./env.js";
 
 const PATTERNS: [string, RegExp][] = [
   ["Paymob/Stripe-style live key", /\b(sk|pk)_live_[A-Za-z0-9]{8,}/],
@@ -40,7 +40,11 @@ function sandboxValues(): [string, string][] {
   if (!existsSync(ENV_FILE)) return [];
   const parsed = parse(readFileSync(ENV_FILE));
   return Object.entries(parsed).filter(
-    ([k, v]) => v.length >= 8 && !/(URL|REGION|INTEGRATION_ID|_ID$)/.test(k) && !/^https?:/.test(v),
+    ([k, v]) =>
+      v.length >= 8 &&
+      !isPlaceholder(v) &&
+      !/(URL|REGION|INTEGRATION_ID|_ID$|_REFERENCE$)/.test(k) &&
+      !/^https?:/.test(v),
   );
 }
 
