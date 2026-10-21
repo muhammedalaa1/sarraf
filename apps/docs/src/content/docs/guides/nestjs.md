@@ -1,47 +1,88 @@
 ---
 title: NestJS
-description: Raw-body webhooks and a Sarraf provider in NestJS.
+description: SarrafModule, verified webhooks and @OnSarrafEvent handlers in NestJS.
 sidebar:
   order: 2
 ---
 
-Enable raw bodies when you bootstrap the app:
+```bash
+npm install @sarraf/nestjs
+```
+
+Enable raw bodies when you bootstrap the app. Signatures are computed over the exact bytes:
 
 ```ts
 const app = await NestFactory.create(AppModule, { rawBody: true });
 ```
 
-Provide Sarraf with a token:
+## Register the module
 
 ```ts
-export const SARRAF = Symbol("SARRAF");
+import { SarrafModule } from "@sarraf/nestjs";
 
 @Module({
-  controllers: [PaymentsController],
-  providers: [{ provide: SARRAF, useFactory: () => new Sarraf({ providers: { /* … */ } }) }],
+  imports: [
+    SarrafModule.forRoot({
+      client: { providers: { paymob: paymob({ /* … */ }), fawry: fawry({ /* … */ }) } },
+    }),
+  ],
 })
 export class AppModule {}
 ```
 
-Verify in a controller:
+`client` is either a `Sarraf` instance or the options to create one. To read keys from `ConfigService`:
 
 ```ts
-@Post("webhooks/:provider")
-@HttpCode(200)
-async webhook(@Param("provider") provider: ProviderId, @Req() req: RawBodyRequest<Request>) {
-  try {
-    const event = await this.pay.webhooks.verifyAndParse(provider, {
-      headers: req.headers,
-      rawBody: req.rawBody!,
-      query: req.query as Record<string, string>,
-    });
-    await this.orders.apply(event);   // dedupe on event.id
-    return { received: true };
-  } catch (err) {
-    if (isSarrafError(err, "WEBHOOK_SIGNATURE_INVALID")) throw new BadRequestException();
-    throw err;
-  }
+SarrafModule.forRootAsync({
+  imports: [ConfigModule],
+  inject: [ConfigService],
+  useFactory: (config: ConfigService) => ({
+    providers: { kashier: kashier({ merchantId: config.getOrThrow("KASHIER_MERCHANT_ID"), /* … */ }) },
+  }),
+});
+```
+
+The module is global. Inject the client anywhere with `@InjectSarraf()`:
+
+```ts
+@Injectable()
+export class CheckoutService {
+  constructor(@InjectSarraf() private readonly pay: Sarraf) {}
 }
 ```
+
+## Handle webhooks
+
+The module serves `POST /webhooks/:provider`. Verified events go to every method marked `@OnSarrafEvent()`:
+
+```ts
+import { OnSarrafEvent } from "@sarraf/nestjs";
+
+@Injectable()
+export class OrdersService {
+  @OnSarrafEvent("payment.succeeded")
+  async paid(event: SarrafEvent) {
+    await this.orders.markPaid(event.payment.reference); // dedupe on event.id
+  }
+
+  @OnSarrafEvent() // no types: every event
+  async log(event: SarrafEvent) { /* … */ }
+}
+```
+
+| Status | When |
+|---|---|
+| 200 | Verified, and every matching handler finished |
+| 400 | `WEBHOOK_SIGNATURE_INVALID` |
+| 404 | Unknown provider |
+| 500 | Missing raw body, processing failed, or a handler threw, so the provider retries |
+
+Handlers must be on singleton providers or controllers; request-scoped ones are ignored with a warning.
+
+Options, on both `forRoot` and `forRootAsync`:
+
+- `webhooks: { path: "payments/webhooks" }` changes the route to `POST /payments/webhooks/:provider`.
+- `webhooks: { mode: "ack-first" }` answers 200 before running handlers. Errors are then only logged, so only enqueue work.
+- `webhooks: false` registers no controller. Call `SarrafWebhooks.handle(provider, req)` from your own controller instead; it throws the same HTTP exceptions.
 
 Full example: [`examples/nestjs-shop`](https://github.com/sarraf-dev/sarraf/tree/main/examples/nestjs-shop).

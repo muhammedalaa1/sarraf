@@ -18,6 +18,8 @@
     "@sarraf/express": "workspace:*",
     "@sarraf/fawry": "workspace:*",
     "@sarraf/kashier": "workspace:*",
+    "@sarraf/nestjs": "workspace:*",
+    "@sarraf/next": "workspace:*",
     "@sarraf/paymob": "workspace:*",
     "@sarraf/testing": "workspace:*",
     "typedoc": "0.28.20"

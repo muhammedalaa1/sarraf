@@ -1,42 +1,70 @@
 ---
 title: Next.js
-description: Route handlers and server actions with the App Router.
+description: Route handlers, thank-you pages and server actions with the App Router.
 sidebar:
   order: 3
 ---
+
+```bash
+npm install @sarraf/next
+```
 
 Keep Sarraf on the server and out of client bundles:
 
 ```js
 // next.config.mjs
 export default {
-  serverExternalPackages: ["@sarraf/core", "@sarraf/paymob", "@sarraf/kashier", "@sarraf/fawry"],
+  serverExternalPackages: ["@sarraf/core", "@sarraf/next", "@sarraf/paymob", "@sarraf/kashier", "@sarraf/fawry"],
 };
 ```
 
-Webhook route handler, `app/api/webhooks/[provider]/route.ts`:
+## Webhooks
+
+`app/api/webhooks/[provider]/route.ts`:
 
 ```ts
+import { webhookRoute } from "@sarraf/next";
+import { pay } from "@/lib/pay";
+
 export const runtime = "nodejs";
 
-export async function POST(req: Request, { params }: { params: Promise<{ provider: string }> }) {
+export const POST = webhookRoute(pay, async (event) => {
+  await applyEvent(event); // dedupe on event.id
+});
+```
+
+`webhookRoute` reads the exact body with `req.text()`, verifies the signature and calls your handler with the normalized `SarrafEvent`. It answers:
+
+| Status | When |
+|---|---|
+| 200 | Verified, and your handler finished |
+| 400 | `WEBHOOK_SIGNATURE_INVALID` |
+| 404 | The `[provider]` segment is not a configured provider |
+| 500 | Processing failed, or your handler threw, so the provider retries |
+
+Options:
+
+- `provider: "paymob"` for a fixed route such as `app/api/webhooks/paymob/route.ts`, or `param` for a segment with another name.
+- `defer: after` (from `next/server`) answers 200 as soon as the signature is valid and runs your handler after the response. Errors are then only logged, so use it to enqueue work, not to do it.
+- `pay` can also be a function, e.g. `webhookRoute(() => getPay(), onEvent)`, for clients created on first use.
+
+## Thank-you page
+
+```tsx
+// app/thanks/[provider]/page.tsx
+import { verifyRedirect } from "@sarraf/next";
+
+export default async function Thanks({ params, searchParams }) {
   const { provider } = await params;
-  try {
-    const event = await pay.webhooks.verifyAndParse(provider as ProviderId, {
-      headers: req.headers,
-      rawBody: await req.text(),                       // exact body
-      query: Object.fromEntries(new URL(req.url).searchParams),
-    });
-    await applyEvent(event);                           // dedupe on event.id
-    return Response.json({ received: true });
-  } catch (err) {
-    if (isSarrafError(err, "WEBHOOK_SIGNATURE_INVALID")) return new Response(null, { status: 400 });
-    return new Response(null, { status: 500 });
-  }
+  const result = await verifyRedirect(pay, provider, searchParams);
+  if (result.authenticated && result.status === "failed") return <TryAgain />;
+  return <ThankYou reference={result.reference} />;
 }
 ```
 
-Checkout from a server action:
+Redirects are for the message only: never fulfil an order from them. `verifyRedirect` returns `authenticated: false, status: "unknown"` for providers that don't sign redirects (Fawry) instead of throwing.
+
+## Checkout from a server action
 
 ```ts
 "use server";
@@ -45,5 +73,7 @@ export async function checkout(formData: FormData) {
   redirect(result.redirectUrl!);
 }
 ```
+
+`@sarraf/next` only uses the Fetch API `Request` / `Response`, so `webhookRoute` also works in other Fetch-based frameworks (Hono, Remix, Bun).
 
 Full example: [`examples/nextjs-shop`](https://github.com/sarraf-dev/sarraf/tree/main/examples/nextjs-shop).
