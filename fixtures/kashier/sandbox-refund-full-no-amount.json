@@ -1,0 +1,50 @@
+{
+  "provider": "kashier",
+  "scenario": "sandbox-refund-full-no-amount",
+  "source": "sandbox",
+  "recordedAt": "2026-10-21T11:06:28.206Z",
+  "description": "Real kashier refunds on a fresh 10.00 EGP order without an amount, as the docs describe a full refund: first with transaction: {}, then with no transaction at all (scrubbed).",
+  "exchanges": [
+    {
+      "method": "PUT",
+      "url": "https://test-fep.kashier.io/v3/orders/60713b61-70c8-42aa-a15a-38bd453f17fa",
+      "requestBody": {
+        "apiOperation": "REFUND",
+        "reason": "Refund",
+        "transaction": {}
+      },
+      "status": 500,
+      "responseBody": {
+        "error": {
+          "cause": "Something went wrong"
+        },
+        "messages": {
+          "ar": "حدث خطأ ما",
+          "en": "Something went wrong."
+        },
+        "status": "FAILURE",
+        "statusCode": 500
+      }
+    },
+    {
+      "method": "PUT",
+      "url": "https://test-fep.kashier.io/v3/orders/60713b61-70c8-42aa-a15a-38bd453f17fa",
+      "requestBody": {
+        "apiOperation": "REFUND",
+        "reason": "Refund"
+      },
+      "status": 500,
+      "responseBody": {
+        "error": {
+          "cause": "Something went wrong"
+        },
+        "messages": {
+          "ar": "حدث خطأ ما",
+          "en": "Something went wrong."
+        },
+        "status": "FAILURE",
+        "statusCode": 500
+      }
+    }
+  ]
+}

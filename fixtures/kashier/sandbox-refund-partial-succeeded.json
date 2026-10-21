@@ -1,0 +1,123 @@
+{
+  "provider": "kashier",
+  "scenario": "sandbox-refund-partial-succeeded",
+  "source": "sandbox",
+  "recordedAt": "2026-10-21T10:47:42.272Z",
+  "description": "Real kashier sandbox partial refund (3.00 of 10.00 EGP), scrubbed. Kashier refunded it: response.result SUCCESS.",
+  "exchanges": [
+    {
+      "method": "PUT",
+      "url": "https://test-fep.kashier.io/v3/orders/c61bcb59-8cac-4007-a8c7-9d5b5c9680f2",
+      "requestBody": {
+        "apiOperation": "REFUND",
+        "reason": "Refund",
+        "transaction": {
+          "amount": 3
+        }
+      },
+      "status": 200,
+      "responseBody": {
+        "response": {
+          "apiOperation": "REFUND",
+          "operation": "refund",
+          "currency": "EGP",
+          "result": "SUCCESS",
+          "status": "PARTIALLY_REFUNDED",
+          "authorizationNumber": "036587",
+          "amount": 3,
+          "creationTime": "2026-10-21T09:27:08.509Z",
+          "lastUpdatedTime": "2026-10-21T09:46:07.215Z",
+          "merchantCurrency": "EGP",
+          "reference": "c61bcb59-8cac-4007-a8c7-9d5b5c9680f2",
+          "totalAuthorizedAmount": 10,
+          "totalCapturedAmount": 10,
+          "totalDisbursedAmount": 0,
+          "totalRefundedAmount": 3,
+          "authentication": {},
+          "paymentMethod": {
+            "type": "card",
+            "card": {
+              "cardBrand": "Visa",
+              "number": "411111******1111",
+              "nameOnCard": "Test Cardholder",
+              "expiry": {
+                "month": "06",
+                "year": "27"
+              }
+            }
+          },
+          "metaData": {
+            "kashier payment UI version": "V3",
+            "termsAndConditions": {
+              "ip": "203.0.113.1"
+            }
+          },
+          "branch": {
+            "name": "Branch Name",
+            "address": {
+              "street": "street",
+              "city": "branch city",
+              "country": "branch country",
+              "address": "Branch Address"
+            }
+          },
+          "reconciliation": {
+            "webhookUrl": "https://example.com/webhooks/kashier",
+            "redirect": false
+          },
+          "merchantId": "MERCHANT_ID",
+          "order": {
+            "amount": 10,
+            "currency": "EGP",
+            "callbackURL": "https://example.com/return/kashier",
+            "systemOrderId": "c61bcb59-8cac-4007-a8c7-9d5b5c9680f2",
+            "reference": "sarraf_fx_1792578275748"
+          },
+          "netAuthorizedAmount": "5.00",
+          "apiKeyId": "REDACTED",
+          "method": "card",
+          "creationDate": "2026-10-21T12:27:01.007Z",
+          "orderId": "c61bcb59-8cac-4007-a8c7-9d5b5c9680f2",
+          "provider": "mpgs",
+          "merchantOrderId": "sarraf_fx_1792578275748",
+          "orderReference": "TEST-ORD-193526487",
+          "interactionSource": "ECOMMERCE",
+          "device": {
+            "browserDetails": {
+              "javaEnabled": false,
+              "language": "en-US",
+              "screenHeight": 953,
+              "screenWidth": 1920,
+              "timeZone": -120,
+              "colorDepth": 24,
+              "3DSecureChallengeWindowSize": "390_X_400"
+            },
+            "browser": "Chrome",
+            "ipAddress": "203.0.113.1"
+          },
+          "transactionId": "TX-3004573805",
+          "sessionId": "6ad885640242459f2c0a02e3",
+          "transactionResponseCode": "00",
+          "transactionResponseMessage": {
+            "en": "Approved",
+            "ar": "تمت الموافقة"
+          }
+        },
+        "messages": {
+          "en": "Approved",
+          "ar": "تمت الموافقة"
+        },
+        "status": "SUCCESS",
+        "statusCode": 200
+      }
+    }
+  ],
+  "data": {
+    "status": "succeeded",
+    "amount": {
+      "value": 300,
+      "currency": "EGP"
+    },
+    "providerRefundId": "TX-3004573805"
+  }
+}

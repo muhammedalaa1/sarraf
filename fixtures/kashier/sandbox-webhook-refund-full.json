@@ -1,0 +1,18 @@
+{
+  "provider": "kashier",
+  "scenario": "sandbox-webhook-refund-full",
+  "source": "sandbox",
+  "recordedAt": "2026-10-21T11:02:46.762Z",
+  "description": "Real kashier refund webhook for the last 7.00 EGP of a 10.00 EGP order (3.00 refunded before), scrubbed and re-signed. It carries only this refund's amount.",
+  "verifiedAgainstRealSignature": true,
+  "secret": "test_payment_api_key_do_not_use",
+  "webhook": {
+    "rawBody": "{\"event\":\"refund\",\"data\":{\"merchantOrderId\":\"sarraf_fx_1792578275748\",\"kashierOrderId\":\"c61bcb59-8cac-4007-a8c7-9d5b5c9680f2\",\"orderReference\":\"TEST-ORD-193526487\",\"transactionId\":\"TX-3004573807\",\"status\":\"SUCCESS\",\"method\":\"card\",\"creationDate\":\"2026-10-21T10:01:11.098Z\",\"amount\":7,\"settlementInfo\":{\"vat\":\"0\",\"sellingRate\":0,\"sellingFlat\":5,\"totalSellingRate\":\"0\",\"totalSellingFees\":\"0\",\"settledAmount\":\"-7.00\"},\"currency\":\"EGP\",\"card\":{\"cardInfo\":{\"cardHolderName\":\"Test Cardholder\",\"cardBrand\":\"Visa\",\"maskedCard\":\"411111******1111\"},\"merchant\":{\"merchantRedirectURL\":\"https://example.com/return/kashier\"},\"amount\":7,\"currency\":\"EGP\"},\"metaData\":{\"kashier payment UI version\":\"V3\",\"termsAndConditions\":{\"ip\":\"203.0.113.1\"}},\"sourceOfFunds\":{\"cardInfo\":{\"maskedCard\":\"411111******1111\",\"extendedMaskedCard\":\"411111******1111\",\"cardBrand\":\"Visa\",\"cardHolderName\":\"Test Cardholder\",\"cardDataToken\":\"REDACTED\",\"ccvToken\":\"REDACTED\",\"expiryYear\":\"27\",\"expiryMonth\":\"06\",\"storedOnFile\":\"NOT_STORED\",\"save\":false}},\"transactionResponseCode\":\"00\",\"transactionResponseMessage\":{\"en\":\"Approved\",\"ar\":\"تمت الموافقة\"},\"channel\":\"online | e-commerce\",\"merchantDetails\":{\"businessEmail\":\"customer@example.com\"},\"installmentPlan\":{},\"signatureKeys\":[\"amount\",\"channel\",\"currency\",\"kashierOrderId\",\"merchantOrderId\",\"method\",\"orderReference\",\"status\",\"transactionId\",\"transactionResponseCode\"]}}",
+    "headers": {
+      "content-type": "application/json",
+      "x-kashier-signature": "d446f27346fc7108705ee8c313f782c0e68909ecef693137caf4d5fa77ac1c84"
+    }
+  },
+  "signedString": "amount=7&channel=online%20%7C%20e-commerce&currency=EGP&kashierOrderId=c61bcb59-8cac-4007-a8c7-9d5b5c9680f2&merchantOrderId=sarraf_fx_1792578275748&method=card&orderReference=TEST-ORD-193526487&status=SUCCESS&transactionId=TX-3004573807&transactionResponseCode=00",
+  "expectedSignature": "d446f27346fc7108705ee8c313f782c0e68909ecef693137caf4d5fa77ac1c84"
+}
