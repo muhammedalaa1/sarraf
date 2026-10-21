@@ -303,6 +303,12 @@ importers:
       '@sarraf/kashier':
         specifier: workspace:*
         version: link:../../packages/kashier
+      '@sarraf/nestjs':
+        specifier: workspace:*
+        version: link:../../packages/nestjs
+      '@sarraf/next':
+        specifier: workspace:*
+        version: link:../../packages/next
       '@sarraf/paymob':
         specifier: workspace:*
         version: link:../../packages/paymob
@@ -367,6 +373,9 @@ importers:
       '@sarraf/kashier':
         specifier: workspace:*
         version: link:../../packages/kashier
+      '@sarraf/nestjs':
+        specifier: workspace:*
+        version: link:../../packages/nestjs
       '@sarraf/paymob':
         specifier: workspace:*
         version: link:../../packages/paymob
@@ -404,6 +413,9 @@ importers:
       '@sarraf/kashier':
         specifier: workspace:*
         version: link:../../packages/kashier
+      '@sarraf/next':
+        specifier: workspace:*
+        version: link:../../packages/next
       '@sarraf/paymob':
         specifier: workspace:*
         version: link:../../packages/paymob
@@ -485,6 +497,50 @@ importers:
       zod:
         specifier: 4.6.7
         version: 4.6.7
+    devDependencies:
+      '@sarraf/testing':
+        specifier: workspace:*
+        version: link:../testing
+
+  packages/nestjs:
+    dependencies:
+      '@sarraf/core':
+        specifier: workspace:^
+        version: link:../core
+    devDependencies:
+      '@nestjs/common':
+        specifier: 12.2.0
+        version: 12.2.0(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0)
+      '@nestjs/core':
+        specifier: 12.2.0
+        version: 12.2.0(@nestjs/common@12.2.0(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/platform-express@12.2.0)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/platform-express':
+        specifier: 12.2.0
+        version: 12.2.0(@nestjs/common@12.2.0(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.2.0)(supports-color@7.2.0)
+      '@nestjs/testing':
+        specifier: 12.2.0
+        version: 12.2.0(@nestjs/common@12.2.0(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.2.0)(@nestjs/platform-express@12.2.0)
+      '@sarraf/testing':
+        specifier: workspace:*
+        version: link:../testing
+      '@types/supertest':
+        specifier: 7.2.1
+        version: 7.2.1
+      reflect-metadata:
+        specifier: 0.2.2
+        version: 0.2.2
+      rxjs:
+        specifier: 7.8.2
+        version: 7.8.2
+      supertest:
+        specifier: 7.3.1
+        version: 7.3.1(supports-color@7.2.0)
+
+  packages/next:
+    dependencies:
+      '@sarraf/core':
+        specifier: workspace:^
+        version: link:../core
     devDependencies:
       '@sarraf/testing':
         specifier: workspace:*

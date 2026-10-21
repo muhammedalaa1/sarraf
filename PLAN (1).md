@@ -26,9 +26,10 @@ Provider APIs change. **The sandbox is the source of truth.** Record what it act
 | Week 2–4: Paymob, Kashier, Fawry adapters | ✅ Implemented, documentation-based fixtures, conformance suite passing. ⚠️ items still need real sandbox fixtures (no sandbox credentials yet), so they ship as `"beta"` / `verified: false` |
 | Week 5: DX & docs | ✅ `@sarraf/express`, three examples, docs site, dashboard inbox + replay |
 | Week 6: launch | ⏳ Not started: v1.0.0 publish, README GIF, launch posts |
+| v1.1: framework helpers | ✅ `@sarraf/next` (`webhookRoute`, `verifyRedirect`) and `@sarraf/nestjs` (`SarrafModule`, `@OnSarrafEvent`); examples use them |
 | Repo hygiene | ✅ Node 22+, zod 4, Express 5, Conventional Commits (commit-msg hook + PR title check), auto PR labels, Dependabot |
 
-Next: record real sandbox fixtures and flip ⚠️ → ✅; Next.js / NestJS helpers (planned for v1.1, §11).
+Next: record real sandbox fixtures and flip ⚠️ → ✅, then launch prep (week 6).
 
 ---
 
@@ -158,7 +159,9 @@ sarraf/
 │  ├─ kashier/     # @sarraf/kashier
 │  ├─ fawry/       # @sarraf/fawry
 │  ├─ testing/     # @sarraf/testing: fake provider, fixture loader, signers to fake valid webhooks in tests
-│  └─ express/     # @sarraf/express: rawBody middleware + webhook handler (Nest/Next helpers later)
+│  ├─ express/     # @sarraf/express: rawBody middleware + webhook handler
+│  ├─ next/        # @sarraf/next: App Router webhook route + redirect helper
+│  └─ nestjs/      # @sarraf/nestjs: SarrafModule + @OnSarrafEvent()
 ├─ apps/
 │  ├─ dashboard/   # Next.js sandbox playground + webhook inbox
 │  └─ docs/        # documentation site
@@ -665,7 +668,7 @@ Cancel unpaid reference: a dedicated "cancel payment" API exists ✅ (confirm pa
 - Errors that teach: `CAPABILITY_NOT_SUPPORTED: Kashier refunds are beta in v1 (docs/providers/kashier#refunds)`.
 - `debug: true` logs redacted requests/responses.
 - ESM + CJS, Node 22+, zero runtime deps in core except `zod` (and `query-string` in the Kashier adapter).
-- `@sarraf/express`: `rawBody()` middleware + `webhookHandler(pay, onEvent)`. Nest and Next helpers in v1.1.
+- `@sarraf/express`: `rawBody()` middleware + `webhookHandler(pay, onEvent)`. `@sarraf/next` and `@sarraf/nestjs` helpers (built ahead of v1.0).
 
 ### Sandbox dashboard (`apps/dashboard`, Next.js)
 1. **Playground:** pick provider/method/amount → create checkout → open hosted page or show the Fawry reference code. Request, raw response and normalized object side by side.

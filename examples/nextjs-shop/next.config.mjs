@@ -6,6 +6,7 @@ export default {
     "@sarraf/paymob",
     "@sarraf/kashier",
     "@sarraf/fawry",
+    "@sarraf/next",
     "@sarraf/testing",
   ],
 };

@@ -6,6 +6,8 @@
     "../../packages/kashier/src/index.ts",
     "../../packages/fawry/src/index.ts",
     "../../packages/express/src/index.ts",
+    "../../packages/next/src/index.ts",
+    "../../packages/nestjs/src/index.ts",
     "../../packages/testing/src/index.ts"
   ],
   "tsconfig": "./tsconfig.typedoc.json",

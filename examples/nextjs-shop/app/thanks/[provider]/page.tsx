@@ -1,4 +1,4 @@
-import type { ProviderId } from "@sarraf/core";
+import { verifyRedirect } from "@sarraf/next";
 import { notFound, redirect } from "next/navigation";
 import { getPay, orders } from "../../../lib/pay";
 
@@ -18,15 +18,10 @@ export default async function Thanks({
   const { provider } = await params;
   const query = await searchParams;
   const { pay } = getPay();
-  let reference = query.reference;
-  let declined = false;
-  try {
-    const r = await pay.redirects.verify(provider as ProviderId, query);
-    reference = r.reference ?? reference;
-    declined = r.authenticated && r.status === "failed";
-  } catch {
-    // Not every provider signs redirects. The webhook remains the source of truth.
-  }
+  // Not every provider signs redirects (then authenticated is false). The webhook remains the source of truth.
+  const r = await verifyRedirect(pay, provider, query);
+  const reference = r.reference ?? query.reference;
+  const declined = r.authenticated && r.status === "failed";
   const order = reference ? orders.get(reference) : undefined;
   if (!order) notFound();
   const message = declined

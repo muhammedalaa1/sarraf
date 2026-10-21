@@ -33,7 +33,7 @@ pnpm check        # lint, typecheck, tests, package checks, secret scan: the sam
 packages/core      client, models, money, errors, http, idempotency, webhook router, conformance suite
 packages/<name>    one adapter per provider
 packages/testing   fake provider, mock fetch, fixture loader
-packages/express   framework helpers
+packages/express   framework helpers (also packages/next, packages/nestjs)
 apps/dashboard     sandbox playground + webhook inbox
 apps/docs          documentation site
 examples/          runnable shops
@@ -100,7 +100,7 @@ feat(core)!: rename createCheckout to checkout.create   ← "!" marks a breaking
 ```
 
 - **Types:** `feat`, `fix`, `perf`, `refactor`, `docs`, `test`, `build`, `ci`, `chore`, `revert`
-- **Scopes (optional):** `core`, `paymob`, `kashier`, `fawry`, `express`, `testing`, `dashboard`, `docs`, `examples`, `scripts`, `ci`, `deps`, `deps-dev`. Adding a provider? Add its scope to `commitlint.config.js` and its label to `.github/labeler.yml` in the same PR.
+- **Scopes (optional):** `core`, `paymob`, `kashier`, `fawry`, `express`, `next`, `nestjs`, `testing`, `dashboard`, `docs`, `examples`, `scripts`, `ci`, `deps`, `deps-dev`. Adding a provider? Add its scope to `commitlint.config.js` and its label to `.github/labeler.yml` in the same PR.
 - **Subject:** starts lowercase and has no trailing period (both checked). Write it in the imperative: `add`, not `added`.
 
 The version bump comes from the changeset, not from the commit type.
@@ -109,5 +109,5 @@ The version bump comes from the changeset, not from the commit type.
 
 PRs are labelled automatically; you don't need to add any by hand.
 
-- **Area**, from the changed files (`.github/labeler.yml`): `provider: paymob`, `provider: kashier`, `provider: fawry`, `pkg: core`, `pkg: express`, `pkg: testing`, `app: dashboard`, `examples`, `documentation`, `ci`, `dependencies`, `changeset`.
+- **Area**, from the changed files (`.github/labeler.yml`): `provider: paymob`, `provider: kashier`, `provider: fawry`, `pkg: core`, `pkg: express`, `pkg: next`, `pkg: nestjs`, `pkg: testing`, `app: dashboard`, `examples`, `documentation`, `ci`, `dependencies`, `changeset`.
 - **Type**, from the PR title: `feat` → `enhancement`, `fix` → `bug`, `perf` → `performance`, `docs` → `documentation`, `test` → `tests`, `refactor` / `build` / `ci` / `chore` → `maintenance`, `revert` → `revert`, and `!` → `breaking`.

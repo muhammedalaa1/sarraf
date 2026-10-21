@@ -78,6 +78,8 @@ const event = await pay.webhooks.verifyAndParse("kashier", req); // same shape f
 | [`@sarraf/kashier`](./packages/kashier) | Hosted payment page (signed URL), redirect and webhook signature verification, Payment Sessions / order lookup / refunds (beta). |
 | [`@sarraf/fawry`](./packages/fawry) | PayAtFawry reference codes, status v2, V2 notification verification with status re-query, hosted card/wallet checkout, refund/cancel (beta). |
 | [`@sarraf/express`](./packages/express) | `rawBody()` middleware and `webhookHandler()` for Express (and any Node `http` server). |
+| [`@sarraf/next`](./packages/next) | `webhookRoute()` for App Router route handlers and `verifyRedirect()` for thank-you pages. Fetch API only, so it also fits Hono, Remix or Bun. |
+| [`@sarraf/nestjs`](./packages/nestjs) | `SarrafModule`, `@InjectSarraf()`, a verified `POST /webhooks/:provider` controller and `@OnSarrafEvent()` handlers. |
 | [`@sarraf/testing`](./packages/testing) | `fakeProvider()` for testing your app without network, `createMockFetch()` for adapter tests, fixture loader. |
 
 Each adapter also ships a `/testing` subpath (`@sarraf/paymob/testing`, ...) with helpers that build correctly signed webhooks for your tests.
@@ -106,6 +108,8 @@ Requires **Node.js 22+**. Install core plus the adapters you use:
 npm install @sarraf/core @sarraf/paymob @sarraf/kashier @sarraf/fawry
 # optional
 npm install @sarraf/express          # Express helpers
+npm install @sarraf/next             # Next.js App Router helpers
+npm install @sarraf/nestjs           # NestJS module
 npm install -D @sarraf/testing       # test helpers
 ```
 
@@ -184,7 +188,7 @@ app.post(
 );
 ```
 
-Without Express:
+Next.js (`@sarraf/next`) and NestJS (`@sarraf/nestjs`) have the same behaviour: see [Framework integration](#framework-integration). Without a helper:
 
 ```ts
 const event = await pay.webhooks.verifyAndParse("kashier", {
@@ -473,25 +477,36 @@ pnpm --filter example-nextjs-shop dev      # http://localhost:3002
 
 | Framework | Example | Key point |
 |---|---|---|
-| Express | [`examples/express-shop`](./examples/express-shop) | `rawBody()` + `webhookHandler()`, a reconcile job |
-| NestJS | [`examples/nestjs-shop`](./examples/nestjs-shop) | `NestFactory.create(AppModule, { rawBody: true })`, then pass `req.rawBody` |
-| Next.js (App Router) | [`examples/nextjs-shop`](./examples/nextjs-shop) | route handler with `await req.text()`, server actions, `import "server-only"` |
+| Express | [`examples/express-shop`](./examples/express-shop) | `@sarraf/express`: `rawBody()` + `webhookHandler()`, a reconcile job |
+| NestJS | [`examples/nestjs-shop`](./examples/nestjs-shop) | `@sarraf/nestjs`: `SarrafModule` + `@OnSarrafEvent()`, app created with `{ rawBody: true }` |
+| Next.js (App Router) | [`examples/nextjs-shop`](./examples/nextjs-shop) | `@sarraf/next`: `webhookRoute()`, `verifyRedirect()`, server actions, `import "server-only"` |
+
+All three helpers answer the same way: 200 once your handler finishes, 400 for an invalid signature, 404 for an unknown provider, and 500 when your handler throws so the provider retries.
 
 Next.js route handler:
 
 ```ts
 // app/api/webhooks/[provider]/route.ts
+import { webhookRoute } from "@sarraf/next";
 import { pay } from "@/lib/pay";
 
-export async function POST(req: Request, { params }: { params: Promise<{ provider: string }> }) {
-  const { provider } = await params;
-  const event = await pay.webhooks.verifyAndParse(provider as "paymob", {
-    rawBody: await req.text(),
-    headers: req.headers,
-    query: Object.fromEntries(new URL(req.url).searchParams),
-  });
-  // ...dedupe on event.id, update the order
-  return Response.json({ received: true });
+export const runtime = "nodejs";
+export const POST = webhookRoute(pay, async (event) => {
+  await applyEvent(event); // dedupe on event.id
+});
+```
+
+NestJS module:
+
+```ts
+// main.ts: NestFactory.create(AppModule, { rawBody: true })
+@Module({ imports: [SarrafModule.forRoot({ client: pay })], providers: [OrdersService] })
+export class AppModule {}
+
+@Injectable()
+export class OrdersService {
+  @OnSarrafEvent("payment.succeeded")       // POST /webhooks/:provider is registered for you
+  async paid(event: SarrafEvent) { /* dedupe on event.id, fulfil the order */ }
 }
 ```
 
@@ -646,6 +661,8 @@ packages/
   kashier/        adapter
   fawry/          adapter
   express/        rawBody() + webhookHandler()
+  next/           webhookRoute() + verifyRedirect() for the App Router
+  nestjs/         SarrafModule, @OnSarrafEvent()
   testing/        fakeProvider, createMockFetch, fixture loader
 apps/
   dashboard/      Next.js sandbox playground + webhook inbox (never accepts live keys)
