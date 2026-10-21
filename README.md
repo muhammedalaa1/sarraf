@@ -668,7 +668,7 @@ tests/sandbox/    contract tests against real sandboxes (skipped without credent
 
 ### Toolchain
 
-pnpm workspaces · Turborepo · TypeScript 5 (strictest settings, see below) · tsup (ESM + CJS + `.d.ts`/`.d.cts`) · Vitest + v8 coverage + fast-check + expect-type · Biome (format + lint) · ESLint with typescript-eslint (type-aware rules only) · publint · are-the-types-wrong · Changesets · lefthook.
+pnpm workspaces · Turborepo · TypeScript 6 (strictest settings, see below) · tsup (ESM + CJS + `.d.ts`/`.d.cts`) · Vitest + v8 coverage + fast-check + expect-type · Biome (format + lint) · ESLint with typescript-eslint (type-aware rules only) · publint · are-the-types-wrong · Changesets · lefthook.
 
 ---
 
@@ -799,7 +799,8 @@ ESLint reads the built `.d.ts` files of sibling packages, so run `pnpm build` fi
 ### Git hooks (lefthook, installed by `pnpm install`)
 
 - **pre-commit:** Biome on staged files, secret scan
-- **pre-push:** typecheck, ESLint
+- **commit-msg:** commitlint ([Conventional Commits](https://www.conventionalcommits.org), rules in `commitlint.config.js`)
+- **pre-push:** typecheck, then ESLint (sequential: ESLint reads the `dist/*.d.ts` that typecheck rebuilds)
 
 To skip them in an emergency: `LEFTHOOK=0 git commit ...`. CI runs the same checks anyway.
 
@@ -810,7 +811,12 @@ To skip them in an emergency: `LEFTHOOK=0 git commit ...`. CI runs the same chec
 | Test (Node 22 / 24) | build packages → typecheck + tests (coverage, snapshots) |
 | Quality | `biome ci`, secret scan, full build, ESLint (`--max-warnings 0`), typecheck everything, all tests, publint, attw, lockfile up to date |
 | Changeset (PRs) | Fails when a published package changed without a changeset |
+| PR title (`pr-title.yml`) | The title must be a Conventional Commit (`type(scope): subject`), since it becomes the squash commit on `main` |
+| PR labels (`pr-labels.yml`) | Adds area labels from changed files (`.github/labeler.yml`) and a type label from the title |
 | Sandbox (nightly, `sandbox.yml`) | Real contract tests with repository secrets |
+| Release (`release.yml`, `main`) | Changesets "Version Packages" PR, then npm publish with provenance |
+
+Dependabot opens weekly npm and monthly GitHub Actions updates, titled `chore(deps): …` / `ci(deps): …` so they pass the title check.
 
 `CODEOWNERS` requires a maintainer review on every change, and an extra reviewer on `money.ts`, `signature.ts` and `mappers.ts`.
 
@@ -824,7 +830,8 @@ Read [CONTRIBUTING.md](./CONTRIBUTING.md). In short:
 2. Make the change **with tests** in the same PR.
 3. `pnpm check` must pass.
 4. `pnpm changeset` for any change to a published package.
-5. Fill in the PR template, including how you verified the change.
+5. Title the PR as a Conventional Commit, e.g. `fix(kashier): sort keys before signing` (checked in CI).
+6. Fill in the PR template, including how you verified the change.
 
 **Adding a provider?** CONTRIBUTING has a step-by-step checklist. Copy `packages/paymob`, follow the [adapter anatomy](#adapter-anatomy), mark everything unconfirmed as `"beta"`, and pass the conformance suite.
 

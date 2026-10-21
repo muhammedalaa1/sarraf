@@ -18,6 +18,18 @@ Author: Muhammed Alaa · Status: Ready to build · Target: v1.0 in ~6 weeks, par
 
 Provider APIs change. **The sandbox is the source of truth.** Record what it actually does as fixtures (§10), and let tests protect you from drift.
 
+### Progress (updated 2026-10-21)
+
+| Milestone (§13) | State |
+|---|---|
+| Week 1: core | ✅ Done |
+| Week 2–4: Paymob, Kashier, Fawry adapters | ✅ Implemented, documentation-based fixtures, conformance suite passing. ⚠️ items still need real sandbox fixtures (no sandbox credentials yet), so they ship as `"beta"` / `verified: false` |
+| Week 5: DX & docs | ✅ `@sarraf/express`, three examples, docs site, dashboard inbox + replay |
+| Week 6: launch | ⏳ Not started: v1.0.0 publish, README GIF, launch posts |
+| Repo hygiene | ✅ Node 22+, zod 4, Express 5, Conventional Commits (commit-msg hook + PR title check), auto PR labels, Dependabot |
+
+Next: record real sandbox fixtures and flip ⚠️ → ✅; Next.js / NestJS helpers (planned for v1.1, §11).
+
 ---
 
 ## 1. What we're building
@@ -155,7 +167,7 @@ sarraf/
 ├─ scripts/        # record-fixtures.ts, scrub.ts, check-no-secrets.ts
 └─ .changeset/
 ```
-Tooling: pnpm workspaces, Turborepo, TypeScript (strict), tsup (ESM + CJS), Vitest, Biome or ESLint+Prettier, Changesets.
+Tooling: pnpm workspaces, Turborepo, TypeScript (strict), tsup (ESM + CJS), Vitest, Biome (format + lint) + type-aware ESLint, Changesets, lefthook, commitlint.
 
 ---
 
