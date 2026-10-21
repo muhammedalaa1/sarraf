@@ -481,6 +481,8 @@ pnpm --filter example-nextjs-shop dev      # http://localhost:3002
 | NestJS | [`examples/nestjs-shop`](./examples/nestjs-shop) | `@sarraf/nestjs`: `SarrafModule` + `@OnSarrafEvent()`, app created with `{ rawBody: true }` |
 | Next.js (App Router) | [`examples/nextjs-shop`](./examples/nextjs-shop) | `@sarraf/next`: `webhookRoute()`, `verifyRedirect()`, server actions, `import "server-only"` |
 
+**Using Kashier?** The [Kashier guide](./apps/docs/src/content/docs/guides/kashier.md) builds a complete integration in both Express and Next.js: checkout, webhooks, thank-you page, refunds, voids and reconciliation.
+
 All three helpers answer the same way: 200 once your handler finishes, 400 for an invalid signature, 404 for an unknown provider, and 500 when your handler throws so the provider retries.
 
 Next.js route handler:

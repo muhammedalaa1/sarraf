@@ -9,6 +9,9 @@ sidebar:
 npm i @sarraf/kashier
 ```
 
+
+> Building an app? Start with the step-by-step guide: [Accept payments with Kashier](/guides/kashier/) (Express and Next.js).
+
 ## Credentials
 
 | Option | Used for |
