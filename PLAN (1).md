@@ -23,13 +23,13 @@ Provider APIs change. **The sandbox is the source of truth.** Record what it act
 | Milestone (§13) | State |
 |---|---|
 | Week 1: core | ✅ Done |
-| Week 2–4: Paymob, Kashier, Fawry adapters | ✅ Implemented, documentation-based fixtures, conformance suite passing. ⚠️ items still need real sandbox fixtures (no sandbox credentials yet), so they ship as `"beta"` / `verified: false` |
+| Week 2–4: Paymob, Kashier, Fawry adapters | ✅ Implemented, conformance suite passing. **Kashier confirmed against the real sandbox (2026-10-21):** hash, redirect, webhooks, order lookup, partial and full refunds, void. Paymob and Fawry have no sandbox credentials yet; their ⚠️ items ship as `"beta"` / `verified: false` |
 | Week 5: DX & docs | ✅ `@sarraf/express`, three examples, docs site, dashboard inbox + replay |
 | Week 6: launch | ⏳ Not started: v1.0.0 publish, README GIF, launch posts |
 | v1.1: framework helpers | ✅ `@sarraf/next` (`webhookRoute`, `verifyRedirect`) and `@sarraf/nestjs` (`SarrafModule`, `@OnSarrafEvent`); examples use them |
 | Repo hygiene | ✅ Node 22+, zod 4, Express 5, Conventional Commits (commit-msg hook + PR title check), auto PR labels, Dependabot |
 
-Next: record real sandbox fixtures and flip ⚠️ → ✅, then launch prep (week 6).
+Next: Paymob and Fawry sandbox credentials and fixtures, then launch prep (week 6).
 
 ---
 
@@ -484,7 +484,7 @@ const path = `/?payment=${merchantId}.${orderId}.${amount}.${currency}`;   // �
 // (an optional ".{customerReference}" suffix exists for saved cards ⚠️)
 const hash = createHmac("sha256", apiKey).update(path).digest("hex");
 ```
-Then redirect to the hosted page with query params ⚠️ (confirm exact names and the base URL, e.g. `https://checkout.kashier.io/`):
+Then redirect to the hosted page with query params ✅ (sandbox payment on `https://checkout.kashier.io/`, which redirects to `payments.kashier.io`; the hash is only checked when the customer pays):
 ```text
 merchantId, orderId, amount, currency, hash, mode=test|live,
 merchantRedirect=<returnUrl>, serverWebhook=<webhookUrl>,
@@ -503,7 +503,7 @@ Returns a session URL to redirect to. Confirm body fields, test base URL and res
 
 **Recommendation:** implement **A** first (fully specified, shown in Kashier's demo). Add **B** behind `providerOptions: { flow: "session" }` once confirmed.
 
-### 8.3 Redirect verification (`merchantRedirect`) ✅ pattern / ⚠️ details
+### 8.3 Redirect verification (`merchantRedirect`) ✅ (real sandbox redirect, 2026-10-21)
 Kashier appends query params (payment status, order/transaction ids, …) **plus `signature`**. Verification per the official demo:
 1. Take all query params **except `signature` and `mode`**, in the order received.
 2. Join as `key=value` pairs with `&`.
@@ -530,15 +530,19 @@ export function kashierWebhookSignature(data: Record<string, unknown>, apiKey: s
 }
 ```
 - Add a fixture test with values containing `* ( ) ' !` and Arabic text. That's where serialization bugs appear.
-- Events to handle (⚠️ confirm names): `pay`, `refund`, `authorize`, `capture`, `void`.
+- ✅ Confirmed with a real sandbox `pay` webhook (2026-10-21), including `channel=online%20%7C%20e-commerce` in the signed string.
+- Events to handle (⚠️ confirm names): `pay` ✅, `refund`, `authorize`, `capture`, `void`.
 
-### 8.5 Get payment / refund ⚠️
-Kashier exposes order/transaction APIs (historically under `https://fep.kashier.io/v3/orders/...`, with refund as an operation on the order using the secret key). Confirm current endpoints, auth header, body (`apiOperation: "REFUND"`, `transaction.amount`, `reason`), and test base URL during week 3. Until confirmed, ship refunds as **beta** in the capability matrix.
+### 8.5 Get payment / refund ✅ (sandbox, 2026-10-21)
+- **Lookup:** `GET https://test-api.kashier.io/v3/payment/orders?search=<merchantOrderId>`, secret key in `Authorization`. `search` is a partial match on *your* reference; pick the exact match. `GET /v3/orders/:id` on `test-fep` does not exist (400 "Routing key is missing").
+- **Refund:** `PUT https://test-fep.kashier.io/v3/orders/:kashierOrderId` with `{ apiOperation: "REFUND", reason, transaction: { amount } }`. Outcome in `response.result`; `response.status` is the order state (`PARTIALLY_REFUNDED`). Void is the same call with `apiOperation: "VOID"`; confirmed with `transaction: { targetTransactionId, amount }` (same day only).
+- **Refund webhook** has only the refund amount, so the adapter reads totals from the lookup. A refunded order stays `CAPTURED`; derive the refund state from `totalRefundedAmount`.
+- Full refund confirmed too (2026-10-21). A refund **without an amount answers HTTP 500** (also on fresh orders, with `transaction: {}`, no `transaction`, or only `targetTransactionId`), although the docs call it optional; the adapter looks the remainder up by reference and always sends an amount. Refunds are `supported`.
 
 ### 8.6 Status mapping ⚠️ (confirm exact strings from fixtures)
 | Kashier | Sarraf |
 |---|---|
-| `SUCCESS` (pay) | `succeeded` |
+| `SUCCESS` (pay) | `succeeded` ✅ |
 | `PENDING` | `pending` |
 | `FAILURE` / `FAILED` | `failed` |
 | refund event `SUCCESS` (partial / full) | `partially_refunded` / `refunded` |
@@ -731,5 +735,8 @@ Community sources (⚠️ verify):
 - Kashier webhook serialization parity issue: GitHub PRs in third-party projects referencing `query-string` stringify behaviour.
 - Fawry V2 notification fields, amount formatting and V1 MD5 warning: `appssquare/payment-validator` (Packagist) and developer write-ups.
 - Existing PHP precedent: https://github.com/Nafezly/payments
+
+Confirmed in the sandbox:
+- 2026-10-21 · Kashier: HPP hash (paid checkout), redirect signature, `pay` and `refund` webhook signatures, `SUCCESS` mapping, partial and full refunds, order lookup, void (`void` webhook → `payment.canceled`). Fixtures: `fixtures/kashier/sandbox-redirect-succeeded.json`, `fixtures/kashier/sandbox-webhook-succeeded-1.json`.
 
 **Rule for the log:** when you confirm a ⚠️ item in the sandbox, change it to ✅ here and in the section, and commit the fixture that proves it.
