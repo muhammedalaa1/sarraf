@@ -5,6 +5,7 @@ import {
   isCurrency,
   normalizeHeaders,
   normalizeQuery,
+  type Payment,
   parseJsonBody,
   type RawWebhookRequest,
   type RedirectResult,
@@ -16,8 +17,14 @@ import {
   type VerifiedWebhook,
   type WebhookInspection,
 } from "@sarraf/core";
+import { findOrder } from "./client.js";
 import type { KashierConfig } from "./config.js";
-import { type KashierTransactionData, mapKashierStatus, toKashierPayment } from "./mappers.js";
+import {
+  type KashierTransactionData,
+  mapKashierStatus,
+  toKashierOrderPayment,
+  toKashierPayment,
+} from "./mappers.js";
 import {
   kashierRedirectSignature,
   kashierWebhookSignature,
@@ -70,20 +77,46 @@ export function verifyKashierWebhook(cfg: KashierConfig, req: RawWebhookRequest)
   };
 }
 
-export function parseKashierWebhook(cfg: KashierConfig, verified: VerifiedWebhook, ctx: Ctx): SarrafEvent {
+export async function parseKashierWebhook(
+  cfg: KashierConfig,
+  verified: VerifiedWebhook,
+  ctx: Ctx,
+): Promise<SarrafEvent> {
   const body = asRecord(verified.body);
   const event = str(body.event) ?? "pay";
   const data = asRecord(body.data) as KashierTransactionData;
-  const payment = toKashierPayment(data, event, cfg.currencies[0] ?? "EGP");
+  const fromWebhook = toKashierPayment(data, event, cfg.currencies[0] ?? "EGP");
   const isRefund = event.toLowerCase() === "refund";
+  const refundFailed = isRefund && fromWebhook.status === "failed";
+  const payment = isRefund && !refundFailed ? await withOrderTotals(cfg, ctx, fromWebhook) : fromWebhook;
   return buildEvent({
     provider: "kashier",
     providerEventId: `${str(data.transactionId) ?? payment.providerPaymentId}${isRefund ? ":refund" : ""}`,
     payment,
-    type: isRefund ? (payment.status === "failed" ? "refund.failed" : "refund.succeeded") : undefined,
+    type: isRefund ? (refundFailed ? "refund.failed" : "refund.succeeded") : undefined,
     receivedAt: ctx.now(),
     raw: verified.body,
   });
+}
+
+/**
+ * Kashier's refund webhook carries only the refund amount, not the order total or what was refunded
+ * before (fixtures/kashier/sandbox-webhook-refund-partial.json), so it cannot say whether the order
+ * is now partially or fully refunded. Read the totals from the order lookup instead.
+ */
+async function withOrderTotals(cfg: KashierConfig, ctx: Ctx, payment: Payment): Promise<Payment> {
+  if (!cfg.secretKey || !payment.reference) {
+    ctx.logger.warn(
+      "kashier: refund webhook without order totals. Configure secretKey so Sarraf can look the order up; until then payment.status and payment.amount describe only this refund.",
+      { reference: payment.reference },
+    );
+    return payment;
+  }
+  const order = toKashierOrderPayment(
+    await findOrder(cfg, ctx, payment.reference),
+    cfg.currencies[0] ?? "EGP",
+  );
+  return { ...order, card: payment.card, raw: payment.raw };
 }
 
 /** Verify `merchantRedirect` query params. UX only: the webhook is the source of truth. */

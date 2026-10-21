@@ -3,22 +3,34 @@
  *
  *   pnpm record-fixtures checkout <paymob|kashier|fawry>      create a real checkout, save request/response
  *   pnpm record-fixtures status <provider> <reference|id>      save a status / transaction inquiry response
+ *   pnpm record-fixtures refund <provider> <paymentId> [amount] [--reference <ref>]
+ *                                                              refund a paid sandbox payment (amount in
+ *                                                              major units, e.g. 3.00; omit for a full refund)
+ *   pnpm record-fixtures cancel <provider> <reference>         void a paid sandbox payment (same day)
  *   pnpm record-fixtures webhook [--port 4545]                 capture webhooks at /webhooks/:provider
+ *                                                              and customer redirects at /return/:provider
  *
- * Webhooks are verified with your REAL secret first (that is what proves a signature recipe ✅),
+ * Webhooks and redirects are verified with your REAL secret first (that is what proves a signature recipe ✅),
  * then scrubbed and re-signed with a throwaway test secret so the fixture can be committed.
  * Reads credentials from .env.sandbox. Sandbox keys only.
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { join } from "node:path";
-import { asRecord, type FetchLike, type ProviderId, type RawWebhookRequest } from "@sarraf/core";
+import {
+  asRecord,
+  type FetchLike,
+  isSarrafError,
+  type ProviderId,
+  type RawWebhookRequest,
+  toMinor,
+} from "@sarraf/core";
 import { fawryNotificationSignature } from "@sarraf/fawry";
 import { signFawryNotification } from "@sarraf/fawry/testing";
-import { kashierWebhookSignedString } from "@sarraf/kashier";
-import { signKashierWebhook } from "@sarraf/kashier/testing";
+import { kashierRedirectSignedString, kashierWebhookSignedString } from "@sarraf/kashier";
+import { signKashierRedirect, signKashierWebhook } from "@sarraf/kashier/testing";
 import { paymobSignedString } from "@sarraf/paymob";
-import { signPaymobCallback } from "@sarraf/paymob/testing";
+import { signPaymobCallback, signPaymobRedirect } from "@sarraf/paymob/testing";
 import { env, loadSandboxEnv, ROOT } from "./env.js";
 import { sandboxSarraf } from "./providers.js";
 import { scrub, scrubUrl } from "./scrub.js";
@@ -119,6 +131,66 @@ async function recordStatus(provider: ProviderId, idOrRef: string) {
   });
 }
 
+/**
+ * Refund a paid sandbox payment and save the exchange, also when the provider rejects it: the
+ * error response is what shows how a beta refund call has to change.
+ */
+async function recordRefund(
+  provider: ProviderId,
+  providerPaymentId: string,
+  major?: string,
+  reference?: string,
+) {
+  const log: Exchange[] = [];
+  const pay = sandboxSarraf({ http: { fetch: recordingFetch(log) } });
+  const currency = SAMPLE.amount.currency;
+  const amount = major ? { value: toMinor(major, currency), currency } : undefined;
+  let outcome: string;
+  let data: Record<string, unknown>;
+  try {
+    const refund = await pay.refunds.create({ provider, providerPaymentId, amount, reference });
+    outcome = refund.status;
+    data = { status: refund.status, amount: refund.amount, providerRefundId: refund.providerRefundId };
+    console.log(`  refund ${refund.status}: ${JSON.stringify(refund.amount ?? "full")}`);
+  } catch (err) {
+    outcome = "error";
+    data = isSarrafError(err)
+      ? { code: err.code, message: err.message, status: err.status }
+      : { error: String(err) };
+    console.log(`  refund rejected: ${String(err)}`);
+  }
+  save(provider, `sandbox-refund-${major ? "partial" : "full"}-${outcome}`, {
+    description: `Real ${provider} sandbox refund call (scrubbed).`,
+    exchanges: scrubExchanges(log).filter((e) => !/auth\/tokens/.test(e.url)),
+    data,
+  });
+}
+
+/** Void / cancel a sandbox payment and save the exchanges, also when the provider rejects it. */
+async function recordCancel(provider: ProviderId, reference: string) {
+  const log: Exchange[] = [];
+  const pay = sandboxSarraf({ http: { fetch: recordingFetch(log) } });
+  let outcome: string;
+  let data: Record<string, unknown>;
+  try {
+    const payment = await pay.payments.cancel({ provider, reference });
+    outcome = payment.status;
+    data = { status: payment.status, amount: payment.amount, amountRefunded: payment.amountRefunded };
+    console.log(`  cancel → payment ${payment.status}`);
+  } catch (err) {
+    outcome = "error";
+    data = isSarrafError(err)
+      ? { code: err.code, message: err.message, status: err.status }
+      : { error: String(err) };
+    console.log(`  cancel rejected: ${String(err)}`);
+  }
+  save(provider, `sandbox-cancel-${outcome}`, {
+    description: `Real ${provider} sandbox void / cancel call (scrubbed).`,
+    exchanges: scrubExchanges(log).filter((e) => !/auth\/tokens/.test(e.url)),
+    data,
+  });
+}
+
 /** Scrub a captured webhook and re-sign it with the throwaway test secret. */
 export function resign(provider: ProviderId, req: RawWebhookRequest) {
   const body = JSON.parse(
@@ -145,19 +217,74 @@ export function resign(provider: ProviderId, req: RawWebhookRequest) {
   return { webhook: signed, signedString: parts.signedString, expectedSignature: parts.signature };
 }
 
+/**
+ * Scrub captured redirect params and re-sign them with the throwaway test secret. The provider's
+ * signature field is dropped first; the remaining params keep the order they arrived in, which
+ * Kashier's redirect signature depends on. Fawry does not sign redirects.
+ */
+export function resignRedirect(provider: ProviderId, query: Record<string, string>) {
+  const secret = TEST_SECRETS[provider];
+  if (provider === "kashier") {
+    const { signature: _drop, ...rest } = query;
+    const params = scrub(rest);
+    const signed = signKashierRedirect(params, secret);
+    return {
+      query: signed,
+      signedString: kashierRedirectSignedString(params),
+      expectedSignature: signed.signature,
+    };
+  }
+  if (provider === "paymob") {
+    const { hmac: _drop, ...rest } = query;
+    const signed = signPaymobRedirect(scrub(rest), secret);
+    return { query: signed, expectedSignature: signed.hmac };
+  }
+  return { query: scrub(query) };
+}
+
+async function recordRedirect(pay: ReturnType<typeof sandboxSarraf>, provider: ProviderId, url: URL) {
+  const query = Object.fromEntries(url.searchParams);
+  console.log(`
+← ${provider} redirect: ${[...url.searchParams.keys()].join(", ")}`);
+  if (provider === "kashier")
+    console.log(`  signed string: ${kashierRedirectSignedString([...url.searchParams])}`);
+  let result: Awaited<ReturnType<typeof pay.redirects.verify>> | undefined;
+  try {
+    result = await pay.redirects.verify(provider, query);
+    console.log(
+      `  signature: ${result.authenticated ? "✓ VALID" : "✗ INVALID"} · status ${result.status} · reference ${result.reference ?? "?"}`,
+    );
+  } catch (err) {
+    console.log(`  not verified: ${String(err)}`);
+  }
+  save(provider, `sandbox-redirect-${result?.status ?? "unverified"}`, {
+    description: `Real ${provider} customer redirect, scrubbed and re-signed with the test secret.`,
+    verifiedAgainstRealSignature: result?.authenticated ?? false,
+    secret: TEST_SECRETS[provider],
+    ...resignRedirect(provider, query),
+  });
+}
+
 async function captureWebhooks(port: number) {
   const pay = sandboxSarraf();
   const counts: Record<string, number> = {};
   const server = createServer((req, res) => {
     const url = new URL(req.url ?? "/", "http://localhost");
+    const ret = /^\/return\/(paymob|kashier|fawry)$/.exec(url.pathname);
+    if (req.method === "GET" && ret) {
+      res
+        .writeHead(200, { "content-type": "text/plain" })
+        .end("Sarraf sandbox: payment returned. Check the terminal.");
+      if (url.searchParams.size > 0) {
+        recordRedirect(pay, ret[1] as ProviderId, url).catch((err: unknown) => {
+          console.error(`  failed to record redirect: ${String(err)}`);
+        });
+      }
+      return;
+    }
     const m = /^\/webhooks\/(paymob|kashier|fawry)$/.exec(url.pathname);
     if (req.method !== "POST" || !m) {
-      res.writeHead(url.pathname.startsWith("/return/") ? 200 : 404, { "content-type": "text/plain" });
-      res.end(
-        url.pathname.startsWith("/return/")
-          ? "Sarraf sandbox: payment returned. Check the terminal."
-          : "not found",
-      );
+      res.writeHead(404, { "content-type": "text/plain" }).end("not found");
       return;
     }
     const provider = m[1] as ProviderId;
@@ -195,7 +322,7 @@ async function captureWebhooks(port: number) {
     });
   });
   server.listen(port, () => {
-    console.log(`Listening on http://localhost:${port}/webhooks/:provider`);
+    console.log(`Listening on http://localhost:${port}/webhooks/:provider and /return/:provider`);
     console.log(`Expose it with:  cloudflared tunnel --url http://localhost:${port}`);
     console.log("Then set SANDBOX_PUBLIC_URL and use <url>/webhooks/<provider> as the callback URL.");
   });
@@ -209,12 +336,19 @@ async function main() {
   const [cmd, a, b] = process.argv.slice(2);
   if (cmd === "checkout" && a) return recordCheckout(a as ProviderId);
   if (cmd === "status" && a && b) return recordStatus(a as ProviderId, b);
+  if (cmd === "cancel" && a && b) return recordCancel(a as ProviderId, b);
+  if (cmd === "refund" && a && b) {
+    const refIdx = process.argv.indexOf("--reference");
+    const reference = refIdx > 0 ? process.argv[refIdx + 1] : undefined;
+    const major = process.argv[5]?.startsWith("--") ? undefined : process.argv[5];
+    return recordRefund(a as ProviderId, b, major, reference);
+  }
   if (cmd === "webhook") {
     const portIdx = process.argv.indexOf("--port");
     return captureWebhooks(portIdx > 0 ? Number(process.argv[portIdx + 1]) : 4545);
   }
   console.log(
-    "Usage:\n  record-fixtures checkout <provider>\n  record-fixtures status <provider> <reference|id>\n  record-fixtures webhook [--port 4545]",
+    "Usage:\n  record-fixtures checkout <provider>\n  record-fixtures status <provider> <reference|id>\n  record-fixtures refund <provider> <paymentId> [amount] [--reference <ref>]\n  record-fixtures cancel <provider> <reference>\n  record-fixtures webhook [--port 4545]",
   );
   process.exit(1);
 }

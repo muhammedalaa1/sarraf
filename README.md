@@ -75,7 +75,7 @@ const event = await pay.webhooks.verifyAndParse("kashier", req); // same shape f
 |---|---|
 | [`@sarraf/core`](./packages/core) | The `Sarraf` client, models, money math (2- and 3-decimal currencies), errors, HTTP client with redaction, idempotency stores, webhook router, and the adapter conformance suite (`@sarraf/core/conformance`). Redis store at `@sarraf/core/redis`. |
 | [`@sarraf/paymob`](./packages/paymob) | Intention API + Unified Checkout, HMAC-SHA512 callback and redirect verification, transaction inquiry, refund, void. Egypt, KSA, UAE, Oman. |
-| [`@sarraf/kashier`](./packages/kashier) | Hosted payment page (signed URL), redirect and webhook signature verification, Payment Sessions / order lookup / refunds (beta). |
+| [`@sarraf/kashier`](./packages/kashier) | Hosted payment page (signed URL), redirect and webhook signature verification, order lookup, full / partial refunds and same-day voids; Payment Sessions (beta). |
 | [`@sarraf/fawry`](./packages/fawry) | PayAtFawry reference codes, status v2, V2 notification verification with status re-query, hosted card/wallet checkout, refund/cancel (beta). |
 | [`@sarraf/express`](./packages/express) | `rawBody()` middleware and `webhookHandler()` for Express (and any Node `http` server). |
 | [`@sarraf/next`](./packages/next) | `webhookRoute()` for App Router route handlers and `verifyRedirect()` for thank-you pages. Fetch API only, so it also fits Hono, Remix or Bun. |
@@ -91,9 +91,9 @@ Each adapter also ships a `/testing` subpath (`@sarraf/paymob/testing`, ...) wit
 | Checkout | ✅ redirect | ✅ redirect (hosted page) · 🧪 sessions | ✅ reference code · 🧪 hosted card/wallet |
 | Webhook verification | ✅ HMAC-SHA512 | ✅ HMAC-SHA256 | ✅ SHA-256 (V2) + status re-query |
 | Redirect verification | ✅ (UX only) | ✅ (UX only) | — |
-| Get payment / reconcile | ✅ (needs `apiKey`) | 🧪 | ✅ |
-| Refund (full / partial) | ✅ | 🧪 | 🧪 |
-| Void / cancel | ✅ | — | 🧪 |
+| Get payment / reconcile | ✅ (needs `apiKey`) | ✅ (needs `secretKey`, by `reference`) | ✅ |
+| Refund (full / partial) | ✅ | ✅ (needs `secretKey`; full refunds need `reference`) | 🧪 |
+| Void / cancel | ✅ | ✅ void, same day (needs `secretKey`, by `reference`) | 🧪 |
 | Currencies | region currency (EGP / SAR / AED / OMR) | configurable, default EGP | EGP |
 
 ✅ supported · 🧪 beta (requires `allowBeta: true`) · — not offered by the provider/adapter
@@ -426,7 +426,7 @@ paymob({
 kashier({
   merchantId: "MID-123-456",
   apiKey: "...",                // Payment API key: signs the hosted page, verifies redirects/webhooks
-  secretKey: "...",             // server APIs (sessions, order lookup, refunds): beta
+  secretKey: "...",             // server APIs: order lookup, refunds, sessions (beta)
   mode: "test",                 // "test" | "live"
   amountFormat: "fixed",        // "fixed" → "250.00", "trimmed" → "250"
   currencies: ["EGP"],
@@ -583,7 +583,7 @@ Full generated reference: `pnpm --filter @sarraf/docs build` (TypeDoc output und
 | `payments.get({ provider, providerPaymentId \| reference })` | `Payment` | Current status from the provider |
 | `payments.reconcile(...)` | `Payment` | Same as `get`; name it this in scheduled jobs |
 | `payments.cancel(...)` | `Payment` | Void / cancel unpaid |
-| `refunds.create({ provider, providerPaymentId, amount?, reason?, idempotencyKey? })` | `Refund` | Omit `amount` for a full refund |
+| `refunds.create({ provider, providerPaymentId, amount?, reason?, idempotencyKey? })` | `Refund` | Omit `amount` for a full refund (Kashier also needs `reference`) |
 | `webhooks.verifyAndParse(provider, req)` | `SarrafEvent` | Throws `WEBHOOK_SIGNATURE_INVALID` |
 | `webhooks.inspect(provider, req)` | `WebhookInspection` | Debug info, never throws on mismatch |
 | `webhooks.dedupeKey(event)` | `string` | `event.id` |

@@ -1,0 +1,32 @@
+{
+  "provider": "kashier",
+  "scenario": "sandbox-refund-full-target-transaction",
+  "source": "sandbox",
+  "recordedAt": "2026-10-21T11:11:56.638Z",
+  "description": "Real kashier refund of a fresh 10.00 EGP order with no amount but with transaction.targetTransactionId set to the pay transaction (scrubbed).",
+  "exchanges": [
+    {
+      "method": "PUT",
+      "url": "https://test-fep.kashier.io/v3/orders/8d9875e2-3771-4367-854b-16a803c02a5d",
+      "requestBody": {
+        "apiOperation": "REFUND",
+        "reason": "Refund",
+        "transaction": {
+          "targetTransactionId": "TX-3004573817"
+        }
+      },
+      "status": 500,
+      "responseBody": {
+        "error": {
+          "cause": "Something went wrong"
+        },
+        "messages": {
+          "ar": "حدث خطأ ما",
+          "en": "Something went wrong."
+        },
+        "status": "FAILURE",
+        "statusCode": 500
+      }
+    }
+  ]
+}

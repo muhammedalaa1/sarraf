@@ -1,0 +1,25 @@
+{
+  "provider": "kashier",
+  "scenario": "sandbox-redirect-succeeded",
+  "source": "sandbox",
+  "recordedAt": "2026-10-21T11:05:49.658Z",
+  "description": "Real kashier customer redirect, scrubbed and re-signed with the test secret.",
+  "verifiedAgainstRealSignature": true,
+  "secret": "test_payment_api_key_do_not_use",
+  "query": {
+    "paymentStatus": "SUCCESS",
+    "cardDataToken": "REDACTED",
+    "maskedCard": "411111******1111",
+    "merchantOrderId": "sarraf_fx_1792580708269",
+    "orderId": "60713b61-70c8-42aa-a15a-38bd453f17fa",
+    "cardBrand": "Visa",
+    "orderReference": "TEST-ORD-193526498",
+    "transactionId": "TX-3004573811",
+    "amount": "10",
+    "currency": "EGP",
+    "mode": "test",
+    "signature": "c78d9eab252d9c713eac06455181a667de647713a35edfa1fd8e65058eca43c2"
+  },
+  "signedString": "paymentStatus=SUCCESS&cardDataToken=REDACTED&maskedCard=411111******1111&merchantOrderId=sarraf_fx_1792580708269&orderId=60713b61-70c8-42aa-a15a-38bd453f17fa&cardBrand=Visa&orderReference=TEST-ORD-193526498&transactionId=TX-3004573811&amount=10&currency=EGP",
+  "expectedSignature": "c78d9eab252d9c713eac06455181a667de647713a35edfa1fd8e65058eca43c2"
+}

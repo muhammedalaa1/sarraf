@@ -1,0 +1,500 @@
+{
+  "provider": "kashier",
+  "scenario": "sandbox-refund-full-fresh-succeeded",
+  "source": "sandbox",
+  "recordedAt": "2026-10-21T11:06:59.802Z",
+  "description": "Real kashier full refund through Sarraf of a fresh 10.00 EGP order: order lookup (nothing refunded), then refund 10.00 (scrubbed).",
+  "exchanges": [
+    {
+      "method": "GET",
+      "url": "https://test-api.kashier.io/v3/payment/orders?search=sarraf_fx_1792580708269",
+      "status": 200,
+      "responseBody": {
+        "status": "SUCCESS",
+        "message": "Orders retrieved successfully",
+        "data": [
+          {
+            "_id": "6ad88e110242459f2c0a16aa",
+            "merchantId": "MERCHANT_ID",
+            "sessionId": "6ad88e110242459f2c0a16a3",
+            "merchantDetails": {
+              "storeName": "Test Store",
+              "MCC": "undefined",
+              "isLive": false,
+              "createdUserId": "6737a625581d6910caddf8d4",
+              "email": "customer@example.com",
+              "accountType": "PF",
+              "apiKey": "REDACTED",
+              "merchantId": "MERCHANT_ID",
+              "isTrustedMerchant": false,
+              "enableNotEnrolled3DSCaptcha": false
+            },
+            "orderReference": "TEST-ORD-193526498",
+            "orderId": "60713b61-70c8-42aa-a15a-38bd453f17fa",
+            "merchantOrderId": "sarraf_fx_1792580708269",
+            "totalCapturedAmount": 10,
+            "totalRefundedAmount": 0,
+            "totalAuthorizedAmount": 10,
+            "acquirerAutoReversal": {
+              "performedBy": {
+                "fullName": null,
+                "userId": null,
+                "email": null
+              },
+              "requestContext": {
+                "ip": null,
+                "userAgent": null,
+                "referer": null,
+                "origin": null
+              },
+              "reversedAmount": null,
+              "reversedAt": null,
+              "capturedTransactionId": null
+            },
+            "localRemainderRelease": {
+              "amount": null,
+              "releasedAt": null,
+              "voidTransactionId": null
+            },
+            "authExpirySweep": {
+              "parkedAt": null,
+              "parkReason": null,
+              "attempts": 0
+            },
+            "order": {
+              "amount": 10,
+              "currency": "EGP",
+              "callbackURL": "https://example.com/return/kashier"
+            },
+            "date": "2026-10-21T10:04:01.337Z",
+            "lastModifiedDate": "2026-10-21T10:04:09.424Z",
+            "status": "CAPTURED",
+            "interChangeRate": "ON_US",
+            "isLockedForPaymentProcessing": false,
+            "provider": "mpgs",
+            "providerVersion": "68",
+            "method": "card",
+            "sourceOfFunds": {
+              "cardInfo": {
+                "maskedCard": "411111******1111",
+                "extendedMaskedCard": "411111******1111",
+                "cardBrand": "Visa",
+                "cardHolderName": "Test Cardholder",
+                "cardDataToken": "REDACTED",
+                "ccvToken": "REDACTED",
+                "expiryYear": "27",
+                "expiryMonth": "06",
+                "storedOnFile": "NOT_STORED",
+                "save": false
+              }
+            },
+            "apiKeyId": "REDACTED",
+            "apiKeyName": "default-test-key",
+            "paymentOrigin": "default-test-key",
+            "paymentChannel": "online | e-commerce",
+            "metaData": {
+              "kashier payment UI version": "V3",
+              "termsAndConditions": {
+                "ip": "203.0.113.1"
+              }
+            },
+            "paymentAgreement": "regular",
+            "authorizationAmount": "10.00",
+            "originalAmount": "10.00",
+            "installmentAmountPerMonth": "0",
+            "serverWebhook": "https://example.com/webhooks/kashier",
+            "apiOperation": "PAY",
+            "transactions": [
+              {
+                "isForceUpdated": false,
+                "isManualRefund": false,
+                "markedAsRefunded": false,
+                "labels": [],
+                "isPOSPortalRefund": false,
+                "metaData": {
+                  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/203.0.113.1 Safari/537.36"
+                },
+                "reconcilation": "NA",
+                "merchantWebhookReconciliation": "NA",
+                "isCurrentlyReconciled": false,
+                "kashierBlocked": false,
+                "operation": "3dsecure_verify",
+                "gateWayOperation": "INITIATE_AUTHENTICATION",
+                "transactionId": "TX-3004573808",
+                "performedBy": {
+                  "fullName": null,
+                  "userId": null,
+                  "email": null
+                },
+                "status": "SUCCESS",
+                "amount": 10,
+                "currency": "EGP",
+                "feeTrxAmount": 0,
+                "feeDetails": {
+                  "transaction": 0,
+                  "processing": 0
+                },
+                "isPF": true,
+                "pccFees": {
+                  "PCC_ID": "PCC-TEST",
+                  "transaction_amount": 10,
+                  "selling_fees": {
+                    "PCC_selling_rate": 0,
+                    "PCC_selling_flat": 5,
+                    "total_selling_rate": "0.00",
+                    "total_selling_fees": "5.00"
+                  },
+                  "cost_fees": {
+                    "PCC_cost_rate": 0,
+                    "PCC_cost_flat": 0,
+                    "total_cost_rate": "0.00",
+                    "total_cost_fees": "0.00"
+                  },
+                  "vat": "0.70",
+                  "settledAmount": "4.30",
+                  "usePaymentFees": false,
+                  "feeLayers": [],
+                  "_id": "6ad88e110242459f2c0a16ac"
+                },
+                "apmTraceId": "e1c06b1e0cee69f6575c48f2cc5f40d9",
+                "instantSettlementRequested": false,
+                "instantSettlementSelectionVersion": 0,
+                "feesCalculationMatched": null,
+                "_id": "6ad88e110242459f2c0a16ab",
+                "requestDate": "2026-10-21T10:04:01.344Z",
+                "responseDate": "2026-10-21T10:04:02.224Z",
+                "transactionResponseCode": "AUTHENTICATION_IN_PROGRESS",
+                "transactionResponseMessage": {
+                  "en": "Authentication in progress",
+                  "ar": "المصادقة قيد التقدم"
+                }
+              },
+              {
+                "isForceUpdated": false,
+                "isManualRefund": false,
+                "markedAsRefunded": false,
+                "labels": [],
+                "isPOSPortalRefund": false,
+                "targetedTransaction": "TX-3004573808",
+                "targetedTransactionOperation": "3dsecure_verify",
+                "reconcilation": "NA",
+                "merchantWebhookReconciliation": "NA",
+                "isCurrentlyReconciled": false,
+                "kashierBlocked": false,
+                "operation": "authenticate_payer",
+                "gateWayOperation": "AUTHENTICATE_PAYER",
+                "transactionId": "TX-3004573809",
+                "performedBy": {
+                  "fullName": null,
+                  "userId": null,
+                  "email": null
+                },
+                "requestDate": "2026-10-21T10:04:03.706Z",
+                "status": "PENDING",
+                "amount": 10,
+                "currency": "EGP",
+                "feeTrxAmount": 0,
+                "feeDetails": {
+                  "transaction": 0,
+                  "processing": 0
+                },
+                "isPF": true,
+                "pccFees": {
+                  "PCC_ID": "PCC-TEST",
+                  "transaction_amount": 10,
+                  "selling_fees": {
+                    "PCC_selling_rate": 0,
+                    "PCC_selling_flat": 5,
+                    "total_selling_rate": "0.00",
+                    "total_selling_fees": "5.00"
+                  },
+                  "cost_fees": {
+                    "PCC_cost_rate": 0,
+                    "PCC_cost_flat": 0,
+                    "total_cost_rate": "0.00",
+                    "total_cost_fees": "0.00"
+                  },
+                  "vat": "0.70",
+                  "settledAmount": "4.30",
+                  "usePaymentFees": false,
+                  "feeLayers": [],
+                  "_id": "6ad88e110242459f2c0a16ac"
+                },
+                "apmTraceId": "766584e8662f30538b9e047077745bbe",
+                "instantSettlementRequested": false,
+                "instantSettlementSelectionVersion": 0,
+                "feesCalculationMatched": null,
+                "_id": "6ad88e130242459f2c0a16bf",
+                "responseDate": "2026-10-21T10:04:04.396Z",
+                "transactionResponseCode": "PENDING",
+                "transactionResponseMessage": {
+                  "en": "Transaction is pending",
+                  "ar": "المعاملة قيد التنفيذ"
+                }
+              },
+              {
+                "isForceUpdated": false,
+                "isManualRefund": false,
+                "markedAsRefunded": false,
+                "labels": [],
+                "isPOSPortalRefund": false,
+                "targetedTransaction": "TX-3004573809",
+                "targetedTransactionOperation": "authenticate_payer",
+                "reconcilation": "NA",
+                "merchantWebhookReconciliation": "NA",
+                "isCurrentlyReconciled": false,
+                "kashierBlocked": false,
+                "operation": "3dsecure_process_acs_result",
+                "gateWayOperation": "3DSECURE_PROCESS_ACS_RESULT",
+                "transactionId": "TX-3004573810",
+                "performedBy": {
+                  "fullName": null,
+                  "userId": null,
+                  "email": null
+                },
+                "requestDate": "2026-10-21T10:04:07.468Z",
+                "status": "SUCCESS",
+                "amount": 10,
+                "currency": "EGP",
+                "feeTrxAmount": 0,
+                "feeDetails": {
+                  "transaction": 0,
+                  "processing": 0
+                },
+                "isPF": true,
+                "pccFees": {
+                  "PCC_ID": "PCC-TEST",
+                  "transaction_amount": 10,
+                  "selling_fees": {
+                    "PCC_selling_rate": 0,
+                    "PCC_selling_flat": 5,
+                    "total_selling_rate": "0.00",
+                    "total_selling_fees": "5.00"
+                  },
+                  "cost_fees": {
+                    "PCC_cost_rate": 0,
+                    "PCC_cost_flat": 0,
+                    "total_cost_rate": "0.00",
+                    "total_cost_fees": "0.00"
+                  },
+                  "vat": "0.70",
+                  "settledAmount": "4.30",
+                  "usePaymentFees": false,
+                  "feeLayers": [],
+                  "_id": "6ad88e110242459f2c0a16ac"
+                },
+                "apmTraceId": "08318a51046bee95c761ed6c0a3ad453",
+                "instantSettlementRequested": false,
+                "instantSettlementSelectionVersion": 0,
+                "feesCalculationMatched": null,
+                "_id": "6ad88e170242459f2c0a16e5",
+                "responseDate": "2026-10-21T10:04:08.239Z",
+                "transactionResponseCode": "APPROVED",
+                "transactionResponseMessage": {
+                  "en": "Approved",
+                  "ar": "تمت الموافقة"
+                }
+              },
+              {
+                "isForceUpdated": false,
+                "isManualRefund": false,
+                "markedAsRefunded": false,
+                "labels": [],
+                "isPOSPortalRefund": false,
+                "targetedTransaction": "TX-3004573809",
+                "targetedTransactionOperation": "authenticate_payer",
+                "reconcilation": "Pending",
+                "merchantWebhookReconciliation": "NA",
+                "isCurrentlyReconciled": false,
+                "kashierBlocked": false,
+                "operation": "pay",
+                "gateWayOperation": "PAY",
+                "transactionId": "TX-3004573811",
+                "performedBy": {
+                  "fullName": null,
+                  "userId": null,
+                  "email": null
+                },
+                "requestDate": "2026-10-21T10:04:08.284Z",
+                "status": "SUCCESS",
+                "amount": 10,
+                "currency": "EGP",
+                "feeTrxAmount": 0,
+                "feeDetails": {
+                  "transaction": 0,
+                  "processing": 0
+                },
+                "isPF": true,
+                "pccFees": {
+                  "PCC_ID": "PCC-TEST",
+                  "transaction_amount": 10,
+                  "selling_fees": {
+                    "PCC_selling_rate": 0,
+                    "PCC_selling_flat": 5,
+                    "total_selling_rate": "0.00",
+                    "total_selling_fees": "5.00"
+                  },
+                  "cost_fees": {
+                    "PCC_cost_rate": 0,
+                    "PCC_cost_flat": 0,
+                    "total_cost_rate": "0.00",
+                    "total_cost_fees": "0.00"
+                  },
+                  "vat": "0.70",
+                  "settledAmount": "4.30",
+                  "usePaymentFees": false,
+                  "feeLayers": [],
+                  "_id": "6ad88e110242459f2c0a16ac"
+                },
+                "apmTraceId": "08318a51046bee95c761ed6c0a3ad453",
+                "instantSettlementRequested": false,
+                "instantSettlementSelectionVersion": 0,
+                "feesCalculationMatched": null,
+                "_id": "6ad88e180242459f2c0a16eb",
+                "bankSettlementDate": "2026-10-21T10:04:09.412Z",
+                "bankValueDate": "2026-10-22T07:00:00.000Z",
+                "gatewayTransactionReference": "039797",
+                "gatewayTransactionUniqueKey": "039797#60713b61-70c8-42aa-a15a-38bd453f17fa",
+                "responseDate": "2026-10-21T10:04:09.412Z",
+                "settlementDate": "2026-10-21T10:04:09.412Z",
+                "transactionResponseCode": "00",
+                "transactionResponseMessage": {
+                  "en": "Approved",
+                  "ar": "تمت الموافقة"
+                }
+              }
+            ],
+            "providerReconcilationResults": [],
+            "originalPCC": {
+              "operations": []
+            },
+            "usePaymentFees": false,
+            "createdAt": "2026-10-21T10:04:01.350Z",
+            "updatedAt": "2026-10-21T10:04:09.488Z",
+            "__v": 0
+          }
+        ],
+        "pagination": {
+          "total": 1,
+          "page": 1,
+          "limit": 20,
+          "pages": 1
+        }
+      }
+    },
+    {
+      "method": "PUT",
+      "url": "https://test-fep.kashier.io/v3/orders/60713b61-70c8-42aa-a15a-38bd453f17fa",
+      "requestBody": {
+        "apiOperation": "REFUND",
+        "reason": "Refund",
+        "transaction": {
+          "amount": 10
+        }
+      },
+      "status": 200,
+      "responseBody": {
+        "response": {
+          "apiOperation": "REFUND",
+          "operation": "refund",
+          "currency": "EGP",
+          "result": "SUCCESS",
+          "status": "REFUNDED",
+          "authorizationNumber": "040867",
+          "amount": 10,
+          "creationTime": "2026-10-21T10:04:08.094Z",
+          "lastUpdatedTime": "2026-10-21T10:05:24.729Z",
+          "merchantCurrency": "EGP",
+          "reference": "60713b61-70c8-42aa-a15a-38bd453f17fa",
+          "totalAuthorizedAmount": 10,
+          "totalCapturedAmount": 10,
+          "totalDisbursedAmount": 0,
+          "totalRefundedAmount": 10,
+          "authentication": {},
+          "paymentMethod": {
+            "type": "card",
+            "card": {
+              "cardBrand": "Visa",
+              "number": "411111******1111",
+              "nameOnCard": "Test Cardholder",
+              "expiry": {
+                "month": "06",
+                "year": "27"
+              }
+            }
+          },
+          "metaData": {
+            "kashier payment UI version": "V3",
+            "termsAndConditions": {
+              "ip": "203.0.113.1"
+            }
+          },
+          "branch": {
+            "name": "Branch Name",
+            "address": {
+              "street": "street",
+              "city": "branch city",
+              "country": "branch country",
+              "address": "Branch Address"
+            }
+          },
+          "reconciliation": {
+            "webhookUrl": "https://example.com/webhooks/kashier",
+            "redirect": false
+          },
+          "merchantId": "MERCHANT_ID",
+          "order": {
+            "amount": 10,
+            "currency": "EGP",
+            "callbackURL": "https://example.com/return/kashier",
+            "systemOrderId": "60713b61-70c8-42aa-a15a-38bd453f17fa",
+            "reference": "sarraf_fx_1792580708269"
+          },
+          "netAuthorizedAmount": "5.00",
+          "apiKeyId": "REDACTED",
+          "method": "card",
+          "creationDate": "2026-10-21T13:04:01.337Z",
+          "orderId": "60713b61-70c8-42aa-a15a-38bd453f17fa",
+          "provider": "mpgs",
+          "merchantOrderId": "sarraf_fx_1792580708269",
+          "orderReference": "TEST-ORD-193526498",
+          "interactionSource": "ECOMMERCE",
+          "device": {
+            "browserDetails": {
+              "javaEnabled": false,
+              "language": "en-US",
+              "screenHeight": 953,
+              "screenWidth": 1920,
+              "timeZone": -120,
+              "colorDepth": 24,
+              "3DSecureChallengeWindowSize": "390_X_400"
+            },
+            "browser": "Chrome",
+            "ipAddress": "203.0.113.1"
+          },
+          "transactionId": "TX-3004573813",
+          "sessionId": "6ad88e110242459f2c0a16a3",
+          "transactionResponseCode": "00",
+          "transactionResponseMessage": {
+            "en": "Approved",
+            "ar": "تمت الموافقة"
+          }
+        },
+        "messages": {
+          "en": "Approved",
+          "ar": "تمت الموافقة"
+        },
+        "status": "SUCCESS",
+        "statusCode": 200
+      }
+    }
+  ],
+  "data": {
+    "status": "succeeded",
+    "amount": {
+      "value": 1000,
+      "currency": "EGP"
+    },
+    "providerRefundId": "TX-3004573813"
+  }
+}

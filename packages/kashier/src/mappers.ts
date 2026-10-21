@@ -38,7 +38,12 @@ export interface KashierTransactionData {
 }
 
 export const KASHIER_STATUS_TABLE: StatusMappingRow[] = [
-  { provider: "event pay, status SUCCESS", status: "succeeded", verified: false },
+  {
+    provider: "event pay, status SUCCESS",
+    status: "succeeded",
+    note: "fixtures/kashier/sandbox-webhook-succeeded-1.json",
+    verified: true,
+  },
   { provider: "status PENDING / INITIATED", status: "pending", verified: false },
   { provider: "status FAILURE / FAILED / DECLINED", status: "failed", verified: false },
   {
@@ -48,11 +53,48 @@ export const KASHIER_STATUS_TABLE: StatusMappingRow[] = [
     verified: false,
   },
   { provider: "event capture, status SUCCESS", status: "succeeded", verified: false },
-  { provider: "event refund, status SUCCESS, partial", status: "partially_refunded", verified: false },
-  { provider: "event refund, status SUCCESS, full", status: "refunded", verified: false },
-  { provider: "event void, status SUCCESS", status: "canceled", verified: false },
+  {
+    provider: "event refund, status SUCCESS, partial (totals from the order lookup)",
+    status: "partially_refunded",
+    note: "fixtures/kashier/sandbox-webhook-refund-partial.json",
+    verified: true,
+  },
+  {
+    provider: "event refund, status SUCCESS, full (totals from the order lookup)",
+    status: "refunded",
+    note: "fixtures/kashier/sandbox-webhook-refund-full.json",
+    verified: true,
+  },
+  {
+    provider: "event void, status SUCCESS",
+    status: "canceled",
+    note: "fixtures/kashier/sandbox-webhook-void.json",
+    verified: true,
+  },
+  {
+    provider: "order lookup: status CAPTURED, nothing refunded",
+    status: "succeeded",
+    verified: false,
+  },
+  {
+    provider: "order lookup: status CAPTURED, totalRefundedAmount < amount",
+    status: "partially_refunded",
+    note: "fixtures/kashier/sandbox-order-partially-refunded.json",
+    verified: true,
+  },
+  {
+    provider: "order lookup: status CAPTURED, totalRefundedAmount = amount",
+    status: "refunded",
+    note: "fixtures/kashier/sandbox-order-refunded.json",
+    verified: true,
+  },
   { provider: "status EXPIRED", status: "expired", verified: false },
-  { provider: "status CANCELLED / CANCELED", status: "canceled", verified: false },
+  {
+    provider: "order lookup: status CANCELLED (after a void)",
+    status: "canceled",
+    note: "fixtures/kashier/sandbox-void-succeeded.json",
+    verified: true,
+  },
 ];
 
 /** Known Kashier event names; `(string & {})` keeps autocomplete while accepting new ones. */
@@ -160,6 +202,80 @@ export function toKashierPayment(
       code: "PAYMENT_DECLINED",
       message: message ?? "Payment failed",
       providerCode: str(data.transactionResponseCode),
+    };
+  }
+  return payment;
+}
+
+/**
+ * Status of an order from the order lookup. Kashier keeps a refunded order `CAPTURED` and tracks
+ * refunds in `totalRefundedAmount`, so refunds are derived from the totals.
+ */
+export function mapKashierOrderStatus(
+  status: string | undefined,
+  amount: Money,
+  refunded: Money,
+): PaymentStatus {
+  const s = (status ?? "").toUpperCase();
+  switch (s) {
+    case "CAPTURED":
+    case "PAID":
+    case "SUCCESS":
+      if (amount.value > 0 && refunded.value >= amount.value) return "refunded";
+      return refunded.value > 0 ? "partially_refunded" : "succeeded";
+    case "REFUNDED":
+      return "refunded";
+    case "PARTIALLY_REFUNDED":
+      return "partially_refunded";
+    case "AUTHORIZED":
+      return "requires_action";
+    case "FAILED":
+    case "REJECTED":
+      return "failed";
+    case "CANCELLED":
+    case "CANCELED":
+    case "VOIDED":
+    case "REVERSED":
+      return "canceled";
+    case "EXPIRED":
+      return "expired";
+    default:
+      return "pending";
+  }
+}
+
+/** A `Payment` from an order returned by the order lookup (`findOrder`). */
+export function toKashierOrderPayment(order: Record<string, unknown>, fallbackCurrency: Currency): Payment {
+  const details = asRecord(order.order);
+  const currency = isCurrency(details.currency) ? details.currency : fallbackCurrency;
+  const amount: Money = {
+    value: minorOf(details.amount ?? order.totalCapturedAmount ?? order.originalAmount, currency) ?? 0,
+    currency,
+  };
+  const refunded: Money = { value: minorOf(order.totalRefundedAmount, currency) ?? 0, currency };
+  const status = mapKashierOrderStatus(str(order.status), amount, refunded);
+  const providerPaymentId = str(order.orderId) ?? "";
+  const transactions = Array.isArray(order.transactions) ? order.transactions.map(asRecord) : [];
+  const last = transactions.at(-1);
+  const payment: Payment = {
+    id: sarrafId("kashier", providerPaymentId),
+    provider: "kashier",
+    providerPaymentId,
+    reference: str(order.merchantOrderId) ?? "",
+    status,
+    amount,
+    amountRefunded: refunded,
+    method: mapKashierMethod(str(order.method)),
+    createdAt: str(order.date),
+    updatedAt: str(order.lastModifiedDate),
+    raw: order,
+  };
+  if (status === "failed") {
+    const message = asRecord(last?.transactionResponseMessage);
+    payment.failure = {
+      code: "PAYMENT_DECLINED",
+      message: str(message.en) ?? "Payment failed",
+      providerCode: str(last?.transactionResponseCode),
     };
   }
   return payment;

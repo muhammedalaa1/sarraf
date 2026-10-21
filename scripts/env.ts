@@ -14,9 +14,15 @@ export function loadSandboxEnv(): boolean {
   return true;
 }
 
+/** Values copied from .env.sandbox.example and never filled in, e.g. `sk_test_...` or `MID-...`. */
+export function isPlaceholder(value: string): boolean {
+  return value.endsWith("...");
+}
+
+/** A sandbox variable, or undefined when it is empty or still a placeholder. */
 export function env(name: string): string | undefined {
   const v = process.env[name]?.trim();
-  return v ? v : undefined;
+  return v && !isPlaceholder(v) ? v : undefined;
 }
 
 export function requireEnv(...names: string[]): Record<string, string> {

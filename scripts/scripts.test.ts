@@ -2,11 +2,12 @@ import { Sarraf, silentLogger } from "@sarraf/core";
 import { fawry } from "@sarraf/fawry";
 import { fawryNotification, signFawryNotification } from "@sarraf/fawry/testing";
 import { kashier } from "@sarraf/kashier";
-import { kashierWebhookData, signKashierWebhook } from "@sarraf/kashier/testing";
+import { kashierWebhookData, signKashierRedirect, signKashierWebhook } from "@sarraf/kashier/testing";
 import { paymob } from "@sarraf/paymob";
 import { paymobTransaction, signPaymobCallback } from "@sarraf/paymob/testing";
 import { describe, expect, it } from "vitest";
-import { resign, TEST_SECRETS } from "./record-fixtures.js";
+import { isPlaceholder } from "./env.js";
+import { resign, resignRedirect, TEST_SECRETS } from "./record-fixtures.js";
 import { scrub, scrubUrl } from "./scrub.js";
 
 describe("scrub", () => {
@@ -38,6 +39,59 @@ describe("scrub", () => {
       list: [{ secretKey: "REDACTED" }],
     });
     expect(scrub({ token: "t" }, { keep: ["token"] })).toEqual({ token: "t" });
+  });
+
+  it("scrubs card tokens, extended masked PANs and IP addresses", () => {
+    const out = scrub({
+      cardDataToken: "c",
+      ccvToken: "56196e5b-0c1a-4077-bda9-fc9967348b8e",
+      extendedMaskedCard: "45087500****1019",
+      termsAndConditions: { ip: "41.33.238.154" },
+      note: "from 41.33.238.154",
+      signatureKeys: ["transactionResponseCode"],
+    });
+    expect(out).toEqual({
+      cardDataToken: "REDACTED",
+      ccvToken: "REDACTED",
+      extendedMaskedCard: "411111******1111",
+      termsAndConditions: { ip: "203.0.113.1" },
+      note: "from 203.0.113.1",
+      signatureKeys: ["transactionResponseCode"],
+    });
+  });
+
+  it("scrubs card masks anywhere, cardholder names, merchant ids and tunnel URLs", () => {
+    const out = scrub({
+      card: { number: "450875******1019", nameOnCard: "Real Person" },
+      merchantId: "MID-30045-738",
+      merchantDetails: { storeName: "Real Store" },
+      apiKeyId: "6737a6254023aa00135c9e45",
+      reconciliation: {
+        webhookUrl: "https://sight-attended-entities-ripe.trycloudflare.com/webhooks/kashier",
+      },
+    });
+    expect(out).toEqual({
+      card: { number: "411111******1111", nameOnCard: "Test Cardholder" },
+      merchantId: "MERCHANT_ID",
+      merchantDetails: { storeName: "Test Store" },
+      apiKeyId: "REDACTED",
+      reconciliation: { webhookUrl: "https://example.com/webhooks/kashier" },
+    });
+  });
+
+  it("scrubs the dashboard user and merchant id recorded on a void", () => {
+    const out = scrub({
+      metaData: {
+        kashier_user: { fullName: "Real Person", email: "real@person.com", selectedMID: "MID-30045-738" },
+      },
+      note: "merchant MID-30045-738",
+    });
+    expect(out).toEqual({
+      metaData: {
+        kashier_user: { fullName: "Test User", email: "customer@example.com", selectedMID: "MERCHANT_ID" },
+      },
+      note: "merchant MERCHANT_ID",
+    });
   });
 
   it("scrubs URLs", () => {
@@ -83,5 +137,33 @@ describe("resign", () => {
     expect(
       resign("paymob", { ...bytes, rawBody: new TextEncoder().encode(bytes.rawBody as string) }).webhook,
     ).toBeTruthy();
+  });
+
+  it("re-signs redirects so they verify with the test secret, keeping param order", async () => {
+    const real = signKashierRedirect(
+      { paymentStatus: "SUCCESS", merchantOrderId: "o1", customerEmail: "real@person.com", mode: "test" },
+      "REAL",
+    );
+    const out = resignRedirect("kashier", real);
+    expect(Object.keys(out.query)).toEqual([
+      "paymentStatus",
+      "merchantOrderId",
+      "customerEmail",
+      "mode",
+      "signature",
+    ]);
+    expect(JSON.stringify(out.query)).not.toContain("real@person.com");
+    expect((await pay.redirects.verify("kashier", out.query)).authenticated).toBe(true);
+    const paymobOut = resignRedirect("paymob", { success: "true", hmac: "REAL" });
+    expect(paymobOut.query.hmac).not.toBe("REAL");
+    expect(resignRedirect("fawry", { merchantRefNumber: "o1" }).query).toEqual({ merchantRefNumber: "o1" });
+  });
+});
+
+describe("isPlaceholder", () => {
+  it("treats unfilled values from .env.sandbox.example as missing", () => {
+    expect(isPlaceholder("sk_test_...")).toBe(true);
+    expect(isPlaceholder("MID-...")).toBe(true);
+    expect(isPlaceholder("sk_test_abc123")).toBe(false);
   });
 });

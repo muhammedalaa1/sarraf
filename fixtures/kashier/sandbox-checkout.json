@@ -1,0 +1,13 @@
+{
+  "provider": "kashier",
+  "scenario": "sandbox-checkout",
+  "source": "sandbox",
+  "recordedAt": "2026-10-21T10:24:35.752Z",
+  "description": "Real kashier sandbox checkout (scrubbed).",
+  "exchanges": [],
+  "data": {
+    "kind": "redirect",
+    "status": "pending",
+    "reference": "sarraf_fx_1792578275748"
+  }
+}

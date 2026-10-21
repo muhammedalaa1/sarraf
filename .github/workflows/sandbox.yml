@@ -35,6 +35,6 @@ jobs:
           KASHIER_MERCHANT_ID: ${{ secrets.KASHIER_MERCHANT_ID }}
           KASHIER_API_KEY: ${{ secrets.KASHIER_API_KEY }}
           KASHIER_SECRET_KEY: ${{ secrets.KASHIER_SECRET_KEY }}
-          KASHIER_SANDBOX_ORDER_ID: ${{ secrets.KASHIER_SANDBOX_ORDER_ID }}
+          KASHIER_SANDBOX_REFERENCE: ${{ secrets.KASHIER_SANDBOX_REFERENCE }}
           FAWRY_MERCHANT_CODE: ${{ secrets.FAWRY_MERCHANT_CODE }}
           FAWRY_SECURE_KEY: ${{ secrets.FAWRY_SECURE_KEY }}
