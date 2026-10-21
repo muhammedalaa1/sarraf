@@ -2,10 +2,11 @@ import "reflect-metadata";
 import type { INestApplication } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import type { Sarraf } from "@sarraf/core";
+import { SARRAF } from "@sarraf/nestjs";
 import type { FakeProvider } from "@sarraf/testing";
 import request from "supertest";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { AppModule, SARRAF } from "../src/app.module.js";
+import { AppModule } from "../src/app.module.js";
 import { createPay } from "../src/pay.js";
 
 describe("nestjs-shop (demo mode)", () => {

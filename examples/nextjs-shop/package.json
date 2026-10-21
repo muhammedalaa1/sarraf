@@ -13,6 +13,7 @@
     "@sarraf/core": "workspace:*",
     "@sarraf/fawry": "workspace:*",
     "@sarraf/kashier": "workspace:*",
+    "@sarraf/next": "workspace:*",
     "@sarraf/paymob": "workspace:*",
     "@sarraf/testing": "workspace:*",
     "next": "16.4.2",

@@ -14,6 +14,7 @@
     "@sarraf/core": "workspace:*",
     "@sarraf/fawry": "workspace:*",
     "@sarraf/kashier": "workspace:*",
+    "@sarraf/nestjs": "workspace:*",
     "@sarraf/paymob": "workspace:*",
     "@sarraf/testing": "workspace:*",
     "reflect-metadata": "0.2.2",
