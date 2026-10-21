@@ -17,6 +17,13 @@ const WEBHOOKS = [
   "webhook-pay-failed",
   "webhook-special-chars",
   "webhook-refund-partial",
+  // Recorded from the real Kashier sandbox (verified with the real key, then re-signed).
+  "sandbox-webhook-succeeded-1",
+  "sandbox-webhook-refund-partial",
+  "sandbox-webhook-refund-full",
+  "sandbox-webhook-refund-full-fresh",
+  "sandbox-webhook-succeeded-2",
+  "sandbox-webhook-void",
 ];
 
 describe("kashier webhook signature", () => {
@@ -44,6 +51,13 @@ describe("kashier webhook signature", () => {
       .join("&");
     const naiveSig = createHmac("sha256", f.secret!).update(naive).digest("hex");
     expect(verifyKashierWebhookSignature(data, f.secret!, naiveSig)).toBe(false);
+  });
+
+  it("matches real sandbox traffic, including spaces and | in signed values", () => {
+    const f = loadFixture("kashier", "sandbox-webhook-succeeded-1");
+    expect(f.verifiedAgainstRealSignature).toBe(true);
+    expect(f.signedString).toContain("channel=online%20%7C%20e-commerce");
+    expect(f.signedString).toContain("amount=10&"); // a JSON number, signed as Kashier sent it
   });
 
   describe("tamper cases fail", () => {
@@ -97,6 +111,20 @@ describe("kashier redirect signature", () => {
         f.secret!,
       ),
     ).toBe(false);
+  });
+});
+
+describe("kashier redirect signature (real sandbox)", () => {
+  const f = loadFixture("kashier", "sandbox-redirect-succeeded");
+  const query = f.query ?? {};
+
+  it("matches the recorded redirect: every param except signature and mode, in received order", () => {
+    expect(f.verifiedAgainstRealSignature).toBe(true);
+    expect(Object.keys(query).slice(-2)).toEqual(["mode", "signature"]);
+    expect(kashierRedirectSignedString(query)).toBe(f.signedString);
+    expect(kashierRedirectSignature(query, f.secret!)).toBe(f.expectedSignature);
+    expect(verifyKashierRedirect(query, f.secret!)).toBe(true);
+    expect(verifyKashierRedirect({ ...query, amount: "10.00" }, f.secret!)).toBe(false);
   });
 });
 

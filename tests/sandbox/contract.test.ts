@@ -63,7 +63,10 @@ describe.skipIf(!hasPaymob())("@sandbox paymob", () => {
 });
 
 describe.skipIf(!hasKashier())("@sandbox kashier", () => {
-  it("builds a hosted payment page the sandbox accepts", async () => {
+  // The hosted page only checks the hash when the customer pays, so this proves the merchant id and
+  // mode are accepted, not the hash. The hash, redirect and webhook recipes are locked in by the
+  // recorded fixtures (fixtures/kashier/sandbox-*.json): record new ones with `pnpm record-fixtures`.
+  it("builds a hosted payment page for this merchant", async () => {
     const pay = sandboxSarraf();
     const checkout = await pay.checkout.create({
       provider: "kashier",
@@ -78,15 +81,15 @@ describe.skipIf(!hasKashier())("@sandbox kashier", () => {
     expect(html.toLowerCase()).not.toContain("invalid hash");
   });
 
-  it("looks up a known order (beta)", {
-    skip: !env("KASHIER_SECRET_KEY") || !env("KASHIER_SANDBOX_ORDER_ID"),
+  it("looks up a known paid order by reference", {
+    skip: !env("KASHIER_SECRET_KEY") || !env("KASHIER_SANDBOX_REFERENCE"),
   }, async () => {
     const pay = sandboxSarraf();
-    const p = await pay.payments.get({
-      provider: "kashier",
-      providerPaymentId: env("KASHIER_SANDBOX_ORDER_ID")!,
-    });
-    expect(p.provider).toBe("kashier");
+    const reference = env("KASHIER_SANDBOX_REFERENCE")!;
+    const p = await pay.payments.get({ provider: "kashier", reference });
+    expect(p.reference).toBe(reference);
+    expect(["succeeded", "partially_refunded", "refunded"]).toContain(p.status);
+    expect(p.amount.value).toBeGreaterThan(0);
   });
 });
 

@@ -16,15 +16,58 @@ import { kashierWebhookData, signKashierRedirect, signKashierWebhook } from "../
 const API_KEY = "test_api_key";
 const options: KashierOptions = { merchantId: "MID-1-1", apiKey: API_KEY, secretKey: "sec_1", mode: "test" };
 
-const orderResponse = (over = {}) => ({ status: "SUCCESS", response: { ...kashierWebhookData(), ...over } });
+/** An order as the order lookup returns it (shape from fixtures/kashier/sandbox-order-partially-refunded.json). */
+const kashierOrder = (over: Record<string, unknown> = {}) => ({
+  orderId: "ko_6527a1b2c3",
+  merchantOrderId: "order_8841",
+  status: "CAPTURED",
+  method: "card",
+  order: { amount: 250, currency: "EGP" },
+  totalCapturedAmount: 250,
+  totalRefundedAmount: 0,
+  date: "2026-10-21T09:27:01.007Z",
+  lastModifiedDate: "2026-10-21T09:46:07.381Z",
+  transactions: [],
+  ...over,
+});
 
+/** Stateful like the real sandbox: a refund raises the order's totalRefundedAmount. */
 function routes(): MockRoute[] {
+  let refunded = 0;
   return [
-    { method: "GET", url: /\/v3\/orders\/[^/]+$/, respond: { body: orderResponse() } },
+    {
+      method: "GET",
+      url: /\/v3\/payment\/orders/,
+      respond: () => ({
+        body: {
+          status: "SUCCESS",
+          data: [
+            kashierOrder({ merchantOrderId: "order_88410" }),
+            kashierOrder({ totalRefundedAmount: refunded }),
+          ],
+        },
+      }),
+    },
     {
       method: "PUT",
-      url: /\/v3\/orders\/.+\/$/,
-      respond: { body: { status: "SUCCESS", response: { status: "SUCCESS", transactionId: "TX-REF-1" } } },
+      url: /\/v3\/orders\/[^/]+$/,
+      respond: (req) => {
+        const amount =
+          (req.json as { transaction?: { amount?: number } }).transaction?.amount ?? 250 - refunded;
+        refunded += amount;
+        return {
+          body: {
+            status: "SUCCESS",
+            response: {
+              result: "SUCCESS",
+              status: "SUCCESS",
+              transactionId: "TX-REF-1",
+              amount,
+              currency: "EGP",
+            },
+          },
+        };
+      },
     },
     {
       method: "POST",
@@ -86,7 +129,7 @@ runConformanceTests("kashier", () => {
         API_KEY,
       ),
     },
-    lookup: { providerPaymentId: "ko_6527a1b2c3" },
+    lookup: { reference: "order_8841" },
     refund: { providerPaymentId: "ko_6527a1b2c3", amount: { value: 10000, currency: "EGP" } },
     fetchCalls: () => calls,
   };
@@ -102,8 +145,13 @@ describe("kashier config", () => {
     expect(custom.capabilities.currencies).toEqual(["EGP"]);
   });
 
-  it("marks server APIs beta with a secret key, unsupported without", () => {
-    expect(kashier(options).capabilities.refund).toBe("beta");
+  it("supports lookups and refunds with a secret key, not without", () => {
+    expect(kashier(options).capabilities).toMatchObject({
+      getPayment: "supported",
+      refund: "supported",
+      partialRefund: "supported",
+      cancel: "supported",
+    });
     expect(kashier({ ...options, secretKey: undefined }).capabilities.refund).toBe("unsupported");
   });
 });
@@ -233,12 +281,93 @@ describe("kashier sessions flow (beta)", () => {
 });
 
 describe("kashier getPayment / refund (beta)", () => {
-  it("gets an order", async () => {
+  it("looks an order up by reference and picks the exact match from the partial search", async () => {
     const { sarraf, fetch } = setup();
     const p = await sarraf.payments.get({ provider: "kashier", reference: "order_8841" });
-    expect(p.status).toBe("succeeded");
-    expect(fetch.calls[0]!.url.pathname).toBe("/v3/orders/order_8841");
+    expect(p).toMatchObject({
+      status: "succeeded",
+      providerPaymentId: "ko_6527a1b2c3",
+      reference: "order_8841",
+      amount: { value: 25000, currency: "EGP" },
+      amountRefunded: { value: 0, currency: "EGP" },
+      method: "card",
+    });
+    const url = fetch.calls[0]!.url;
+    expect(url.origin + url.pathname).toBe("https://test-api.kashier.io/v3/payment/orders");
+    expect(url.searchParams.get("search")).toBe("order_8841");
     expect(fetch.calls[0]!.headers.authorization).toBe("sec_1");
+  });
+
+  it("rejects lookups by Kashier's order id: the search only matches your reference", async () => {
+    const { sarraf } = setup();
+    await expect(
+      sarraf.payments.get({ provider: "kashier", providerPaymentId: "ko_6527a1b2c3" }),
+    ).rejects.toMatchObject({ code: "INVALID_REQUEST" });
+  });
+
+  it("reads the real sandbox order after a partial refund as partially_refunded", async () => {
+    const f = loadFixture("kashier", "sandbox-order-partially-refunded");
+    const exchange = (f as unknown as { exchanges: { responseBody: unknown }[] }).exchanges[0];
+    const { sarraf } = setup({}, [
+      { method: "GET", url: /orders/, respond: { body: exchange?.responseBody } },
+    ]);
+    const p = await sarraf.payments.get({ provider: "kashier", reference: "sarraf_fx_1792578275748" });
+    expect(p).toMatchObject({
+      status: "partially_refunded",
+      providerPaymentId: "c61bcb59-8cac-4007-a8c7-9d5b5c9680f2",
+      amount: { value: 1000, currency: "EGP" },
+      amountRefunded: { value: 300, currency: "EGP" },
+    });
+  });
+
+  it.each([
+    ["CAPTURED", 250, "refunded"],
+    ["REFUNDED", 0, "refunded"],
+    ["PARTIALLY_REFUNDED", 0, "partially_refunded"],
+    ["AUTHORIZED", 0, "requires_action"],
+    ["INITIATED", 0, "pending"],
+    ["FAILED", 0, "failed"],
+    ["REJECTED", 0, "failed"],
+    ["CANCELLED", 0, "canceled"],
+    ["REVERSED", 0, "canceled"],
+    ["EXPIRED", 0, "expired"],
+  ])("maps order status %s (refunded %d) to %s", async (status, refunded, expected) => {
+    const order = kashierOrder({
+      status,
+      totalRefundedAmount: refunded,
+      transactions: [{ transactionResponseCode: "05", transactionResponseMessage: { en: "Do not honor" } }],
+    });
+    const { sarraf } = setup({}, [{ method: "GET", url: /orders/, respond: { body: { data: [order] } } }]);
+    const p = await sarraf.payments.get({ provider: "kashier", reference: "order_8841" });
+    expect(p.status).toBe(expected);
+    if (expected === "failed") {
+      expect(p.failure).toEqual({ code: "PAYMENT_DECLINED", message: "Do not honor", providerCode: "05" });
+    }
+  });
+
+  it("falls back to captured / original amounts and defaults", async () => {
+    const order = kashierOrder({
+      order: undefined,
+      totalCapturedAmount: undefined,
+      originalAmount: "12.50",
+      status: undefined,
+    });
+    const { sarraf } = setup({}, [{ method: "GET", url: /orders/, respond: { body: { data: [order] } } }]);
+    const p = await sarraf.payments.get({ provider: "kashier", reference: "order_8841" });
+    expect(p).toMatchObject({ status: "pending", amount: { value: 1250, currency: "EGP" } });
+    const bare = setup({}, [
+      {
+        method: "GET",
+        url: /orders/,
+        respond: { body: { data: [{ merchantOrderId: "order_8841", status: "FAILED" }] } },
+      },
+    ]);
+    const b = await bare.sarraf.payments.get({ provider: "kashier", reference: "order_8841" });
+    expect(b).toMatchObject({
+      status: "failed",
+      providerPaymentId: "",
+      failure: { message: "Payment failed" },
+    });
   });
 
   it("reports NOT_FOUND and provider messages", async () => {
@@ -246,6 +375,12 @@ describe("kashier getPayment / refund (beta)", () => {
     await expect(empty.sarraf.payments.get({ provider: "kashier", reference: "x" })).rejects.toMatchObject({
       code: "NOT_FOUND",
     });
+    const other = setup({}, [
+      { method: "GET", url: /orders/, respond: { body: { data: [kashierOrder()] } } },
+    ]);
+    await expect(
+      other.sarraf.payments.get({ provider: "kashier", reference: "order_884" }),
+    ).rejects.toMatchObject({ code: "NOT_FOUND" });
     const err = setup({}, [
       { method: "GET", url: /orders/, respond: { status: 400, body: { message: "bad order" } } },
     ]);
@@ -277,17 +412,33 @@ describe("kashier getPayment / refund (beta)", () => {
     expect(r).toMatchObject({ status: "succeeded", providerRefundId: "TX-REF-1" });
   });
 
-  it("refunds the remaining amount and reports pending / failed", async () => {
-    const r = routes();
-    r[0] = {
-      method: "GET",
-      url: /\/v3\/orders\/[^/]+$/,
-      respond: { body: orderResponse({ totalRefundedAmount: 50 }) },
-    };
-    const { sarraf, fetch } = setup({}, r);
-    const refund = await sarraf.refunds.create({ provider: "kashier", providerPaymentId: "ko_1" });
-    expect(fetch.calls[1]!.json).toMatchObject({ transaction: { amount: 200 }, reason: "Refund" });
+  it("refunds the remaining amount, read from the order lookup", async () => {
+    const { sarraf, fetch } = setup();
+    const ref = { provider: "kashier" as const, providerPaymentId: "ko_6527a1b2c3", reference: "order_8841" };
+    await sarraf.refunds.create({ ...ref, amount: { value: 5000, currency: "EGP" } });
+    const refund = await sarraf.refunds.create(ref);
+    // Kashier answers HTTP 500 to a refund without an amount, so the remainder is always sent.
+    expect(fetch.calls.map((c) => c.method)).toEqual(["PUT", "GET", "PUT"]);
+    expect(fetch.calls[2]!.json).toEqual({
+      apiOperation: "REFUND",
+      reason: "Refund",
+      transaction: { amount: 200 },
+    });
     expect(refund.amount).toEqual({ value: 20000, currency: "EGP" });
+    await expect(sarraf.refunds.create(ref)).rejects.toThrow(/already fully refunded/);
+  });
+
+  it("explains what a full refund needs", async () => {
+    const { sarraf } = setup();
+    await expect(sarraf.refunds.create({ provider: "kashier", providerPaymentId: "ko_1" })).rejects.toThrow(
+      /needs `reference`/,
+    );
+    await expect(
+      sarraf.refunds.create({ provider: "kashier", providerPaymentId: "ko_other", reference: "order_8841" }),
+    ).rejects.toThrow(/belongs to order ko_6527a1b2c3/);
+  });
+
+  it("reports pending / failed refunds", async () => {
     const pending = setup({}, [{ method: "PUT", url: /orders/, respond: { body: { status: "PENDING" } } }]);
     const p = await pending.sarraf.refunds.create({
       provider: "kashier",
@@ -310,11 +461,147 @@ describe("kashier getPayment / refund (beta)", () => {
     ).toBe("failed");
   });
 
-  it("requires allowBeta for refunds", async () => {
+  it("replays the real sandbox void: lookup, VOID of the pay transaction, lookup", async () => {
+    const f = loadFixture("kashier", "sandbox-void-succeeded");
+    const [before, put, after] = (f as unknown as { exchanges: { responseBody: unknown }[] }).exchanges;
+    let lookups = 0;
+    const { sarraf, fetch } = setup({}, [
+      {
+        method: "GET",
+        url: /orders/,
+        respond: () => ({ body: (lookups++ === 0 ? before : after)?.responseBody }),
+      },
+      { method: "PUT", url: /orders/, respond: { body: put?.responseBody } },
+    ]);
+    const p = await sarraf.payments.cancel({ provider: "kashier", reference: "sarraf_fx_1792580710302" });
+    expect(fetch.calls.map((c) => c.method)).toEqual(["GET", "PUT", "GET"]);
+    expect(fetch.calls[1]!.url.pathname).toBe("/v3/orders/0e8c7ec8-b167-4de5-9af2-9437fa1d775c");
+    expect(fetch.calls[1]!.json).toEqual({
+      apiOperation: "VOID",
+      transaction: { targetTransactionId: "TX-3004573823", amount: 10 },
+    });
+    expect(p).toMatchObject({ status: "canceled", amount: { value: 1000, currency: "EGP" } });
+  });
+
+  it("refuses to void without a pay transaction, for another order, or when Kashier declines", async () => {
+    const noPay = setup({}, [
+      { method: "GET", url: /orders/, respond: { body: { data: [kashierOrder({ transactions: [] })] } } },
+    ]);
+    await expect(
+      noPay.sarraf.payments.cancel({ provider: "kashier", reference: "order_8841" }),
+    ).rejects.toThrow(/no successful pay to void/);
+    const paid = kashierOrder({
+      transactions: [
+        { operation: "pay", status: "FAILURE", transactionId: "TX-1" },
+        { operation: "pay", status: "SUCCESS", transactionId: "TX-2" },
+      ],
+    });
+    const other = setup({}, [{ method: "GET", url: /orders/, respond: { body: { data: [paid] } } }]);
+    await expect(
+      other.sarraf.payments.cancel({
+        provider: "kashier",
+        reference: "order_8841",
+        providerPaymentId: "ko_x",
+      }),
+    ).rejects.toThrow(/belongs to order ko_6527a1b2c3/);
+    const declined = setup({}, [
+      { method: "GET", url: /orders/, respond: { body: { data: [paid] } } },
+      {
+        method: "PUT",
+        url: /orders/,
+        respond: { body: { status: "FAILURE", response: { result: "FAILURE" } } },
+      },
+    ]);
+    await expect(
+      declined.sarraf.payments.cancel({ provider: "kashier", reference: "order_8841" }),
+    ).rejects.toMatchObject({ code: "PAYMENT_DECLINED" });
+    expect(declined.fetch.calls[1]!.json).toMatchObject({ transaction: { targetTransactionId: "TX-2" } });
+    const noResult = setup({}, [
+      { method: "GET", url: /orders/, respond: { body: { data: [paid] } } },
+      { method: "PUT", url: /orders/, respond: { body: {} } },
+    ]);
+    await expect(
+      noResult.sarraf.payments.cancel({ provider: "kashier", reference: "order_8841" }),
+    ).rejects.toThrow(/no result/);
+  });
+
+  it("parses the real void webhook as payment canceled", async () => {
+    const f = loadFixture("kashier", "sandbox-webhook-void");
+    const { sarraf } = setup({ apiKey: f.secret! });
+    const e = await sarraf.webhooks.verifyAndParse("kashier", f.webhook!);
+    expect(e.type).toBe("payment.canceled");
+    expect(e.payment).toMatchObject({ status: "canceled", reference: "sarraf_fx_1792580710302" });
+  });
+
+  it("refunds without allowBeta", async () => {
     const { sarraf } = setup({}, routes(), { allowBeta: false });
-    await expect(sarraf.refunds.create({ provider: "kashier", providerPaymentId: "ko_1" })).rejects.toThrow(
-      /Kashier refund is beta/,
-    );
+    const r = await sarraf.refunds.create({
+      provider: "kashier",
+      providerPaymentId: "ko_6527a1b2c3",
+      amount: { value: 100, currency: "EGP" },
+    });
+    expect(r.status).toBe("succeeded");
+  });
+
+  it("replays the real sandbox full refund: lookup for the remainder, then refund 7.00", async () => {
+    const f = loadFixture("kashier", "sandbox-refund-full-succeeded");
+    const [lookup, put] = (f as unknown as { exchanges: { responseBody: unknown }[] }).exchanges;
+    const { sarraf, fetch } = setup({}, [
+      { method: "GET", url: /orders/, respond: { body: lookup?.responseBody } },
+      { method: "PUT", url: /orders/, respond: { body: put?.responseBody } },
+    ]);
+    const r = await sarraf.refunds.create({
+      provider: "kashier",
+      providerPaymentId: "c61bcb59-8cac-4007-a8c7-9d5b5c9680f2",
+      reference: "sarraf_fx_1792578275748",
+    });
+    expect(fetch.calls[1]!.json).toEqual({
+      apiOperation: "REFUND",
+      reason: "Refund",
+      transaction: { amount: 7 },
+    });
+    expect(r).toMatchObject({
+      status: "succeeded",
+      amount: { value: 700, currency: "EGP" },
+      providerRefundId: "TX-3004573807",
+    });
+  });
+
+  it("replays the real full refund of a fresh order: nothing refunded before, refund 10.00", async () => {
+    const f = loadFixture("kashier", "sandbox-refund-full-fresh-succeeded");
+    const [lookup, put] = (f as unknown as { exchanges: { responseBody: unknown }[] }).exchanges;
+    const { sarraf, fetch } = setup({}, [
+      { method: "GET", url: /orders/, respond: { body: lookup?.responseBody } },
+      { method: "PUT", url: /orders/, respond: { body: put?.responseBody } },
+    ]);
+    const r = await sarraf.refunds.create({
+      provider: "kashier",
+      providerPaymentId: "60713b61-70c8-42aa-a15a-38bd453f17fa",
+      reference: "sarraf_fx_1792580708269",
+    });
+    expect(fetch.calls[1]!.json).toEqual({
+      apiOperation: "REFUND",
+      reason: "Refund",
+      transaction: { amount: 10 },
+    });
+    expect(r).toMatchObject({ status: "succeeded", amount: { value: 1000, currency: "EGP" } });
+  });
+
+  it("parses the real full refund webhook as refunded, using the real order lookup", async () => {
+    const f = loadFixture("kashier", "sandbox-webhook-refund-full");
+    const order = loadFixture("kashier", "sandbox-order-refunded");
+    const lookup = (order as unknown as { exchanges: { responseBody: unknown }[] }).exchanges[0];
+    const { sarraf } = setup({ apiKey: f.secret! }, [
+      { method: "GET", url: /orders/, respond: { body: lookup?.responseBody } },
+    ]);
+    const e = await sarraf.webhooks.verifyAndParse("kashier", f.webhook!);
+    expect(e.type).toBe("refund.succeeded");
+    expect(e.id).toBe("kashier:TX-3004573807:refund:refunded");
+    expect(e.payment).toMatchObject({
+      status: "refunded",
+      amount: { value: 1000, currency: "EGP" },
+      amountRefunded: { value: 1000, currency: "EGP" },
+    });
   });
 });
 
@@ -327,13 +614,111 @@ describe("kashier webhooks", () => {
       expect(e.type).toBe("payment.succeeded");
     }
     const f = loadFixture("kashier", "webhook-refund-partial");
-    const { sarraf } = setup({ apiKey: f.secret! });
+    // Refund events take their totals from the order lookup.
+    const { sarraf } = setup({ apiKey: f.secret! }, [
+      {
+        method: "GET",
+        url: /orders/,
+        respond: { body: { data: [kashierOrder({ totalRefundedAmount: 100 })] } },
+      },
+    ]);
     const e = await sarraf.webhooks.verifyAndParse("kashier", f.webhook!);
     expect(e.type).toBe("refund.succeeded");
     expect(e.payment.status).toBe("partially_refunded");
     expect(e.payment.amountRefunded.value).toBe(10000);
     expect(e.payment.amount.value).toBe(25000);
     expect(e.id).toBe("kashier:TX-2491820499:refund:partially_refunded");
+  });
+
+  it("parses a real sandbox payment webhook and its redirect", async () => {
+    const f = loadFixture("kashier", "sandbox-webhook-succeeded-1");
+    const { sarraf } = setup({ apiKey: f.secret! });
+    const e = await sarraf.webhooks.verifyAndParse("kashier", f.webhook!);
+    expect(e.type).toBe("payment.succeeded");
+    expect(e.id).toBe("kashier:TX-3004573804:succeeded");
+    expect(e.payment).toMatchObject({
+      status: "succeeded",
+      reference: "sarraf_fx_1792578275748",
+      amount: { value: 1000, currency: "EGP" },
+      method: "card",
+      card: { last4: "1111", brand: "Visa" },
+    });
+
+    const r = loadFixture("kashier", "sandbox-redirect-succeeded");
+    const redirect = await sarraf.redirects.verify("kashier", r.query ?? {});
+    expect(redirect).toMatchObject({
+      authenticated: true,
+      status: "succeeded",
+      reference: "sarraf_fx_1792580708269",
+    });
+  });
+
+  it("reports a real sandbox refund as succeeded although the order status is PARTIALLY_REFUNDED", async () => {
+    const f = loadFixture<{ status: string }>("kashier", "sandbox-refund-partial-succeeded");
+    const exchange = (f as unknown as { exchanges: { responseBody: unknown }[] }).exchanges[0];
+    const { sarraf } = setup({}, [
+      { method: "PUT", url: /orders/, respond: { body: exchange?.responseBody } },
+    ]);
+    const refund = await sarraf.refunds.create({
+      provider: "kashier",
+      providerPaymentId: "c61bcb59-8cac-4007-a8c7-9d5b5c9680f2",
+      amount: { value: 300, currency: "EGP" },
+    });
+    expect(refund).toMatchObject({ status: "succeeded", providerRefundId: "TX-3004573805" });
+  });
+
+  // Kashier's refund webhook carries only the refund amount (3), not the order total (10). The
+  // adapter reads the totals from the order lookup; both payloads are real sandbox recordings.
+  it("parses a real partial refund webhook as partially_refunded, using the real order lookup", async () => {
+    const f = loadFixture("kashier", "sandbox-webhook-refund-partial");
+    const order = loadFixture("kashier", "sandbox-order-partially-refunded");
+    const lookup = (order as unknown as { exchanges: { responseBody: unknown }[] }).exchanges[0];
+    const { sarraf, fetch } = setup({ apiKey: f.secret! }, [
+      { method: "GET", url: /orders/, respond: { body: lookup?.responseBody } },
+    ]);
+    const e = await sarraf.webhooks.verifyAndParse("kashier", f.webhook!);
+    expect(fetch.calls[0]!.url.searchParams.get("search")).toBe("sarraf_fx_1792578275748");
+    expect(e.type).toBe("refund.succeeded");
+    expect(e.id).toBe("kashier:TX-3004573805:refund:partially_refunded");
+    expect(e.payment).toMatchObject({
+      status: "partially_refunded",
+      amount: { value: 1000, currency: "EGP" },
+      amountRefunded: { value: 300, currency: "EGP" },
+      card: { last4: "1111", brand: "Visa" },
+    });
+  });
+
+  it("warns and keeps the webhook's own view of a refund without a secret key", async () => {
+    const f = loadFixture("kashier", "sandbox-webhook-refund-partial");
+    const fetch = createMockFetch([]);
+    const logger = { ...silentLogger, warn: vi.fn() };
+    const sarraf = new Sarraf({
+      providers: { kashier: kashier({ ...options, apiKey: f.secret!, secretKey: undefined }) },
+      http: { fetch },
+      logger,
+    });
+    const e = await sarraf.webhooks.verifyAndParse("kashier", f.webhook!);
+    expect(e.type).toBe("refund.succeeded");
+    expect(fetch.calls).toHaveLength(0);
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.stringContaining("Configure secretKey"),
+      expect.anything(),
+    );
+  });
+
+  it("does not look the order up for a failed refund", async () => {
+    const fetch = createMockFetch([]);
+    const sarraf = new Sarraf({
+      providers: { kashier: kashier(options) },
+      http: { fetch },
+      logger: silentLogger,
+    });
+    const e = await sarraf.webhooks.verifyAndParse(
+      "kashier",
+      signKashierWebhook("refund", kashierWebhookData({ status: "FAILURE" }), API_KEY),
+    );
+    expect(e.type).toBe("refund.failed");
+    expect(fetch.calls).toHaveLength(0);
   });
 
   it("parses failures with messages and card details", async () => {

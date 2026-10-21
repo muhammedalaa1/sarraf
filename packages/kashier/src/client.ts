@@ -1,7 +1,7 @@
 import { asRecord, type Ctx, ensureOk, SarrafError, str } from "@sarraf/core";
 import type { KashierConfig } from "./config.js";
 
-/** Thin wrappers around Kashier server APIs. ⚠️ All endpoints here are beta until confirmed in the sandbox. */
+/** Thin wrappers around Kashier server APIs. Each one says whether it is confirmed in the sandbox. */
 
 const message = (data: unknown): string | undefined => {
   const d = asRecord(data);
@@ -62,32 +62,43 @@ export async function createSession(
   return res.data as { _id: string; sessionUrl: string };
 }
 
-/** Order lookup. ⚠️ Beta: path to confirm. */
-export async function getOrder(
+/**
+ * Order lookup by your reference: GET {api}/v3/payment/orders?search=<merchantOrderId>. `search` is a
+ * partial, case-insensitive match, so the exact order is picked here; `order_1` must not return
+ * `order_12`. Confirmed against the sandbox (fixtures/kashier/sandbox-order-partially-refunded.json).
+ */
+export async function findOrder(
   cfg: KashierConfig,
   ctx: Ctx,
-  orderId: string,
+  merchantOrderId: string,
 ): Promise<Record<string, unknown>> {
   const res = await ctx.http.request<Record<string, unknown>>({
     method: "GET",
-    url: `${cfg.urls.fep}/v3/orders/${encodeURIComponent(orderId)}`,
+    url: `${cfg.urls.api}/v3/payment/orders`,
+    query: { search: merchantOrderId },
     headers: { authorization: requireSecret(cfg, "order lookup") },
     provider: "kashier",
-    operation: "kashier.getOrder",
+    operation: "kashier.findOrder",
   });
-  ensureOk(res, "kashier", "getOrder", message);
+  ensureOk(res, "kashier", "findOrder", message);
   const body = asRecord(res.data);
-  const response = asRecord(body.response ?? body.data ?? body.body ?? body);
-  if (!str(response.merchantOrderId) && !str(response.kashierOrderId) && !str(response.status)) {
-    throw new SarrafError("NOT_FOUND", `kashier: order "${orderId}" not found`, {
+  const orders = Array.isArray(body.data) ? body.data.map(asRecord) : [];
+  const order = orders.find((o) => str(o.merchantOrderId) === merchantOrderId);
+  if (!order) {
+    throw new SarrafError("NOT_FOUND", `kashier: no order with merchantOrderId "${merchantOrderId}"`, {
       provider: "kashier",
-      raw: body,
     });
   }
-  return response;
+  return order;
 }
 
-/** Refund on an order. ⚠️ Beta: body shape from community sources (apiOperation REFUND). */
+/**
+ * Refund on an order: PUT /v3/orders/:orderId with apiOperation REFUND. Confirmed against the
+ * sandbox (fixtures/kashier/sandbox-refund-partial-succeeded.json). Always send an amount: the docs
+ * call it optional, but the sandbox answers HTTP 500 without one, also on a fresh order: with
+ * `transaction: {}`, with no `transaction`, and with only `transaction.targetTransactionId`
+ * (sandbox-refund-full-no-amount.json, sandbox-refund-full-target-transaction.json).
+ */
 export async function refundOrder(
   cfg: KashierConfig,
   ctx: Ctx,
@@ -97,7 +108,7 @@ export async function refundOrder(
 ): Promise<Record<string, unknown>> {
   const res = await ctx.http.request<Record<string, unknown>>({
     method: "PUT",
-    url: `${cfg.urls.fep}/v3/orders/${encodeURIComponent(orderId)}/`,
+    url: `${cfg.urls.fep}/v3/orders/${encodeURIComponent(orderId)}`,
     headers: { authorization: requireSecret(cfg, "refunds") },
     body: { apiOperation: "REFUND", reason: reason ?? "Refund", transaction: { amount: Number(amount) } },
     moneyMoving: true,
@@ -105,5 +116,31 @@ export async function refundOrder(
     operation: "kashier.refund",
   });
   ensureOk(res, "kashier", "refund", message);
+  return asRecord(res.data);
+}
+
+/**
+ * Void a transaction on an order: PUT /v3/orders/:orderId with apiOperation VOID. Confirmed in the
+ * sandbox (fixtures/kashier/sandbox-void-succeeded.json). The docs
+ * call `transaction` optional, but refunds without an amount fail with HTTP 500 in the sandbox, so
+ * the target transaction and the amount are always sent. Pay transactions void only on the same day.
+ */
+export async function voidOrder(
+  cfg: KashierConfig,
+  ctx: Ctx,
+  orderId: string,
+  targetTransactionId: string,
+  amount: string,
+): Promise<Record<string, unknown>> {
+  const res = await ctx.http.request<Record<string, unknown>>({
+    method: "PUT",
+    url: `${cfg.urls.fep}/v3/orders/${encodeURIComponent(orderId)}`,
+    headers: { authorization: requireSecret(cfg, "voids") },
+    body: { apiOperation: "VOID", transaction: { targetTransactionId, amount: Number(amount) } },
+    moneyMoving: true,
+    provider: "kashier",
+    operation: "kashier.void",
+  });
+  ensureOk(res, "kashier", "void", message);
   return asRecord(res.data);
 }
