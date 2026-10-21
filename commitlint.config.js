@@ -18,6 +18,8 @@ export default {
         "kashier",
         "fawry",
         "express",
+        "next",
+        "nestjs",
         "testing",
         // apps and tooling
         "dashboard",

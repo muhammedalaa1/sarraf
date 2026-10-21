@@ -14,6 +14,12 @@
 "pkg: express":
   - changed-files:
       - any-glob-to-any-file: packages/express/**
+"pkg: next":
+  - changed-files:
+      - any-glob-to-any-file: packages/next/**
+"pkg: nestjs":
+  - changed-files:
+      - any-glob-to-any-file: packages/nestjs/**
 "pkg: testing":
   - changed-files:
       - any-glob-to-any-file: packages/testing/**
