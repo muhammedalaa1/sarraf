@@ -1,14 +1,20 @@
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 
+// The public URL: SITE_URL (e.g. a custom domain), else the Vercel production URL, else sarraf.dev.
+const vercelUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+const site = process.env.SITE_URL ?? (vercelUrl ? `https://${vercelUrl}` : "https://sarraf.dev");
+// The GitHub repo for the header link and "Edit page" links (same org as package.json `repository`).
+const repo = "https://github.com/sarraf-dev/sarraf";
+
 export default defineConfig({
-  site: "https://sarraf.dev",
+  site,
   integrations: [
     starlight({
       title: "Sarraf",
       description: "One payment API for Egypt and the Middle East: Paymob, Kashier, Fawry.",
-      social: [{ icon: "github", label: "GitHub", href: "https://github.com/sarraf-dev/sarraf" }],
-      editLink: { baseUrl: "https://github.com/sarraf-dev/sarraf/edit/main/apps/docs/" },
+      social: [{ icon: "github", label: "GitHub", href: repo }],
+      editLink: { baseUrl: `${repo}/edit/main/apps/docs/` },
       sidebar: [
         {
           label: "Getting started",
