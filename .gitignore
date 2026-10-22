@@ -11,5 +11,8 @@ next-env.d.ts
 !.env.*.example
 !.env.example
 fixtures/**/raw/
+# Webhooks auto-captured by `record-fixtures webhook` (sandbox-webhook-<status>-<n>.json).
+# To keep one, rename it to a scenario name (e.g. sandbox-webhook-void.json) or `git add -f` it.
+fixtures/*/sandbox-webhook-*-[0-9]*.json
 apps/dashboard/data/
 *.tsbuildinfo
