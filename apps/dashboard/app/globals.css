@@ -195,3 +195,43 @@ th {
   font-size: 13px;
   word-break: break-all;
 }
+button.danger {
+  background: var(--bad);
+  color: var(--accent-text);
+}
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.actions button,
+.actions input {
+  padding: 6px 10px;
+  font-size: 13px;
+}
+.actions input {
+  width: 80px;
+}
+.history {
+  margin: 4px 0 0;
+  padding-left: 16px;
+  font-size: 13px;
+}
+.status-succeeded {
+  color: var(--ok);
+  border-color: var(--ok);
+}
+.status-failed,
+.status-canceled,
+.status-expired {
+  color: var(--bad);
+  border-color: var(--bad);
+}

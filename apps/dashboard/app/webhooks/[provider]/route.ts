@@ -1,5 +1,6 @@
 import type { ProviderId } from "@sarraf/core";
 import { inbox } from "../../../lib/inbox";
+import { orders, withoutRaw } from "../../../lib/orders";
 import { clientKey, limits, tooMany } from "../../../lib/rate-limit";
 import { getSarraf } from "../../../lib/sarraf";
 import { captureWebhook } from "../../../lib/webhooks";
@@ -26,6 +27,16 @@ export async function POST(req: Request, { params }: { params: Promise<{ provide
     query: Object.fromEntries(new URL(req.url).searchParams),
     rawBody,
   });
+  const event = entry.event;
+  if (event) {
+    // Keep the operations page in step with what the provider reports.
+    orders.upsert(
+      event.provider,
+      event.payment.reference,
+      { payment: withoutRaw(event.payment) },
+      { action: "webhook", ok: true, summary: `${event.type} · ${event.payment.status}` },
+    );
+  }
   // Always 200 so providers don't retry forever while you debug; the inbox shows the result.
   return Response.json({ received: true, id: entry.id, valid: entry.inspection.valid });
 }

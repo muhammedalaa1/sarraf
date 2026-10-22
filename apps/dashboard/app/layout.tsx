@@ -25,6 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <nav>
             <strong>Sarraf Sandbox</strong>
             <a href="/">Playground</a>
+            <a href="/operations">Operations</a>
             <a href="/inbox">Webhook inbox</a>
             <a href="/status">Status explorer</a>
             <a href="/capabilities">Capabilities</a>

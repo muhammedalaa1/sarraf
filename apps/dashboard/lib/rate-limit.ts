@@ -30,9 +30,13 @@ export function clientKey(req: Request): string {
   return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "local";
 }
 
-const g = globalThis as unknown as { __limits?: { checkout: RateLimiter; webhook: RateLimiter } };
+const g = globalThis as unknown as {
+  __limits?: { checkout: RateLimiter; webhook: RateLimiter; actions?: RateLimiter };
+};
 g.__limits ??= { checkout: new RateLimiter(20, 60_000), webhook: new RateLimiter(120, 60_000) };
-export const limits = g.__limits;
+// Added separately so a dev server that already holds __limits (hot reload) picks it up.
+g.__limits.actions ??= new RateLimiter(30, 60_000);
+export const limits = g.__limits as Required<NonNullable<typeof g.__limits>>;
 
 export function tooMany() {
   return Response.json({ error: "RATE_LIMITED" }, { status: 429, headers: { "retry-after": "60" } });
