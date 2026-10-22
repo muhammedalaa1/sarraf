@@ -9,7 +9,7 @@ sidebar:
 
 ```bash
 cp .env.sandbox.example .env.sandbox     # sandbox keys only
-pnpm --filter @sarraf/dashboard dev      # http://localhost:4545
+pnpm --filter @sarrafjs/dashboard dev      # http://localhost:4545
 cloudflared tunnel --url http://localhost:4545
 ```
 

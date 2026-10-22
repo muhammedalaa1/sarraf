@@ -1,4 +1,4 @@
-import type { FetchLike } from "@sarraf/core";
+import type { FetchLike } from "@sarrafjs/core";
 
 export interface MockRequest {
   method: string;

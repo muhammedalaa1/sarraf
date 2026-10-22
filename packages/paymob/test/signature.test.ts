@@ -1,4 +1,4 @@
-import { loadFixture } from "@sarraf/testing";
+import { loadFixture } from "@sarrafjs/testing";
 import { describe, expect, it } from "vitest";
 import {
   PAYMOB_REDIRECT_HMAC_FIELDS,

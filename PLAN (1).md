@@ -24,9 +24,9 @@ Provider APIs change. **The sandbox is the source of truth.** Record what it act
 |---|---|
 | Week 1: core | ✅ Done |
 | Week 2–4: Paymob, Kashier, Fawry adapters | ✅ Implemented, conformance suite passing. **Kashier confirmed against the real sandbox (2026-10-21):** hash, redirect, webhooks, order lookup, partial and full refunds, void. Paymob and Fawry have no sandbox credentials yet; their ⚠️ items ship as `"beta"` / `verified: false` |
-| Week 5: DX & docs | ✅ `@sarraf/express`, three examples, docs site, dashboard inbox + replay |
+| Week 5: DX & docs | ✅ `@sarrafjs/express`, three examples, docs site, dashboard inbox + replay |
 | Week 6: launch | ⏳ Not started: v1.0.0 publish, README GIF, launch posts |
-| v1.1: framework helpers | ✅ `@sarraf/next` (`webhookRoute`, `verifyRedirect`) and `@sarraf/nestjs` (`SarrafModule`, `@OnSarrafEvent`); examples use them |
+| v1.1: framework helpers | ✅ `@sarrafjs/next` (`webhookRoute`, `verifyRedirect`) and `@sarrafjs/nestjs` (`SarrafModule`, `@OnSarrafEvent`); examples use them |
 | Repo hygiene | ✅ Node 22+, zod 4, Express 5, Conventional Commits (commit-msg hook + PR title check), auto PR labels, Dependabot |
 
 Next: Paymob and Fawry sandbox credentials and fixtures, then launch prep (week 6).
@@ -38,10 +38,10 @@ Next: Paymob and Fawry sandbox credentials and fixtures, then launch prep (week 
 An **open-source TypeScript SDK for Node.js** that lets a backend accept payments through **Paymob, Kashier and Fawry** (v1), and later Tap, HyperPay, Stripe and others, through **one interface**:
 
 ```ts
-import { Sarraf } from "@sarraf/core";
-import { paymob } from "@sarraf/paymob";
-import { kashier } from "@sarraf/kashier";
-import { fawry } from "@sarraf/fawry";
+import { Sarraf } from "@sarrafjs/core";
+import { paymob } from "@sarrafjs/paymob";
+import { kashier } from "@sarrafjs/kashier";
+import { fawry } from "@sarrafjs/fawry";
 
 const pay = new Sarraf({
   providers: {
@@ -102,7 +102,7 @@ These are **design constraints**:
 
 1. **SDK, not a payment service.** Merchants use their **own** provider accounts and keys. Money goes customer → provider → merchant. Sarraf never holds funds.
 2. **No card data, ever.** Only hosted pages, iframes, redirects, tokens and reference codes. No Sarraf API accepts a card number or CVV.
-3. **Server-side only.** `@sarraf/core` throws a clear error if imported in a browser. Public keys for client widgets are exposed through explicit helpers only.
+3. **Server-side only.** `@sarrafjs/core` throws a clear error if imported in a browser. Public keys for client widgets are exposed through explicit helpers only.
 4. **Not affiliated** with any provider: state it in README and docs; no provider logos as branding.
 5. **Apache-2.0 license** (patent grant + no-warranty clause).
 6. **Sandbox-only dashboard**: refuses live keys, labels every screen "Sandbox".
@@ -117,11 +117,11 @@ These are **design constraints**:
 ```mermaid
 flowchart TB
   subgraph Merchant backend
-    APP[Merchant code] --> CORE["@sarraf/core<br/>Sarraf client"]
+    APP[Merchant code] --> CORE["@sarrafjs/core<br/>Sarraf client"]
     CORE --> REG[Provider registry]
-    REG --> PM["@sarraf/paymob"]
-    REG --> KS["@sarraf/kashier"]
-    REG --> FW["@sarraf/fawry"]
+    REG --> PM["@sarrafjs/paymob"]
+    REG --> KS["@sarrafjs/kashier"]
+    REG --> FW["@sarrafjs/fawry"]
     CORE --> WH[Webhook router<br/>verify → parse → normalize]
     CORE --> IDEM[(Idempotency store<br/>memory / Redis / Postgres)]
     PM & KS & FW --> HTTP[HTTP client<br/>timeouts · redaction · hooks]
@@ -155,13 +155,13 @@ adapter/
 sarraf/
 ├─ packages/
 │  ├─ core/        # Sarraf client, types, Money, errors, http, idempotency, webhook router, conformance tests
-│  ├─ paymob/      # @sarraf/paymob
-│  ├─ kashier/     # @sarraf/kashier
-│  ├─ fawry/       # @sarraf/fawry
-│  ├─ testing/     # @sarraf/testing: fake provider, fixture loader, signers to fake valid webhooks in tests
-│  ├─ express/     # @sarraf/express: rawBody middleware + webhook handler
-│  ├─ next/        # @sarraf/next: App Router webhook route + redirect helper
-│  └─ nestjs/      # @sarraf/nestjs: SarrafModule + @OnSarrafEvent()
+│  ├─ paymob/      # @sarrafjs/paymob
+│  ├─ kashier/     # @sarrafjs/kashier
+│  ├─ fawry/       # @sarrafjs/fawry
+│  ├─ testing/     # @sarrafjs/testing: fake provider, fixture loader, signers to fake valid webhooks in tests
+│  ├─ express/     # @sarrafjs/express: rawBody middleware + webhook handler
+│  ├─ next/        # @sarrafjs/next: App Router webhook route + redirect helper
+│  └─ nestjs/      # @sarrafjs/nestjs: SarrafModule + @OnSarrafEvent()
 ├─ apps/
 │  ├─ dashboard/   # Next.js sandbox playground + webhook inbox
 │  └─ docs/        # documentation site
@@ -174,7 +174,7 @@ Tooling: pnpm workspaces, Turborepo, TypeScript (strict), tsup (ESM + CJS), Vite
 
 ---
 
-## 4. Core contracts (`@sarraf/core`)
+## 4. Core contracts (`@sarrafjs/core`)
 
 ### 4.1 Provider interface
 
@@ -347,7 +347,7 @@ Each adapter has a **status mapping table** in `mappers.ts`, exported for docs a
 
 ---
 
-## 7. Paymob adapter (`@sarraf/paymob`)
+## 7. Paymob adapter (`@sarrafjs/paymob`)
 
 ### 7.1 Credentials & config
 | Option | Use | Exposure |
@@ -465,7 +465,7 @@ Checkout ✅ · get payment ✅ · full/partial refund ✅ · void ✅ · webhoo
 
 ---
 
-## 8. Kashier adapter (`@sarraf/kashier`)
+## 8. Kashier adapter (`@sarrafjs/kashier`)
 
 ### 8.1 Credentials & config
 | Option | Use | Exposure |
@@ -555,7 +555,7 @@ export function kashierWebhookSignature(data: Record<string, unknown>, apiKey: s
 
 ---
 
-## 9. Fawry adapter (`@sarraf/fawry`)
+## 9. Fawry adapter (`@sarrafjs/fawry`)
 
 ### 9.1 Credentials & config
 | Option | Use |
@@ -672,7 +672,7 @@ Cancel unpaid reference: a dedicated "cancel payment" API exists ✅ (confirm pa
 - Errors that teach: `CAPABILITY_NOT_SUPPORTED: Kashier refunds are beta in v1 (docs/providers/kashier#refunds)`.
 - `debug: true` logs redacted requests/responses.
 - ESM + CJS, Node 22+, zero runtime deps in core except `zod` (and `query-string` in the Kashier adapter).
-- `@sarraf/express`: `rawBody()` middleware + `webhookHandler(pay, onEvent)`. `@sarraf/next` and `@sarraf/nestjs` helpers (built ahead of v1.0).
+- `@sarrafjs/express`: `rawBody()` middleware + `webhookHandler(pay, onEvent)`. `@sarrafjs/next` and `@sarrafjs/nestjs` helpers (built ahead of v1.0).
 
 ### Sandbox dashboard (`apps/dashboard`, Next.js)
 1. **Playground:** pick provider/method/amount → create checkout → open hosted page or show the Fawry reference code. Request, raw response and normalized object side by side.
@@ -699,11 +699,11 @@ Quick start (5 min) · Concepts (money, statuses, webhooks, idempotency, reconci
 | Week | Goal | Done when |
 |---|---|---|
 | **0 (now)** | Accounts | Sandbox/test accounts requested from **Paymob, Kashier, Fawry** (Fawry may need business onboarding; use your agency) |
-| **1** | Core | Monorepo, types, Money (all currencies), errors, HTTP + redaction, idempotency store, webhook router, `@sarraf/testing`, conformance suite skeleton, dashboard skeleton, CI green |
+| **1** | Core | Monorepo, types, Money (all currencies), errors, HTTP + redaction, idempotency store, webhook router, `@sarrafjs/testing`, conformance suite skeleton, dashboard skeleton, CI green |
 | **2** | **Paymob** (reference adapter) | Intention checkout, HMAC callback verification with real fixtures, auth-token status query, refund/void, status map, passes conformance suite, works in dashboard |
 | **3** | **Kashier** | HPP hash checkout, redirect verification, webhook verification with serialization parity tests, status map; sessions API + refunds marked beta if unconfirmed |
 | **4** | **Fawry** | PAYATFAWRY reference flow end to end, status query, V2 notification verification confirmed against a real notification, refund/cancel; hosted card checkout if time allows |
-| **5** | DX & docs | `@sarraf/express`, three examples, docs site with provider pages and signature recipes, dashboard webhook inbox + replay |
+| **5** | DX & docs | `@sarrafjs/express`, three examples, docs site with provider pages and signature recipes, dashboard webhook inbox + replay |
 | **6** | Launch | v1.0.0 on npm with provenance, public sandbox dashboard, README GIF, launch posts |
 
 **Definition of done for each adapter:** passes the conformance suite, has real sandbox fixtures for success / failure / refund, has a docs page, and every ⚠️ item in its section is either ✅ verified or listed as "beta" in its capabilities.

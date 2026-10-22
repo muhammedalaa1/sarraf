@@ -49,7 +49,7 @@ jobs:
         run: pnpm biome ci .
       - name: Build everything
         run: pnpm turbo run build
-      # After the build: scripts/env.ts imports @sarraf/core from its dist.
+      # After the build: scripts/env.ts imports @sarrafjs/core from its dist.
       - name: Secret scan
         run: pnpm check-secrets
       - name: ESLint (type-aware rules)

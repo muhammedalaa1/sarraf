@@ -1,8 +1,8 @@
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { Sarraf, silentLogger } from "@sarraf/core";
-import { runConformanceTests } from "@sarraf/core/conformance";
+import { Sarraf, silentLogger } from "@sarrafjs/core";
+import { runConformanceTests } from "@sarrafjs/core/conformance";
 import { describe, expect, it } from "vitest";
 import { createMockFetch, fakeProvider, findFixturesDir, listFixtures, loadFixture } from "../src/index.js";
 

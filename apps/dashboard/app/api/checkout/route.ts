@@ -1,5 +1,5 @@
-import { isSarrafError, type PaymentMethod, type ProviderId, toMinor } from "@sarraf/core";
-import type { FakeProvider } from "@sarraf/testing";
+import { isSarrafError, type PaymentMethod, type ProviderId, toMinor } from "@sarrafjs/core";
+import type { FakeProvider } from "@sarrafjs/testing";
 import { clientKey, limits, tooMany } from "../../../lib/rate-limit";
 import { getSarraf } from "../../../lib/sarraf";
 

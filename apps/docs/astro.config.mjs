@@ -5,7 +5,7 @@ import { defineConfig } from "astro/config";
 const vercelUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL;
 const site = process.env.SITE_URL ?? (vercelUrl ? `https://${vercelUrl}` : "https://sarraf.dev");
 // The GitHub repo for the header link and "Edit page" links (same org as package.json `repository`).
-const repo = "https://github.com/sarraf-dev/sarraf";
+const repo = "https://github.com/muhammedalaa1/Sarraf";
 
 export default defineConfig({
   site,

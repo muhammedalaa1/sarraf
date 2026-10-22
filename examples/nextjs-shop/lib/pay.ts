@@ -1,5 +1,5 @@
 import "server-only";
-import type { Money, PaymentStatus, ProviderId, Sarraf, SarrafEvent } from "@sarraf/core";
+import type { Money, PaymentStatus, ProviderId, Sarraf, SarrafEvent } from "@sarrafjs/core";
 import { createPay } from "./pay-factory";
 
 export interface Order {

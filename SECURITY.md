@@ -20,7 +20,7 @@ Out of scope: vulnerabilities in the payment providers themselves (report those 
 
 ## Supported versions
 
-The latest minor version of each `@sarraf/*` package receives security fixes.
+The latest minor version of each `@sarrafjs/*` package receives security fixes.
 
 ## Design safeguards
 

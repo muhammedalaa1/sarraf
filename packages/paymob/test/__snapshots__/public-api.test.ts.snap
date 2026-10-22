@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`public exports > @sarraf/paymob 1`] = `
+exports[`public exports > @sarrafjs/paymob 1`] = `
 [
   "PAYMOB_DOCS_URL",
   "PAYMOB_REDIRECT_HMAC_FIELDS",
@@ -19,7 +19,7 @@ exports[`public exports > @sarraf/paymob 1`] = `
 ]
 `;
 
-exports[`public exports > @sarraf/paymob/testing 1`] = `
+exports[`public exports > @sarrafjs/paymob/testing 1`] = `
 [
   "paymobTransaction",
   "signPaymobCallback",

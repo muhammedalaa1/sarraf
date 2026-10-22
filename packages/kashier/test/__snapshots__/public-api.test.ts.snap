@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`public exports > @sarraf/kashier 1`] = `
+exports[`public exports > @sarrafjs/kashier 1`] = `
 [
   "KASHIER_DOCS_URL",
   "KASHIER_METHOD_NAMES",
@@ -23,7 +23,7 @@ exports[`public exports > @sarraf/kashier 1`] = `
 ]
 `;
 
-exports[`public exports > @sarraf/kashier/testing 1`] = `
+exports[`public exports > @sarrafjs/kashier/testing 1`] = `
 [
   "kashierWebhookData",
   "signKashierRedirect",

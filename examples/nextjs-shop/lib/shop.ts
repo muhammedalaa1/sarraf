@@ -1,4 +1,4 @@
-import { type Money, type PaymentStatus, type ProviderId, toMajorString } from "@sarraf/core";
+import { type Money, type PaymentStatus, type ProviderId, toMajorString } from "@sarrafjs/core";
 
 export const PRODUCT = {
   name: "Field Notes, pack of 3",

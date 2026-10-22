@@ -69,10 +69,10 @@ You don't need to set a webhook URL in the Kashier dashboard: Sarraf sends `webh
 
 ```bash
 # Express
-npm install @sarraf/core @sarraf/kashier @sarraf/express express
+npm install @sarrafjs/core @sarrafjs/kashier @sarrafjs/express express
 
 # Next.js
-npm install @sarraf/core @sarraf/kashier @sarraf/next server-only
+npm install @sarrafjs/core @sarrafjs/kashier @sarrafjs/next server-only
 ```
 
 `.env` (never commit it):
@@ -116,8 +116,8 @@ The client is the same in both frameworks. Create it once, on the server.
 
 ```ts
 // pay.ts (Express) or lib/pay.ts (Next.js)
-import { Sarraf } from "@sarraf/core";
-import { kashier } from "@sarraf/kashier";
+import { Sarraf } from "@sarrafjs/core";
+import { kashier } from "@sarrafjs/kashier";
 
 export const pay = new Sarraf({
   providers: {
@@ -137,7 +137,7 @@ Bad options fail at startup with `CONFIGURATION_INVALID` and a precise message, 
 
 ```ts
 // orders.ts
-import type { SarrafEvent } from "@sarraf/core";
+import type { SarrafEvent } from "@sarrafjs/core";
 import type { Order } from "./types";                 // the Order interface above
 
 export const orders = new Map<string, Order>();       // use your database
@@ -180,8 +180,8 @@ A complete server: checkout, webhooks, thank-you page, refund, void and a reconc
 ```ts
 // server.ts
 import express from "express";
-import { isSarrafError } from "@sarraf/core";
-import { rawBody, webhookHandler } from "@sarraf/express";
+import { isSarrafError } from "@sarrafjs/core";
+import { rawBody, webhookHandler } from "@sarrafjs/express";
 import { pay } from "./pay";
 import { applyEvent, orders } from "./orders";
 
@@ -289,22 +289,22 @@ Note on the order of middleware: if your app already has `app.use(express.json()
 
 ## Next.js (App Router)
 
-The same features, split into Next.js files. `@sarraf/next` provides the webhook route handler and the thank-you page helper.
+The same features, split into Next.js files. `@sarrafjs/next` provides the webhook route handler and the thank-you page helper.
 
 ### Keep Sarraf on the server
 
 ```js
 // next.config.mjs
 export default {
-  serverExternalPackages: ["@sarraf/core", "@sarraf/kashier", "@sarraf/next"],
+  serverExternalPackages: ["@sarrafjs/core", "@sarrafjs/kashier", "@sarrafjs/next"],
 };
 ```
 
 ```ts
 // lib/pay.ts
 import "server-only";                    // build error if a client component imports this
-import { Sarraf } from "@sarraf/core";
-import { kashier } from "@sarraf/kashier";
+import { Sarraf } from "@sarrafjs/core";
+import { kashier } from "@sarrafjs/kashier";
 
 export const pay = new Sarraf({
   providers: {
@@ -318,7 +318,7 @@ export const pay = new Sarraf({
 });
 ```
 
-`@sarraf/core` also throws if it ever runs in a browser: your secret key must never reach client code.
+`@sarrafjs/core` also throws if it ever runs in a browser: your secret key must never reach client code.
 
 ### 1. Checkout: a server action
 
@@ -326,7 +326,7 @@ export const pay = new Sarraf({
 // app/actions.ts
 "use server";
 import { redirect } from "next/navigation";
-import { isSarrafError } from "@sarraf/core";
+import { isSarrafError } from "@sarrafjs/core";
 import { pay } from "@/lib/pay";
 import { orders } from "@/lib/orders";
 
@@ -383,7 +383,7 @@ export default function Shop() {
 
 ```ts
 // app/api/webhooks/[provider]/route.ts
-import { webhookRoute } from "@sarraf/next";
+import { webhookRoute } from "@sarrafjs/next";
 import { pay } from "@/lib/pay";
 import { applyEvent } from "@/lib/orders";
 
@@ -403,7 +403,7 @@ If `applyEvent` only enqueues work, you can answer Kashier first: `webhookRoute(
 ```tsx
 // app/thanks/[provider]/page.tsx
 import { notFound } from "next/navigation";
-import { verifyRedirect } from "@sarraf/next";
+import { verifyRedirect } from "@sarrafjs/next";
 import { pay } from "@/lib/pay";
 import { orders } from "@/lib/orders";
 
@@ -465,7 +465,7 @@ export async function voidOrder(reference: string) {
 
 ```ts
 // app/api/cron/reconcile/route.ts
-import { isSarrafError } from "@sarraf/core";
+import { isSarrafError } from "@sarrafjs/core";
 import { pay } from "@/lib/pay";
 import { orders } from "@/lib/orders";
 
@@ -541,7 +541,7 @@ Every event has `event.id` (stable across retries, use it to dedupe), `event.pay
 Amounts are always integers in minor units: `{ value: 25000, currency: "EGP" }` is 250.00 EGP. Sarraf converts to Kashier's format (`"250.00"`) and back without floating-point math. A bare number (`amount: 250`) does not compile, and a non-integer `value` (`250.5`) is rejected at runtime.
 
 ```ts
-import { toMinor, toMajorString } from "@sarraf/core";
+import { toMinor, toMajorString } from "@sarrafjs/core";
 toMinor("250.00", "EGP");      // 25000
 toMajorString(25000, "EGP");   // "250.00"
 ```
@@ -551,8 +551,8 @@ toMajorString(25000, "EGP");   // "250.00"
 **Without Kashier at all.** `fakeProvider` behaves like an adapter and signs its own webhooks:
 
 ```ts
-import { Sarraf } from "@sarraf/core";
-import { fakeProvider } from "@sarraf/testing";
+import { Sarraf } from "@sarrafjs/core";
+import { fakeProvider } from "@sarrafjs/testing";
 
 const kashier = fakeProvider("kashier");
 const pay = new Sarraf({ providers: { kashier } });
@@ -565,7 +565,7 @@ await applyEvent(event);   // your code, tested end to end
 **With Kashier's real payload format.** Build a correctly signed Kashier webhook and post it to your route:
 
 ```ts
-import { kashierWebhookData, signKashierWebhook } from "@sarraf/kashier/testing";
+import { kashierWebhookData, signKashierWebhook } from "@sarrafjs/kashier/testing";
 
 const req = signKashierWebhook("pay", kashierWebhookData({ merchantOrderId: "o1" }), process.env.KASHIER_API_KEY!);
 // req.rawBody and req.headers["x-kashier-signature"]: send them to /api/webhooks/kashier
@@ -617,4 +617,4 @@ Those methods are still beta for Kashier. Pass `allowBeta: true` to `new Sarraf(
 - [Kashier provider reference](/providers/kashier/): signature recipes, status mapping, what was confirmed in the sandbox
 - [Express guide](/guides/express/) · [Next.js guide](/guides/nextjs/)
 - [Webhooks](/concepts/webhooks/) · [Reconciliation](/concepts/reconciliation/) · [Idempotency](/concepts/idempotency/)
-- Runnable examples: [`examples/express-shop`](https://github.com/sarraf-dev/sarraf/tree/main/examples/express-shop), [`examples/nextjs-shop`](https://github.com/sarraf-dev/sarraf/tree/main/examples/nextjs-shop)
+- Runnable examples: [`examples/express-shop`](https://github.com/muhammedalaa1/Sarraf/tree/main/examples/express-shop), [`examples/nextjs-shop`](https://github.com/muhammedalaa1/Sarraf/tree/main/examples/nextjs-shop)

@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`public exports > @sarraf/core 1`] = `
+exports[`public exports > @sarrafjs/core 1`] = `
 [
   "CURRENCIES",
   "CURRENCY_EXPONENT",
@@ -59,7 +59,7 @@ exports[`public exports > @sarraf/core 1`] = `
 ]
 `;
 
-exports[`public exports > @sarraf/core/redis 1`] = `
+exports[`public exports > @sarrafjs/core/redis 1`] = `
 [
   "RedisStore",
 ]

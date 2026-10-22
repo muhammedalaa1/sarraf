@@ -1,4 +1,4 @@
-import { webhookRoute } from "@sarraf/next";
+import { webhookRoute } from "@sarrafjs/next";
 import { applyEvent, getPay } from "../../../../lib/pay";
 
 export const runtime = "nodejs";

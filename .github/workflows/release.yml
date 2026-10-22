@@ -14,7 +14,7 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
-    if: github.repository_owner == 'sarraf-dev'
+    if: github.repository_owner == 'muhammedalaa1'
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4

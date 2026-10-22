@@ -15,7 +15,7 @@ The default store is in memory. With more than one server instance, use Redis:
 
 ```ts
 import Redis from "ioredis";
-import { RedisStore } from "@sarraf/core/redis";
+import { RedisStore } from "@sarrafjs/core/redis";
 
 new Sarraf({ providers, idempotency: new RedisStore(new Redis(process.env.REDIS_URL)) });
 ```

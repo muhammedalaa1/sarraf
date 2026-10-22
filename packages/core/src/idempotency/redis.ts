@@ -12,7 +12,7 @@ export interface RedisLike {
  *
  * ```ts
  * import Redis from "ioredis";
- * import { RedisStore } from "@sarraf/core/redis";
+ * import { RedisStore } from "@sarrafjs/core/redis";
  * const idempotency = new RedisStore(new Redis(process.env.REDIS_URL));
  * ```
  */

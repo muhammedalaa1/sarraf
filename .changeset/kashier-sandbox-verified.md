@@ -1,6 +1,6 @@
 ---
-"@sarraf/kashier": minor
-"@sarraf/testing": patch
+"@sarrafjs/kashier": minor
+"@sarrafjs/testing": patch
 ---
 
 Kashier, checked against the real Kashier sandbox with recorded fixtures:
@@ -12,4 +12,4 @@ Kashier, checked against the real Kashier sandbox with recorded fixtures:
 - **Refunds are now `supported`** (no `allowBeta` needed): partial and full refunds are confirmed. Kashier answers HTTP 500 to a refund without an amount, so a full refund looks the order up by `reference` and sends the remaining amount; pass `reference` with a full refund, or it throws `INVALID_REQUEST`.
 - **Fix:** refund webhooks reported a partial refund as a full refund of a smaller payment. Kashier's refund webhook carries only the refund amount, so the adapter now reads the order totals from the lookup (needs `secretKey`).
 
-`@sarraf/testing`: the `Fixture` type now includes `query` (recorded redirects) and `verifiedAgainstRealSignature`.
+`@sarrafjs/testing`: the `Fixture` type now includes `query` (recorded redirects) and `verifiedAgainstRealSignature`.

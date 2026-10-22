@@ -1,4 +1,4 @@
-import type { RawWebhookRequest } from "@sarraf/core";
+import type { RawWebhookRequest } from "@sarrafjs/core";
 import type { KashierTransactionData } from "./mappers.js";
 import { kashierRedirectSignature, kashierWebhookSignature } from "./signature.js";
 import { KASHIER_SIGNATURE_HEADER } from "./webhooks.js";

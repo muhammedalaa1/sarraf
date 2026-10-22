@@ -11,7 +11,7 @@ import {
   Sarraf,
   type SarrafError,
   type SarrafEvent,
-} from "@sarraf/core";
+} from "@sarrafjs/core";
 import { expectTypeOf } from "expect-type";
 import { describe, it } from "vitest";
 import { paymob } from "../src/index.js";

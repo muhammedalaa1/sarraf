@@ -1,6 +1,6 @@
-import { Sarraf, silentLogger } from "@sarraf/core";
-import { runConformanceTests } from "@sarraf/core/conformance";
-import { createMockFetch, loadFixture, type MockRoute } from "@sarraf/testing";
+import { Sarraf, silentLogger } from "@sarrafjs/core";
+import { runConformanceTests } from "@sarrafjs/core/conformance";
+import { createMockFetch, loadFixture, type MockRoute } from "@sarrafjs/testing";
 import { describe, expect, it, vi } from "vitest";
 import {
   formatKashierAmount,

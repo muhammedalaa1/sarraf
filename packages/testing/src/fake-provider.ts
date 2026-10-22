@@ -19,7 +19,7 @@ import {
   SarrafError,
   safeEqualHex,
   sarrafId,
-} from "@sarraf/core";
+} from "@sarrafjs/core";
 
 export interface FakeProviderOptions {
   /** Secret used to sign simulated webhooks. Default "fake_secret". */

@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 import * as index from "../src/index.js";
 
 describe("public exports", () => {
-  it("@sarraf/next", () => {
+  it("@sarrafjs/next", () => {
     expect(Object.keys(index).sort()).toMatchSnapshot();
   });
 });

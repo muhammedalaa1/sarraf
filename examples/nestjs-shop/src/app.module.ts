@@ -6,8 +6,8 @@ import {
   type ProviderId,
   type Sarraf,
   type SarrafEvent,
-} from "@sarraf/core";
-import { InjectSarraf, OnSarrafEvent, SarrafModule } from "@sarraf/nestjs";
+} from "@sarrafjs/core";
+import { InjectSarraf, OnSarrafEvent, SarrafModule } from "@sarrafjs/nestjs";
 import { createPay } from "./pay.js";
 
 export interface Order {

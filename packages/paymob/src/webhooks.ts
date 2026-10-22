@@ -13,7 +13,7 @@ import {
   str,
   type VerifiedWebhook,
   type WebhookInspection,
-} from "@sarraf/core";
+} from "@sarrafjs/core";
 import type { PaymobConfig } from "./config.js";
 import { mapPaymobStatus, type PaymobTransaction, toPaymobPayment } from "./mappers.js";
 import { paymobRedirectHmac, paymobSignedString, paymobTransactionHmac } from "./signature.js";

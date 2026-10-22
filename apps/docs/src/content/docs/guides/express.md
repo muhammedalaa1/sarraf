@@ -7,7 +7,7 @@ sidebar:
 
 ```ts
 import express from "express";
-import { rawBody, webhookHandler } from "@sarraf/express";
+import { rawBody, webhookHandler } from "@sarrafjs/express";
 import { pay } from "./pay";
 
 const app = express();
@@ -41,4 +41,4 @@ app.post("/checkout", async (req, res) => {
 
 Use `{ mode: "ack-first" }` to answer 200 before your handler runs. Only do that if your handler just enqueues the event.
 
-Full example: [`examples/express-shop`](https://github.com/sarraf-dev/sarraf/tree/main/examples/express-shop).
+Full example: [`examples/express-shop`](https://github.com/muhammedalaa1/Sarraf/tree/main/examples/express-shop).

@@ -10,12 +10,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@sarraf/core": "workspace:*",
-    "@sarraf/fawry": "workspace:*",
-    "@sarraf/kashier": "workspace:*",
-    "@sarraf/next": "workspace:*",
-    "@sarraf/paymob": "workspace:*",
-    "@sarraf/testing": "workspace:*",
+    "@sarrafjs/core": "workspace:*",
+    "@sarrafjs/fawry": "workspace:*",
+    "@sarrafjs/kashier": "workspace:*",
+    "@sarrafjs/next": "workspace:*",
+    "@sarrafjs/paymob": "workspace:*",
+    "@sarrafjs/testing": "workspace:*",
     "next": "16.4.2",
     "react": "19.3.1",
     "react-dom": "19.3.1",

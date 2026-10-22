@@ -6,7 +6,7 @@ sidebar:
 ---
 
 ```bash
-npm i @sarraf/paymob
+npm i @sarrafjs/paymob
 ```
 
 ## Credentials

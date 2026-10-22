@@ -15,7 +15,7 @@ const event = await pay.webhooks.verifyAndParse(provider, {
 
 Rules:
 
-1. **Use the raw body.** Re-serialized JSON changes bytes and number formatting, which breaks signatures. Use `rawBody()` from `@sarraf/express`, `await req.text()` in Next.js, or `rawBody: true` in NestJS.
+1. **Use the raw body.** Re-serialized JSON changes bytes and number formatting, which breaks signatures. Use `rawBody()` from `@sarrafjs/express`, `await req.text()` in Next.js, or `rawBody: true` in NestJS.
 2. **The webhook is the source of truth.** Redirect parameters can be tampered with or never arrive.
 3. **Dedupe on `event.id`.** Providers retry. Store processed ids with a unique constraint.
 4. **Acknowledge quickly.** Do heavy work asynchronously (enqueue the event).

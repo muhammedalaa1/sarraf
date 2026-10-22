@@ -1,4 +1,4 @@
-import { isSarrafError } from "@sarraf/core";
+import { isSarrafError } from "@sarrafjs/core";
 /**
  * Contract tests against the real provider sandboxes. Run locally with `pnpm test:sandbox`
  * (reads .env.sandbox) and nightly in CI with repository secrets. Each provider is skipped
@@ -42,8 +42,8 @@ describe.skipIf(!hasPaymob())("@sandbox paymob", () => {
   });
 
   it("rejects a bad secret key with AUTHENTICATION_FAILED", async () => {
-    const { paymob } = await import("@sarraf/paymob");
-    const { Sarraf } = await import("@sarraf/core");
+    const { paymob } = await import("@sarrafjs/paymob");
+    const { Sarraf } = await import("@sarrafjs/core");
     const pay = new Sarraf({
       providers: {
         paymob: paymob({

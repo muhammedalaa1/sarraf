@@ -1,4 +1,4 @@
-import { SarrafError } from "@sarraf/core";
+import { SarrafError } from "@sarrafjs/core";
 import { z } from "zod";
 
 /** ⚠️ Base URLs: confirm with Fawry for your account. Override with `baseUrl`. */

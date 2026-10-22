@@ -2,7 +2,7 @@
  * HTML for the example shop. Kept apart from app.ts so the payment code stays easy to read.
  * Every interpolated value is HTML-escaped by the `html` tag.
  */
-import { type Money, type PaymentStatus, type ProviderId, toMajorString } from "@sarraf/core";
+import { type Money, type PaymentStatus, type ProviderId, toMajorString } from "@sarrafjs/core";
 import type { Order } from "./app.js";
 
 class Html {

@@ -10,8 +10,8 @@ import {
   Scope,
 } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
-import { Sarraf, type SarrafEvent, silentLogger } from "@sarraf/core";
-import { type FakeProvider, fakeProvider } from "@sarraf/testing";
+import { Sarraf, type SarrafEvent, silentLogger } from "@sarrafjs/core";
+import { type FakeProvider, fakeProvider } from "@sarrafjs/testing";
 import request from "supertest";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {

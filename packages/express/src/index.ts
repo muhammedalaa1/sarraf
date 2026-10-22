@@ -6,7 +6,7 @@ import {
   type ProviderId,
   type Sarraf,
   type SarrafEvent,
-} from "@sarraf/core";
+} from "@sarrafjs/core";
 
 /** Minimal Express-compatible request/response types, so express stays an optional peer. */
 export interface RawBodyRequest extends IncomingMessage {

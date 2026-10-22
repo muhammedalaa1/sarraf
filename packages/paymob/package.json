@@ -1,5 +1,5 @@
 {
-  "name": "@sarraf/paymob",
+  "name": "@sarrafjs/paymob",
   "version": "0.1.0",
   "description": "Paymob adapter for Sarraf: Intention API checkout, HMAC-SHA512 callback verification, refunds and voids.",
   "license": "Apache-2.0",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sarraf-dev/sarraf.git",
+    "url": "git+https://github.com/muhammedalaa1/Sarraf.git",
     "directory": "packages/paymob"
   },
   "keywords": [
@@ -59,11 +59,11 @@
     "lint:package": "publint --strict"
   },
   "dependencies": {
-    "@sarraf/core": "workspace:^",
+    "@sarrafjs/core": "workspace:^",
     "zod": "4.6.7"
   },
   "devDependencies": {
-    "@sarraf/testing": "workspace:*"
+    "@sarrafjs/testing": "workspace:*"
   },
   "publishConfig": {
     "access": "public",

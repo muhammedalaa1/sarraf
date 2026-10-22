@@ -1,10 +1,10 @@
-import { Sarraf, silentLogger } from "@sarraf/core";
-import { fawry } from "@sarraf/fawry";
-import { fawryNotification, signFawryNotification } from "@sarraf/fawry/testing";
-import { kashier } from "@sarraf/kashier";
-import { kashierWebhookData, signKashierRedirect, signKashierWebhook } from "@sarraf/kashier/testing";
-import { paymob } from "@sarraf/paymob";
-import { paymobTransaction, signPaymobCallback } from "@sarraf/paymob/testing";
+import { Sarraf, silentLogger } from "@sarrafjs/core";
+import { fawry } from "@sarrafjs/fawry";
+import { fawryNotification, signFawryNotification } from "@sarrafjs/fawry/testing";
+import { kashier } from "@sarrafjs/kashier";
+import { kashierWebhookData, signKashierRedirect, signKashierWebhook } from "@sarrafjs/kashier/testing";
+import { paymob } from "@sarrafjs/paymob";
+import { paymobTransaction, signPaymobCallback } from "@sarrafjs/paymob/testing";
 import { describe, expect, it } from "vitest";
 import { isPlaceholder } from "./env.js";
 import { resign, resignRedirect, TEST_SECRETS } from "./record-fixtures.js";

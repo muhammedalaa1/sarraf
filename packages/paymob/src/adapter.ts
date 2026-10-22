@@ -16,7 +16,7 @@ import {
   sarrafId,
   type VerifiedWebhook,
   type WebhookInspection,
-} from "@sarraf/core";
+} from "@sarrafjs/core";
 import {
   createIntention,
   getTransaction,
@@ -45,7 +45,7 @@ export interface PaymobProviderOptions {
   billingData?: Record<string, string> | undefined;
 }
 
-declare module "@sarraf/core" {
+declare module "@sarrafjs/core" {
   interface ProviderOptionsRegistry {
     paymob: PaymobProviderOptions;
   }
