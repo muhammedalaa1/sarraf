@@ -1,5 +1,6 @@
 import { isSarrafError, type PaymentMethod, type ProviderId, toMinor } from "@sarraf/core";
 import type { FakeProvider } from "@sarraf/testing";
+import { orders, withoutRaw } from "../../../lib/orders";
 import { clientKey, limits, tooMany } from "../../../lib/rate-limit";
 import { getSarraf } from "../../../lib/sarraf";
 
@@ -37,6 +38,17 @@ export async function POST(req: Request) {
   try {
     input.amount.value = toMinor(String(body.amount ?? "0"), "EGP");
     const checkout = await pay.checkout.create(input);
+    orders.upsert(
+      input.provider,
+      input.reference,
+      {
+        amount: input.amount,
+        redirectUrl: checkout.redirectUrl,
+        referenceCode: checkout.referenceCode,
+        payment: checkout.payment ? withoutRaw(checkout.payment) : undefined,
+      },
+      { action: "checkout", ok: true, summary: `checkout created (${checkout.kind})` },
+    );
     let demoWebhook: unknown;
     if (demo) {
       // Demo mode: fake a signed "succeeded" webhook so the inbox has something to show.
