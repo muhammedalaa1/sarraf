@@ -1,3 +1,4 @@
+import { AUTHORIZE_ONLY } from "../lib/methods";
 import { getSarraf } from "../lib/sarraf";
 import { Playground } from "./playground";
 
@@ -7,9 +8,12 @@ export default function Page() {
   const { pay } = getSarraf();
   const providers = pay.providerIds.map((id) => ({
     id,
-    methods: Object.entries(pay.capabilities(id).methods)
-      .filter(([, level]) => level !== "unsupported")
-      .map(([m]) => m),
+    methods: [
+      ...Object.entries(pay.capabilities(id).methods)
+        .filter(([, level]) => level !== "unsupported")
+        .map(([m]) => m),
+      ...(pay.capabilities(id).capture === "unsupported" ? [] : [AUTHORIZE_ONLY]),
+    ],
   }));
   return (
     <>

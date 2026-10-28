@@ -7,6 +7,8 @@ export interface MockRequest {
   body?: string | undefined;
   /** Parsed JSON body, or undefined. */
   json?: unknown;
+  /** Multipart / urlencoded body fields. Repeated fields keep every value. */
+  form?: Record<string, string | string[]> | undefined;
 }
 
 export interface MockResponse {
@@ -55,7 +57,8 @@ export function createMockFetch(routes: MockRoute[]): MockFetch {
         json = undefined;
       }
     }
-    const req: MockRequest = { method, url, headers, body, json };
+    const form = formFields(init.body);
+    const req: MockRequest = { method, url, headers, body, json, form };
     calls.push(req);
 
     const route = routes.find((r) => {
@@ -94,4 +97,15 @@ function matches(pattern: string | RegExp, url: URL) {
   return typeof pattern === "string"
     ? url.pathname === pattern || url.href === pattern
     : pattern.test(url.href);
+}
+
+function formFields(body: unknown): Record<string, string | string[]> | undefined {
+  if (!(body instanceof FormData || body instanceof URLSearchParams)) return undefined;
+  const form: Record<string, string | string[]> = {};
+  for (const [k, v] of body.entries()) {
+    const value = typeof v === "string" ? v : "[file]";
+    const prev = form[k];
+    form[k] = prev === undefined ? value : [...(Array.isArray(prev) ? prev : [prev]), value];
+  }
+  return form;
 }

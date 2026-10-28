@@ -28,7 +28,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ provide
     rawBody,
   });
   const event = entry.event;
-  if (event) {
+  // Saved-card callbacks carry the provider's order id, not our reference: the inbox shows them.
+  if (event && event.type !== "card.saved") {
     // Keep the operations page in step with what the provider reports.
     orders.upsert(
       event.provider,

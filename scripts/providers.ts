@@ -1,20 +1,23 @@
 import { Sarraf, type SarrafOptions } from "@sarraf/core";
-import { fawry } from "@sarraf/fawry";
-import { kashier } from "@sarraf/kashier";
-import { paymob } from "@sarraf/paymob";
+import { type FawryProvider, fawry } from "@sarraf/fawry";
+import { type KashierProvider, kashier } from "@sarraf/kashier";
+import { type PaymobProvider, paymob, paymobIntegrationIdsFromEnv } from "@sarraf/paymob";
 import { assertSandbox, env, hasFawry, hasKashier, hasPaymob } from "./env.js";
 
 /** Build sandbox adapters from process.env (see .env.sandbox.example). */
-export function sandboxProviders() {
-  const providers: SarrafOptions["providers"] = {};
+export interface SandboxProviders {
+  paymob?: PaymobProvider;
+  kashier?: KashierProvider;
+  fawry?: FawryProvider;
+}
+
+export function sandboxProviders(): SandboxProviders {
+  const providers: SandboxProviders = {};
   for (const name of Object.keys(process.env).filter((k) => /^(PAYMOB|KASHIER|FAWRY)_/.test(k))) {
     assertSandbox(name, env(name));
   }
   if (hasPaymob()) {
-    const integrationIds: Record<string, number> = {};
-    if (env("PAYMOB_CARD_INTEGRATION_ID")) integrationIds.card = Number(env("PAYMOB_CARD_INTEGRATION_ID"));
-    if (env("PAYMOB_WALLET_INTEGRATION_ID"))
-      integrationIds.wallet = Number(env("PAYMOB_WALLET_INTEGRATION_ID"));
+    const integrationIds = paymobIntegrationIdsFromEnv(process.env);
     providers.paymob = paymob({
       region: (env("PAYMOB_REGION") as "egypt") ?? "egypt",
       secretKey: env("PAYMOB_SECRET_KEY")!,
@@ -42,6 +45,8 @@ export function sandboxProviders() {
   return providers;
 }
 
-export function sandboxSarraf(extra: Partial<SarrafOptions> = {}) {
+export function sandboxSarraf(
+  extra: Partial<Omit<SarrafOptions, "providers">> = {},
+): Sarraf<SandboxProviders> {
   return new Sarraf({ providers: sandboxProviders(), allowBeta: true, ...extra });
 }

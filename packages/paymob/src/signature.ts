@@ -68,3 +68,34 @@ export function paymobRedirectSignedString(query: Record<string, string>): strin
 export function paymobRedirectHmac(query: Record<string, string>, hmacSecret: string): string {
   return hmacHex("sha512", hmacSecret, paymobRedirectSignedString(query));
 }
+
+/** Fields covered by the card-token (`type: "TOKEN"`) callback HMAC, in Paymob's order. */
+export const PAYMOB_TOKEN_HMAC_FIELDS = [
+  "card_subtype",
+  "created_at",
+  "email",
+  "id",
+  "masked_pan",
+  "merchant_id",
+  "order_id",
+  "token",
+] as const;
+
+export function paymobTokenSignedString(obj: Record<string, unknown>): string {
+  return PAYMOB_TOKEN_HMAC_FIELDS.map((path) => stringifyHmacValue(getPath(obj, path))).join("");
+}
+
+/** HMAC-SHA512 (lowercase hex) of a card-token callback `obj`. */
+export function paymobTokenHmac(obj: Record<string, unknown>, hmacSecret: string): string {
+  return hmacHex("sha512", hmacSecret, paymobTokenSignedString(obj));
+}
+
+/** The string a subscription callback signs: `"<trigger_type>for<subscription_data.id>"`. */
+export function paymobSubscriptionSignedString(body: Record<string, unknown>): string {
+  return `${stringifyHmacValue(body.trigger_type)}for${stringifyHmacValue(getPath(body, "subscription_data.id"))}`;
+}
+
+/** HMAC-SHA512 (lowercase hex) of a subscription callback; the result travels in the body's `hmac`. */
+export function paymobSubscriptionHmac(body: Record<string, unknown>, hmacSecret: string): string {
+  return hmacHex("sha512", hmacSecret, paymobSubscriptionSignedString(body));
+}

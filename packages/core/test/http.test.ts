@@ -20,6 +20,26 @@ describe("HttpClient", () => {
     expect((init.headers as Record<string, string>)["content-type"]).toBe("application/json");
   });
 
+  it("sends FormData as is and logs its fields redacted", async () => {
+    const f = vi.fn<FetchLike>(async () => json(201, { id: 1 }));
+    const onRequest = vi.fn();
+    const form = new FormData();
+    form.append("amount_cents", "100");
+    form.append("email", "sara@example.com");
+    await client(f, { hooks: { onRequest } }).request({
+      method: "POST",
+      url: "https://x.test/a",
+      body: form,
+    });
+    const [, init] = f.mock.calls[0]!;
+    expect(init.body).toBe(form);
+    expect((init.headers as Record<string, string>)["content-type"]).toBeUndefined();
+    expect(onRequest.mock.calls[0]![0].requestBody).toEqual({
+      amount_cents: "100",
+      email: "s***@example.com",
+    });
+  });
+
   it("returns text when the body is not JSON", async () => {
     const res = await client(async () => new Response("hello", { status: 200 })).request({
       method: "GET",

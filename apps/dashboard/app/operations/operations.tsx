@@ -9,9 +9,10 @@ interface ProviderCaps {
   refund: boolean;
   partialRefund: boolean;
   cancel: boolean;
+  capture: boolean;
 }
 
-type Action = "reconcile" | "refund" | "cancel";
+type Action = "reconcile" | "refund" | "cancel" | "capture";
 
 interface ActionResponse {
   ok: boolean;
@@ -28,6 +29,42 @@ const KASHIER_FLOW: [string, string][] = [
   ["3. Reconcile", "Reads the order by reference and fills in Kashier's order id, which refunds need."],
   ["4. Refund", "Partial: enter an amount. Full: leave it blank and Sarraf refunds what is left."],
   ["5. Void", "Same day only, on a paid order with no refunds. After that, refund instead."],
+];
+
+const PAYMOB_FLOW: [string, string][] = [
+  ["1. Create", "Playground → provider paymob → Create checkout (card, wallet, or card (authorize only))."],
+  ["2. Pay", "Card 5123 4567 8901 2346, 01/39, CVV 123. Wallet 01010101010, MPin and OTP 123456."],
+  [
+    "3. Reconcile",
+    "Fills in the transaction id from the webhook or a lookup; refunds, voids and captures need it.",
+  ],
+  ["4. Capture", "Authorize-only orders: capture the full amount (blank) or part of it."],
+  ["5. Refund", "Partial: enter an amount. Full: leave it blank and Sarraf refunds what is left."],
+  ["6. Void", "Same business day only, before settlement. After that, refund instead."],
+];
+
+const FLOWS: { provider: string; title: string; steps: [string, string][]; note: React.ReactNode }[] = [
+  {
+    provider: "kashier",
+    title: "Kashier test flow",
+    steps: KASHIER_FLOW,
+    note: (
+      <>
+        Lookups, refunds and voids need <span className="code">KASHIER_SECRET_KEY</span>.
+      </>
+    ),
+  },
+  {
+    provider: "paymob",
+    title: "Paymob test flow",
+    steps: PAYMOB_FLOW,
+    note: (
+      <>
+        Lookups and full refunds need <span className="code">PAYMOB_API_KEY</span>; manual capture needs{" "}
+        <span className="code">PAYMOB_CARD_AUTH_INTEGRATION_ID</span>.
+      </>
+    ),
+  },
 ];
 
 export function Operations({ providers, demo }: { providers: ProviderCaps[]; demo: boolean }) {
@@ -83,31 +120,32 @@ export function Operations({ providers, demo }: { providers: ProviderCaps[]; dem
 
   return (
     <>
-      <details className="card">
-        <summary>
-          <strong>Kashier test flow</strong>
-        </summary>
-        <div className="table-wrap">
-          <table>
-            <tbody>
-              {KASHIER_FLOW.map(([step, how]) => (
-                <tr key={step}>
-                  <td>
-                    <strong>{step}</strong>
-                  </td>
-                  <td className="muted">{how}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <p className="muted">
-          Lookups, refunds and voids need <span className="code">KASHIER_SECRET_KEY</span>. Webhooks reach the
-          inbox only through a public URL: set <span className="code">SANDBOX_PUBLIC_URL</span> to your
-          tunnel.
-          {demo && " Demo mode: providers are fake and every checkout is marked paid straight away."}
-        </p>
-      </details>
+      {FLOWS.filter((f) => caps(f.provider)).map((f) => (
+        <details className="card" key={f.provider}>
+          <summary>
+            <strong>{f.title}</strong>
+          </summary>
+          <div className="table-wrap">
+            <table>
+              <tbody>
+                {f.steps.map(([step, how]) => (
+                  <tr key={step}>
+                    <td>
+                      <strong>{step}</strong>
+                    </td>
+                    <td className="muted">{how}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="muted">
+            {f.note} Webhooks reach the inbox only through a public URL: set{" "}
+            <span className="code">SANDBOX_PUBLIC_URL</span> to your tunnel.
+            {demo && " Demo mode: providers are fake and every checkout is marked paid straight away."}
+          </p>
+        </details>
+      ))}
 
       <form
         className="card inline"
@@ -162,7 +200,6 @@ export function Operations({ providers, demo }: { providers: ProviderCaps[]; dem
                 {orders.map((o) => {
                   const c = caps(o.provider);
                   const p = o.payment;
-                  const label = (a: Action, text: string) => (busy === `${o.key}:${a}` ? "…" : text);
                   const amount = amounts[o.key] ?? "";
                   return (
                     <tr key={o.key}>
@@ -209,47 +246,15 @@ export function Operations({ providers, demo }: { providers: ProviderCaps[]; dem
                         )}
                       </td>
                       <td>
-                        <div className="actions">
-                          <button
-                            type="button"
-                            className="secondary"
-                            disabled={!c?.lookup || busy !== null}
-                            onClick={() => run("reconcile", o)}
-                          >
-                            {label("reconcile", "Reconcile")}
-                          </button>
-                          <input
-                            aria-label="Refund amount"
-                            placeholder={c?.partialRefund ? "full" : "full only"}
-                            disabled={!c?.partialRefund}
-                            inputMode="decimal"
-                            value={amount}
-                            onChange={(e) => setAmounts({ ...amounts, [o.key]: e.target.value })}
-                          />
-                          <button
-                            type="button"
-                            disabled={!c?.refund || busy !== null}
-                            onClick={() => run("refund", o, amount || undefined)}
-                          >
-                            {label("refund", amount ? `Refund ${amount}` : "Full refund")}
-                          </button>
-                          <button
-                            type="button"
-                            className="danger"
-                            disabled={!c?.cancel || busy !== null}
-                            onClick={() => run("cancel", o)}
-                          >
-                            {label("cancel", "Void")}
-                          </button>
-                          <button
-                            type="button"
-                            className="secondary"
-                            onClick={() => remove(o)}
-                            title="Forget"
-                          >
-                            ✕
-                          </button>
-                        </div>
+                        <OrderActions
+                          order={o}
+                          caps={c}
+                          busy={busy}
+                          amount={amount}
+                          onAmount={(v) => setAmounts({ ...amounts, [o.key]: v })}
+                          run={run}
+                          remove={remove}
+                        />
                       </td>
                     </tr>
                   );
@@ -291,6 +296,70 @@ export function Operations({ providers, demo }: { providers: ProviderCaps[]; dem
         </>
       )}
     </>
+  );
+}
+
+function OrderActions({
+  order: o,
+  caps: c,
+  busy,
+  amount,
+  onAmount,
+  run,
+  remove,
+}: {
+  order: Order;
+  caps: ProviderCaps | undefined;
+  busy: string | null;
+  amount: string;
+  onAmount: (value: string) => void;
+  run: (action: Action, o: Order, amount?: string) => Promise<void>;
+  remove: (o: Order) => Promise<void>;
+}) {
+  const label = (a: Action, text: string) => (busy === `${o.key}:${a}` ? "…" : text);
+  const authorized = c?.capture && o.payment?.status === "requires_action";
+  return (
+    <div className="actions">
+      <button
+        type="button"
+        className="secondary"
+        disabled={!c?.lookup || busy !== null}
+        onClick={() => run("reconcile", o)}
+      >
+        {label("reconcile", "Reconcile")}
+      </button>
+      <input
+        aria-label="Amount"
+        placeholder={c?.partialRefund ? "full" : "full only"}
+        disabled={!c?.partialRefund && !authorized}
+        inputMode="decimal"
+        value={amount}
+        onChange={(e) => onAmount(e.target.value)}
+      />
+      {authorized && (
+        <button type="button" disabled={busy !== null} onClick={() => run("capture", o, amount || undefined)}>
+          {label("capture", amount ? `Capture ${amount}` : "Capture")}
+        </button>
+      )}
+      <button
+        type="button"
+        disabled={!c?.refund || busy !== null}
+        onClick={() => run("refund", o, amount || undefined)}
+      >
+        {label("refund", amount ? `Refund ${amount}` : "Full refund")}
+      </button>
+      <button
+        type="button"
+        className="danger"
+        disabled={!c?.cancel || busy !== null}
+        onClick={() => run("cancel", o)}
+      >
+        {label("cancel", "Void")}
+      </button>
+      <button type="button" className="secondary" onClick={() => remove(o)} title="Forget">
+        ✕
+      </button>
+    </div>
   );
 }
 

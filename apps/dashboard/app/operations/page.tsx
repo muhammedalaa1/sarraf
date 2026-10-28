@@ -13,14 +13,15 @@ export default function OperationsPage() {
       refund: caps.refund !== "unsupported",
       partialRefund: caps.partialRefund !== "unsupported",
       cancel: caps.cancel !== "unsupported",
+      capture: caps.capture !== "unsupported",
     };
   });
   return (
     <>
       <h1>Operations</h1>
       <p className="lead">
-        Every checkout created in the playground lands here. Pay it on the hosted page, then reconcile, refund
-        or void it and compare the request, the raw response and the normalized result.
+        Every checkout created in the playground lands here. Pay it on the hosted page, then reconcile,
+        capture, refund or void it and compare the request, the raw response and the normalized result.
       </p>
       <Operations providers={providers} demo={demo} />
     </>

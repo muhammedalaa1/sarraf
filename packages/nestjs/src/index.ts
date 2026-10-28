@@ -44,7 +44,7 @@ export const InjectSarraf = (): PropertyDecorator & ParameterDecorator => Inject
  *
  * ```ts
  * @OnSarrafEvent("payment.succeeded")
- * async paid(event: SarrafEvent) { await this.orders.markPaid(event.payment.reference); }
+ * async paid(event: PaymentEvent) { await this.orders.markPaid(event.payment.reference); }
  * ```
  */
 export const OnSarrafEvent = (...types: EventType[]): MethodDecorator => SetMetadata(EVENT_METADATA, types);

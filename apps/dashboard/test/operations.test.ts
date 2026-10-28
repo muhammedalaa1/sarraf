@@ -76,6 +76,15 @@ describe("runAction", () => {
     expect(res.order?.payment?.status).toBe("canceled");
   });
 
+  it("records an unsupported capture as a failed action", async () => {
+    const { pay, store, reference } = await paidOrder();
+    await runAction(pay, store, { action: "reconcile", provider: "kashier", reference });
+    const res = await runAction(pay, store, { action: "capture", provider: "kashier", reference });
+    expect(res.ok).toBe(false);
+    expect(res.error?.code).toBe("CAPABILITY_NOT_SUPPORTED");
+    expect(store.get("kashier", reference)?.history[0]).toMatchObject({ action: "capture", ok: false });
+  });
+
   it("asks for a reconcile before a refund, and records failures", async () => {
     const { pay, store, reference } = await paidOrder();
     const res = await runAction(pay, store, { action: "refund", provider: "kashier", reference });

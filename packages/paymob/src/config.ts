@@ -1,4 +1,4 @@
-import { type Currency, type PaymentMethod, SarrafError } from "@sarraf/core";
+import { type Currency, SarrafError } from "@sarraf/core";
 import { z } from "zod";
 
 export const PAYMOB_REGIONS = {
@@ -12,6 +12,16 @@ export type PaymobRegion = keyof typeof PAYMOB_REGIONS;
 
 const methods = ["card", "wallet", "cash_outlet", "installments", "bnpl", "bank_transfer", "other"] as const;
 
+/**
+ * Integration ids beyond one-per-method:
+ * - `card_auth`: card integration in Auth mode, for `providerOptions.capture: "manual"`.
+ * - `card_moto`: MOTO integration, for merchant-initiated charges on saved cards and subscriptions.
+ * - `apple_pay`: offered next to `card` on the Unified Checkout.
+ */
+const integrations = [...methods, "card_auth", "card_moto", "apple_pay"] as const;
+
+export type PaymobIntegration = (typeof integrations)[number];
+
 export const paymobOptionsSchema = z.object({
   region: z.enum(["egypt", "ksa", "uae", "oman"]).default("egypt"),
   /** Secret key (`sk_test_…` / `sk_live_…`): creates intentions, refunds, voids. */
@@ -22,9 +32,12 @@ export const paymobOptionsSchema = z.object({
   hmacSecret: z.string().min(1, "hmacSecret is required"),
   /** Legacy API key: needed for transaction inquiry (getPayment / reconcile). */
   apiKey: z.string().min(1).optional(),
-  /** One integration id per payment method. Test/live mode must match the keys. */
+  /**
+   * Integration ids, one per payment method (`card`, `wallet`, `cash_outlet` for kiosk, `bnpl`,
+   * `installments`, …) plus `card_auth`, `card_moto` and `apple_pay`. Test/live mode must match the keys.
+   */
   integrationIds: z
-    .partialRecord(z.enum(methods), z.number().int().positive())
+    .partialRecord(z.enum(integrations), z.number().int().positive())
     .refine((v) => Object.keys(v).length > 0, "at least one integration id is required"),
   /** Override the region base URL (testing / proxies). */
   baseUrl: z.string().url().optional(),
@@ -40,7 +53,7 @@ export interface PaymobConfig {
   publicKey: string;
   hmacSecret: string;
   apiKey?: string | undefined;
-  integrationIds: Partial<Record<PaymentMethod, number>>;
+  integrationIds: Partial<Record<PaymobIntegration, number>>;
   mode: "test" | "live";
 }
 
@@ -76,4 +89,33 @@ export function resolveConfig(options: PaymobOptions): PaymobConfig {
     integrationIds: o.integrationIds,
     mode: secretMode ?? "test",
   };
+}
+
+/** Env var suffixes for each integration: `PAYMOB_<NAME>_INTEGRATION_ID`. */
+export const PAYMOB_INTEGRATION_ENV: Record<PaymobIntegration, string> = {
+  card: "CARD",
+  wallet: "WALLET",
+  cash_outlet: "KIOSK",
+  installments: "INSTALLMENTS",
+  bnpl: "BNPL",
+  bank_transfer: "BANK_TRANSFER",
+  other: "OTHER",
+  card_auth: "CARD_AUTH",
+  card_moto: "CARD_MOTO",
+  apple_pay: "APPLE_PAY",
+};
+
+/**
+ * Read `PAYMOB_CARD_INTEGRATION_ID`, `PAYMOB_WALLET_INTEGRATION_ID`, `PAYMOB_KIOSK_INTEGRATION_ID`,
+ * `PAYMOB_CARD_AUTH_INTEGRATION_ID`, `PAYMOB_CARD_MOTO_INTEGRATION_ID`, … into `integrationIds`.
+ */
+export function paymobIntegrationIdsFromEnv(
+  env: Record<string, string | undefined>,
+): Partial<Record<PaymobIntegration, number>> {
+  const ids: Partial<Record<PaymobIntegration, number>> = {};
+  for (const [key, name] of Object.entries(PAYMOB_INTEGRATION_ENV) as [PaymobIntegration, string][]) {
+    const value = env[`PAYMOB_${name}_INTEGRATION_ID`]?.trim();
+    if (value) ids[key] = Number(value);
+  }
+  return ids;
 }

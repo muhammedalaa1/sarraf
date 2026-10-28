@@ -29,6 +29,7 @@ export class OrdersService {
   apply(event: SarrafEvent) {
     if (this.processedEvents.has(event.id)) return; // dedupe: providers retry
     this.processedEvents.add(event.id);
+    if (event.type === "card.saved") return; // this shop does not keep saved cards
     const order = this.orders.get(event.payment.reference);
     if (order) order.status = event.payment.status;
   }

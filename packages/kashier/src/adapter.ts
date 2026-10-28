@@ -68,6 +68,7 @@ export class KashierProvider implements PaymentProvider<"kashier"> {
       partialRefund: server,
       cancel: server,
       webhooks: "supported",
+      capture: "unsupported",
       redirectVerification: "supported",
       methods: { card: "supported", wallet: "supported", installments: "beta", bnpl: "beta" },
       currencies: this.config.currencies,

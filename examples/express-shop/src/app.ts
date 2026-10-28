@@ -36,6 +36,7 @@ export class Store {
 export function applyEvent(store: Store, event: SarrafEvent): void {
   if (store.processedEvents.has(event.id)) return; // dedupe: providers retry
   store.processedEvents.add(event.id);
+  if (event.type === "card.saved") return; // this shop does not keep saved cards
   const order = store.orders.get(event.payment.reference);
   if (!order) return;
   order.status = event.payment.status;

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { isSarrafError } from "./errors.js";
 import type { Sarraf } from "./sarraf.js";
 import type {
+  CaptureInput,
   CheckoutKind,
   CreateCheckoutInput,
   PaymentLookup,
@@ -30,6 +31,8 @@ export interface ConformanceHarness {
   lookup: PaymentLookup;
   /** Omit when the adapter does not support refunds. */
   refund?: Omit<RefundInput, "idempotencyKey"> | undefined;
+  /** Omit when the adapter does not support capture; the mock must answer with a captured payment. */
+  capture?: Omit<CaptureInput, "idempotencyKey"> | undefined;
   /** Number of fetch calls made so far. */
   fetchCalls(): number;
 }
@@ -48,6 +51,7 @@ export function runConformanceTests(
       const caps = h.sarraf.capabilities(h.provider);
       expect(caps.checkout).not.toBe("unsupported");
       expect(caps.webhooks).toBe("supported");
+      expect(["supported", "beta", "unsupported"]).toContain(caps.capture);
       expect(caps.currencies.length).toBeGreaterThan(0);
       expect(caps.checkoutKinds).toContain(h.expectedCheckoutKind);
       expect(caps.docsUrl).toMatch(/^https?:\/\//);
@@ -79,6 +83,7 @@ export function runConformanceTests(
     it("verifies and normalizes a succeeded webhook", async () => {
       const h = await setup();
       const event = await h.sarraf.webhooks.verifyAndParse(h.provider, h.webhooks.succeeded);
+      if (event.type === "card.saved") throw new Error("expected a payment event");
       expect(event.type).toBe("payment.succeeded");
       expect(event.provider).toBe(h.provider);
       expect(event.payment.status).toBe("succeeded");
@@ -123,9 +128,21 @@ export function runConformanceTests(
       expect(refund.provider).toBe(h.provider);
       if (h.webhooks.refunded) {
         const event = await h.sarraf.webhooks.verifyAndParse(h.provider, h.webhooks.refunded);
+        if (event.type === "card.saved") throw new Error("expected a payment event");
         expect(event.type).toBe("refund.succeeded");
         expect(["refunded", "partially_refunded"]).toContain(event.payment.status);
       }
+    });
+
+    it("captures an authorization", async () => {
+      const h = await setup();
+      if (!h.capture) {
+        expect(h.sarraf.capabilities(h.provider).capture).toBe("unsupported");
+        return;
+      }
+      const payment = await h.sarraf.payments.capture({ provider: h.provider, ...h.capture });
+      expect(payment.provider).toBe(h.provider);
+      expect(payment.status).toBe("succeeded");
     });
   });
 }

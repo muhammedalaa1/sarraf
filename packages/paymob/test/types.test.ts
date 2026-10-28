@@ -3,10 +3,12 @@
  * an `@ts-expect-error` line that stops erroring is itself an error.
  */
 import {
+  type CardSavedEvent,
   type Checkout,
   isSarrafError,
   type Money,
   type Payment,
+  type PaymentEvent,
   type PaymentStatus,
   Sarraf,
   type SarrafError,
@@ -75,7 +77,8 @@ describe("public types", () => {
   it("models expose closed unions", () => {
     expectTypeOf<Money["value"]>().toEqualTypeOf<number>();
     expectTypeOf<Payment["status"]>().toEqualTypeOf<PaymentStatus>();
-    expectTypeOf<SarrafEvent["payment"]>().toEqualTypeOf<Payment>();
+    expectTypeOf<PaymentEvent["payment"]>().toEqualTypeOf<Payment>();
+    expectTypeOf<SarrafEvent>().toEqualTypeOf<PaymentEvent | CardSavedEvent>();
   });
 
   it("isSarrafError narrows unknown errors", () => {

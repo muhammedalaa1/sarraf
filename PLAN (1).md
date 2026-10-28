@@ -27,9 +27,10 @@ Provider APIs change. **The sandbox is the source of truth.** Record what it act
 | Week 5: DX & docs | ✅ `@sarraf/express`, three examples, docs site, dashboard inbox + replay |
 | Week 6: launch | ⏳ Not started: v1.0.0 publish, README GIF, launch posts |
 | v1.1: framework helpers | ✅ `@sarraf/next` (`webhookRoute`, `verifyRedirect`) and `@sarraf/nestjs` (`SarrafModule`, `@OnSarrafEvent`); examples use them |
+| Paymob full API (2026-10-28) | ✅ Implemented with unit tests, waiting on sandbox fixtures: kiosk reference codes, manual capture (`payments.capture` in core), `card.saved` events, saved-card MOTO charges, subscriptions, payment links, intention update/retrieve (`pay.provider("paymob").extras`). New features ship as `"beta"` until recorded with `pnpm record-fixtures`. Payouts and the legacy iframe flow are out of scope |
 | Repo hygiene | ✅ Node 22+, zod 4, Express 5, Conventional Commits (commit-msg hook + PR title check), auto PR labels, Dependabot |
 
-Next: Paymob and Fawry sandbox credentials and fixtures, then launch prep (week 6).
+Next: record Paymob sandbox fixtures (checkout, webhooks incl. `TOKEN`, refunds, void, capture, kiosk) and mark the confirmed rows `verified: true`; Fawry sandbox credentials; then launch prep (week 6).
 
 ---
 

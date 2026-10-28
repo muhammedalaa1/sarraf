@@ -4,7 +4,13 @@ import { fawryNotification, signFawryNotification } from "@sarraf/fawry/testing"
 import { kashier } from "@sarraf/kashier";
 import { kashierWebhookData, signKashierRedirect, signKashierWebhook } from "@sarraf/kashier/testing";
 import { paymob } from "@sarraf/paymob";
-import { paymobTransaction, signPaymobCallback } from "@sarraf/paymob/testing";
+import {
+  paymobCardToken,
+  paymobTransaction,
+  signPaymobCallback,
+  signPaymobSubscriptionCallback,
+  signPaymobTokenCallback,
+} from "@sarraf/paymob/testing";
 import { describe, expect, it } from "vitest";
 import { isPlaceholder } from "./env.js";
 import { resign, resignRedirect, TEST_SECRETS } from "./record-fixtures.js";
@@ -137,6 +143,23 @@ describe("resign", () => {
     expect(
       resign("paymob", { ...bytes, rawBody: new TextEncoder().encode(bytes.rawBody as string) }).webhook,
     ).toBeTruthy();
+  });
+
+  it("re-signs Paymob card-token and subscription callbacks", async () => {
+    const real = paymobCardToken({ email: "real@person.com", token: "real_card_token" });
+    const token = resign("paymob", signPaymobTokenCallback(real, "REAL_SECRET"));
+    expect((await pay.webhooks.inspect("paymob", token.webhook)).valid).toBe(true);
+    expect(JSON.stringify(token.webhook)).not.toContain("real@person.com");
+    expect(JSON.stringify(token.webhook)).not.toContain("real_card_token");
+    const sub = resign(
+      "paymob",
+      signPaymobSubscriptionCallback(
+        { trigger_type: "suspended", subscription_data: { id: 1264 } },
+        "REAL_SECRET",
+      ),
+    );
+    expect(sub.signedString).toBe("suspendedfor1264");
+    expect(pay.provider("paymob").extras.subscriptions.inspectWebhook(sub.webhook).valid).toBe(true);
   });
 
   it("re-signs redirects so they verify with the test secret, keeping param order", async () => {
