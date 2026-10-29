@@ -26,11 +26,11 @@ import {
   Sarraf,
   type SarrafEvent,
   type SarrafOptions,
-} from "@sarraf/core";
+} from "@sarrafjs/core";
 
 /** Injection token for the `Sarraf` client. Prefer `@InjectSarraf()`. */
-export const SARRAF: unique symbol = Symbol.for("@sarraf/nestjs:client");
-const MODULE_OPTIONS = Symbol.for("@sarraf/nestjs:options");
+export const SARRAF: unique symbol = Symbol.for("@sarrafjs/nestjs:client");
+const MODULE_OPTIONS = Symbol.for("@sarrafjs/nestjs:options");
 const EVENT_METADATA = "sarraf:on-event";
 
 type EventType = SarrafEvent["type"];

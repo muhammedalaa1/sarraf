@@ -31,7 +31,7 @@ export function rawBodyToString(rawBody: RawWebhookRequest["rawBody"]): string {
   if (rawBody instanceof Uint8Array) return new TextDecoder("utf-8").decode(rawBody);
   throw new SarrafError(
     "INVALID_REQUEST",
-    "Webhook rawBody must be the raw request body (string or Buffer). Use the rawBody() middleware from @sarraf/express.",
+    "Webhook rawBody must be the raw request body (string or Buffer). Use the rawBody() middleware from @sarrafjs/express.",
   );
 }
 

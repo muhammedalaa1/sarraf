@@ -1,4 +1,4 @@
-import type { ProviderId, RawWebhookRequest, Sarraf } from "@sarraf/core";
+import type { ProviderId, RawWebhookRequest, Sarraf } from "@sarrafjs/core";
 import type { Inbox, InboxEntry } from "./inbox";
 
 /** Inspect, verify and parse a webhook, and store everything in the inbox, valid or not. */

@@ -6,7 +6,7 @@ import {
   SarrafError,
   type SavedCard,
   validateWith,
-} from "@sarraf/core";
+} from "@sarrafjs/core";
 import { z } from "zod";
 import { authedRequest, createIntention, payWithSource, toId } from "../client.js";
 import { intentionBody } from "../intention.js";

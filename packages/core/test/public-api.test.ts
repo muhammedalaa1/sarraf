@@ -8,10 +8,10 @@ import * as redis from "../src/idempotency/redis.js";
 import * as index from "../src/index.js";
 
 describe("public exports", () => {
-  it("@sarraf/core", () => {
+  it("@sarrafjs/core", () => {
     expect(Object.keys(index).sort()).toMatchSnapshot();
   });
-  it("@sarraf/core/redis", () => {
+  it("@sarrafjs/core/redis", () => {
     expect(Object.keys(redis).sort()).toMatchSnapshot();
   });
 });

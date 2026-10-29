@@ -13,7 +13,7 @@ import {
   str,
   validateWith,
   type WebhookInspection,
-} from "@sarraf/core";
+} from "@sarrafjs/core";
 import { z } from "zod";
 import { authedRequest, toId } from "../client.js";
 import { type PaymobTransaction, toPaymobPayment } from "../mappers.js";

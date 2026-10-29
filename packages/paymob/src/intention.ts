@@ -1,4 +1,4 @@
-import type { CreateCheckoutInput } from "@sarraf/core";
+import type { CreateCheckoutInput } from "@sarrafjs/core";
 import type { PaymobIntentionRequest } from "./client.js";
 
 /** Sarraf checkout input → Paymob intention body. Shared by checkout, saved-card charges and subscriptions. */

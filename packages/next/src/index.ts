@@ -6,7 +6,7 @@ import {
   type RedirectResult,
   type Sarraf,
   type SarrafEvent,
-} from "@sarraf/core";
+} from "@sarrafjs/core";
 
 /** A Sarraf client, or a function returning one (for clients created lazily, e.g. on first request). */
 export type SarrafSource = Sarraf | (() => Sarraf);

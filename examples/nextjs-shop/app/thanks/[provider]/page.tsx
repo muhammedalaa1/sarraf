@@ -1,4 +1,4 @@
-import { verifyRedirect } from "@sarraf/next";
+import { verifyRedirect } from "@sarrafjs/next";
 import { notFound, redirect } from "next/navigation";
 import { getPay, orders } from "../../../lib/pay";
 

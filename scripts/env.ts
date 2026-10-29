@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { SarrafError } from "@sarraf/core";
+import { SarrafError } from "@sarrafjs/core";
 import { config } from "dotenv";
 
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");

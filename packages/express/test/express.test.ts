@@ -1,6 +1,6 @@
 import { createServer } from "node:http";
-import { Sarraf, silentLogger } from "@sarraf/core";
-import { fakeProvider } from "@sarraf/testing";
+import { Sarraf, silentLogger } from "@sarrafjs/core";
+import { fakeProvider } from "@sarrafjs/testing";
 import express from "express";
 import request from "supertest";
 import { describe, expect, it, vi } from "vitest";

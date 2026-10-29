@@ -1,5 +1,5 @@
-import { assertPaymentEvent, type CardSavedEvent, Sarraf, silentLogger } from "@sarraf/core";
-import { createMockFetch, type MockRoute } from "@sarraf/testing";
+import { assertPaymentEvent, type CardSavedEvent, Sarraf, silentLogger } from "@sarrafjs/core";
+import { createMockFetch, type MockRoute } from "@sarrafjs/testing";
 import { describe, expect, it } from "vitest";
 import { type PaymobOptions, paymob, paymobEmbed } from "../src/index.js";
 import {

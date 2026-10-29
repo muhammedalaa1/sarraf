@@ -16,7 +16,7 @@ import {
   toMinor,
   type VerifiedWebhook,
   type WebhookInspection,
-} from "@sarraf/core";
+} from "@sarrafjs/core";
 import { findOrder } from "./client.js";
 import type { KashierConfig } from "./config.js";
 import {

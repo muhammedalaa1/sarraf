@@ -6,7 +6,7 @@ sidebar:
 ---
 
 ```bash
-npm install @sarraf/nestjs
+npm install @sarrafjs/nestjs
 ```
 
 Enable raw bodies when you bootstrap the app. Signatures are computed over the exact bytes:
@@ -18,7 +18,7 @@ const app = await NestFactory.create(AppModule, { rawBody: true });
 ## Register the module
 
 ```ts
-import { SarrafModule } from "@sarraf/nestjs";
+import { SarrafModule } from "@sarrafjs/nestjs";
 
 @Module({
   imports: [
@@ -56,7 +56,7 @@ export class CheckoutService {
 The module serves `POST /webhooks/:provider`. Verified events go to every method marked `@OnSarrafEvent()`:
 
 ```ts
-import { OnSarrafEvent } from "@sarraf/nestjs";
+import { OnSarrafEvent } from "@sarrafjs/nestjs";
 
 @Injectable()
 export class OrdersService {
@@ -85,4 +85,4 @@ Options, on both `forRoot` and `forRootAsync`:
 - `webhooks: { mode: "ack-first" }` answers 200 before running handlers. Errors are then only logged, so only enqueue work.
 - `webhooks: false` registers no controller. Call `SarrafWebhooks.handle(provider, req)` from your own controller instead; it throws the same HTTP exceptions.
 
-Full example: [`examples/nestjs-shop`](https://github.com/sarraf-dev/sarraf/tree/main/examples/nestjs-shop).
+Full example: [`examples/nestjs-shop`](https://github.com/muhammedalaa1/sarraf/tree/main/examples/nestjs-shop).

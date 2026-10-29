@@ -1,5 +1,5 @@
 {
-  "name": "@sarraf/testing",
+  "name": "@sarrafjs/testing",
   "version": "0.1.0",
   "description": "Test helpers for Sarraf: fake provider, mock fetch router and fixture loader.",
   "license": "Apache-2.0",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sarraf-dev/sarraf.git",
+    "url": "git+https://github.com/muhammedalaa1/sarraf.git",
     "directory": "packages/testing"
   },
   "main": "./dist/index.cjs",
@@ -40,7 +40,7 @@
     "lint:package": "publint --strict"
   },
   "dependencies": {
-    "@sarraf/core": "workspace:^"
+    "@sarrafjs/core": "workspace:^"
   },
   "publishConfig": {
     "access": "public",

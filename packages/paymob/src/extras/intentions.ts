@@ -1,4 +1,4 @@
-import { type Checkout, SarrafError } from "@sarraf/core";
+import { type Checkout, SarrafError } from "@sarrafjs/core";
 import {
   type PaymobIntentionRequest,
   type PaymobIntentionResponse,

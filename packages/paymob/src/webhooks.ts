@@ -14,7 +14,7 @@ import {
   str,
   type VerifiedWebhook,
   type WebhookInspection,
-} from "@sarraf/core";
+} from "@sarrafjs/core";
 import type { PaymobConfig } from "./config.js";
 import { mapPaymobStatus, type PaymobTransaction, toPaymobPayment, toSavedCard, truthy } from "./mappers.js";
 import {

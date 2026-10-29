@@ -1,4 +1,4 @@
-import type { Ctx } from "@sarraf/core";
+import type { Ctx } from "@sarrafjs/core";
 import type { PaymobProvider } from "../adapter.js";
 import type { PaymobTokenCache } from "../client.js";
 import type { PaymobConfig } from "../config.js";

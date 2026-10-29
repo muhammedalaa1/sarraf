@@ -1,4 +1,4 @@
-import type { RawWebhookRequest } from "@sarraf/core";
+import type { RawWebhookRequest } from "@sarrafjs/core";
 import { type FawryNotificationV2, fawryNotificationSignature } from "./signature.js";
 
 /** A realistic V2 "PAID" notification for a PayAtFawry reference code. Override any field. */

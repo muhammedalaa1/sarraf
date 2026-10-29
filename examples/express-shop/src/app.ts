@@ -7,9 +7,9 @@ import {
   type ProviderId,
   type Sarraf,
   type SarrafEvent,
-} from "@sarraf/core";
-import { rawBody, webhookHandler } from "@sarraf/express";
-import type { FakeProvider } from "@sarraf/testing";
+} from "@sarrafjs/core";
+import { rawBody, webhookHandler } from "@sarrafjs/express";
+import type { FakeProvider } from "@sarrafjs/testing";
 import express from "express";
 import * as views from "./views.js";
 

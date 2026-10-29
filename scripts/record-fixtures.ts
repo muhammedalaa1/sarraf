@@ -32,18 +32,22 @@ import {
   type ProviderId,
   type RawWebhookRequest,
   toMinor,
-} from "@sarraf/core";
-import { fawryNotificationSignature } from "@sarraf/fawry";
-import { signFawryNotification } from "@sarraf/fawry/testing";
-import { kashierRedirectSignedString, kashierWebhookSignedString } from "@sarraf/kashier";
-import { signKashierRedirect, signKashierWebhook } from "@sarraf/kashier/testing";
-import { paymobSignedString, paymobSubscriptionSignedString, paymobTokenSignedString } from "@sarraf/paymob";
+} from "@sarrafjs/core";
+import { fawryNotificationSignature } from "@sarrafjs/fawry";
+import { signFawryNotification } from "@sarrafjs/fawry/testing";
+import { kashierRedirectSignedString, kashierWebhookSignedString } from "@sarrafjs/kashier";
+import { signKashierRedirect, signKashierWebhook } from "@sarrafjs/kashier/testing";
+import {
+  paymobSignedString,
+  paymobSubscriptionSignedString,
+  paymobTokenSignedString,
+} from "@sarrafjs/paymob";
 import {
   signPaymobCallback,
   signPaymobRedirect,
   signPaymobSubscriptionCallback,
   signPaymobTokenCallback,
-} from "@sarraf/paymob/testing";
+} from "@sarrafjs/paymob/testing";
 import { env, loadSandboxEnv, ROOT } from "./env.js";
 import { sandboxSarraf } from "./providers.js";
 import { scrub, scrubUrl } from "./scrub.js";

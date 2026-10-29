@@ -3,9 +3,9 @@
   "changelog": "@changesets/cli/changelog",
   "commit": false,
   "fixed": [],
-  "linked": [["@sarraf/*"]],
+  "linked": [["@sarrafjs/*"]],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@sarraf/dashboard", "@sarraf/docs", "example-*"]
+  "ignore": ["@sarrafjs/dashboard", "@sarrafjs/docs", "example-*"]
 }

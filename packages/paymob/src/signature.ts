@@ -1,4 +1,4 @@
-import { getPath, hmacHex, safeEqualHex, str } from "@sarraf/core";
+import { getPath, hmacHex, safeEqualHex, str } from "@sarrafjs/core";
 
 /**
  * Fields covered by the transaction-processed callback HMAC, in Paymob's exact order.

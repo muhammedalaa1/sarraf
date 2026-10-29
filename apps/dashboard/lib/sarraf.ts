@@ -1,10 +1,10 @@
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
-import { type HttpEvent, type PaymentProvider, Sarraf, type SarrafOptions } from "@sarraf/core";
-import { fawry } from "@sarraf/fawry";
-import { kashier } from "@sarraf/kashier";
-import { paymob, paymobIntegrationIdsFromEnv } from "@sarraf/paymob";
-import { fakeProvider } from "@sarraf/testing";
+import { type HttpEvent, type PaymentProvider, Sarraf, type SarrafOptions } from "@sarrafjs/core";
+import { fawry } from "@sarrafjs/fawry";
+import { kashier } from "@sarrafjs/kashier";
+import { paymob, paymobIntegrationIdsFromEnv } from "@sarrafjs/paymob";
+import { fakeProvider } from "@sarrafjs/testing";
 import { config } from "dotenv";
 
 /** The dashboard is sandbox-only. Anything that looks like a live credential is refused. */

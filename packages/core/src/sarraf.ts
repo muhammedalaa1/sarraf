@@ -32,7 +32,7 @@ export interface SarrafOptions<P extends ProvidersConfig = ProvidersConfig> {
   debug?: boolean | undefined;
   logger?: Logger | undefined;
   http?: HttpClientOptions | HttpClient | undefined;
-  /** Defaults to an in-memory store. Use RedisStore from `@sarraf/core/redis` across instances. */
+  /** Defaults to an in-memory store. Use RedisStore from `@sarrafjs/core/redis` across instances. */
   idempotency?: IdempotencyStore | undefined;
   /** How long completed idempotent results are kept. Default 24h. */
   idempotencyTtlSeconds?: number | undefined;

@@ -1,7 +1,7 @@
-import type { StatusMappingRow } from "@sarraf/core";
-import { FAWRY_STATUS_TABLE } from "@sarraf/fawry";
-import { KASHIER_STATUS_TABLE } from "@sarraf/kashier";
-import { PAYMOB_STATUS_TABLE } from "@sarraf/paymob";
+import type { StatusMappingRow } from "@sarrafjs/core";
+import { FAWRY_STATUS_TABLE } from "@sarrafjs/fawry";
+import { KASHIER_STATUS_TABLE } from "@sarrafjs/kashier";
+import { PAYMOB_STATUS_TABLE } from "@sarrafjs/paymob";
 
 const TABLES: [string, StatusMappingRow[]][] = [
   ["Paymob", PAYMOB_STATUS_TABLE],

@@ -1,4 +1,4 @@
-import { asRecord, type Ctx, ensureOk, type HttpRequest, SarrafError, str } from "@sarraf/core";
+import { asRecord, type Ctx, ensureOk, type HttpRequest, SarrafError, str } from "@sarrafjs/core";
 import type { PaymobConfig } from "./config.js";
 import type { PaymobTransaction } from "./mappers.js";
 

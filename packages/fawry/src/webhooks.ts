@@ -12,7 +12,7 @@ import {
   str,
   type VerifiedWebhook,
   type WebhookInspection,
-} from "@sarraf/core";
+} from "@sarrafjs/core";
 import { getStatus } from "./client.js";
 import type { FawryConfig } from "./config.js";
 import { toFawryPayment } from "./mappers.js";

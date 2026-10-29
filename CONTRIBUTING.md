@@ -45,10 +45,10 @@ scripts/           record-fixtures, scrub, check-no-secrets
 
 Use `packages/paymob` as the reference adapter. Checklist:
 
-1. **Package**: `packages/<name>` with `package.json` (`@sarraf/<name>`), `tsup.config.ts` (entries `index` + `testing`), `vitest.config.ts`.
+1. **Package**: `packages/<name>` with `package.json` (`@sarrafjs/<name>`), `tsup.config.ts` (entries `index` + `testing`), `vitest.config.ts`.
 2. **Register the id**: in the adapter, augment the core registries:
    ```ts
-   declare module "@sarraf/core" {
+   declare module "@sarrafjs/core" {
      interface ProviderRegistry { tap: true }
      interface ProviderOptionsRegistry { tap: TapProviderOptions }
    }
@@ -67,7 +67,7 @@ Use `packages/paymob` as the reference adapter. Checklist:
    - every signature function against its fixture
    - tamper cases: changed amount, changed status, wrong key, missing signature, extra whitespace
    - one test per status-table row
-   - `runConformanceTests()` from `@sarraf/core/conformance`
+   - `runConformanceTests()` from `@sarrafjs/core/conformance`
    - `test/public-api.test.ts` (copy it from `packages/paymob`) so the export surface is snapshotted
 7. **Sandbox contract test** in `tests/sandbox/contract.test.ts`, skipped when credentials are missing.
 8. **Docs**: a provider page in `apps/docs` covering setup, credentials, flows, the status table, gotchas and signature recipes.

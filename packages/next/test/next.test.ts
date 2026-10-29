@@ -1,5 +1,5 @@
-import { Sarraf, SarrafError, silentLogger } from "@sarraf/core";
-import { fakeProvider } from "@sarraf/testing";
+import { Sarraf, SarrafError, silentLogger } from "@sarrafjs/core";
+import { fakeProvider } from "@sarrafjs/testing";
 import { describe, expect, it, vi } from "vitest";
 import { verifyRedirect, webhookRoute } from "../src/index.js";
 

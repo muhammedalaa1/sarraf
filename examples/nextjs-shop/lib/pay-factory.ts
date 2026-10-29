@@ -1,8 +1,8 @@
-import { Sarraf, type SarrafOptions } from "@sarraf/core";
-import { fawry } from "@sarraf/fawry";
-import { kashier } from "@sarraf/kashier";
-import { paymob } from "@sarraf/paymob";
-import { fakeProvider } from "@sarraf/testing";
+import { Sarraf, type SarrafOptions } from "@sarrafjs/core";
+import { fawry } from "@sarrafjs/fawry";
+import { kashier } from "@sarrafjs/kashier";
+import { paymob } from "@sarrafjs/paymob";
+import { fakeProvider } from "@sarrafjs/testing";
 
 const env = (k: string) => process.env[k] || undefined;
 

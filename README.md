@@ -2,8 +2,8 @@
 
 **One payment API for Egypt, then the Middle East.** Sarraf is an open-source TypeScript SDK for Node.js. It puts **Paymob, Kashier and Fawry** behind one typed interface: one way to create a checkout, one webhook format, one status model, one error type.
 
-[![CI](https://github.com/sarraf-dev/sarraf/actions/workflows/ci.yml/badge.svg)](https://github.com/sarraf-dev/sarraf/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/@sarraf/core.svg)](https://www.npmjs.com/package/@sarraf/core)
+[![CI](https://github.com/muhammedalaa1/sarraf/actions/workflows/ci.yml/badge.svg)](https://github.com/muhammedalaa1/sarraf/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/@sarrafjs/core.svg)](https://www.npmjs.com/package/@sarrafjs/core)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](./LICENSE)
 
 > [!IMPORTANT]
@@ -73,16 +73,16 @@ const event = await pay.webhooks.verifyAndParse("kashier", req); // same shape f
 
 | Package | What it does |
 |---|---|
-| [`@sarraf/core`](./packages/core) | The `Sarraf` client, models, money math (2- and 3-decimal currencies), errors, HTTP client with redaction, idempotency stores, webhook router, and the adapter conformance suite (`@sarraf/core/conformance`). Redis store at `@sarraf/core/redis`. |
-| [`@sarraf/paymob`](./packages/paymob) | Intention API + Unified Checkout, HMAC-SHA512 callback and redirect verification, transaction inquiry, refund, void. Egypt, KSA, UAE, Oman. |
-| [`@sarraf/kashier`](./packages/kashier) | Hosted payment page (signed URL), redirect and webhook signature verification, order lookup, full / partial refunds and same-day voids; Payment Sessions (beta). |
-| [`@sarraf/fawry`](./packages/fawry) | PayAtFawry reference codes, status v2, V2 notification verification with status re-query, hosted card/wallet checkout, refund/cancel (beta). |
-| [`@sarraf/express`](./packages/express) | `rawBody()` middleware and `webhookHandler()` for Express (and any Node `http` server). |
-| [`@sarraf/next`](./packages/next) | `webhookRoute()` for App Router route handlers and `verifyRedirect()` for thank-you pages. Fetch API only, so it also fits Hono, Remix or Bun. |
-| [`@sarraf/nestjs`](./packages/nestjs) | `SarrafModule`, `@InjectSarraf()`, a verified `POST /webhooks/:provider` controller and `@OnSarrafEvent()` handlers. |
-| [`@sarraf/testing`](./packages/testing) | `fakeProvider()` for testing your app without network, `createMockFetch()` for adapter tests, fixture loader. |
+| [`@sarrafjs/core`](./packages/core) | The `Sarraf` client, models, money math (2- and 3-decimal currencies), errors, HTTP client with redaction, idempotency stores, webhook router, and the adapter conformance suite (`@sarrafjs/core/conformance`). Redis store at `@sarrafjs/core/redis`. |
+| [`@sarrafjs/paymob`](./packages/paymob) | Intention API + Unified Checkout, HMAC-SHA512 callback and redirect verification, transaction inquiry, refund, void. Egypt, KSA, UAE, Oman. |
+| [`@sarrafjs/kashier`](./packages/kashier) | Hosted payment page (signed URL), redirect and webhook signature verification, order lookup, full / partial refunds and same-day voids; Payment Sessions (beta). |
+| [`@sarrafjs/fawry`](./packages/fawry) | PayAtFawry reference codes, status v2, V2 notification verification with status re-query, hosted card/wallet checkout, refund/cancel (beta). |
+| [`@sarrafjs/express`](./packages/express) | `rawBody()` middleware and `webhookHandler()` for Express (and any Node `http` server). |
+| [`@sarrafjs/next`](./packages/next) | `webhookRoute()` for App Router route handlers and `verifyRedirect()` for thank-you pages. Fetch API only, so it also fits Hono, Remix or Bun. |
+| [`@sarrafjs/nestjs`](./packages/nestjs) | `SarrafModule`, `@InjectSarraf()`, a verified `POST /webhooks/:provider` controller and `@OnSarrafEvent()` handlers. |
+| [`@sarrafjs/testing`](./packages/testing) | `fakeProvider()` for testing your app without network, `createMockFetch()` for adapter tests, fixture loader. |
 
-Each adapter also ships a `/testing` subpath (`@sarraf/paymob/testing`, ...) with helpers that build correctly signed webhooks for your tests.
+Each adapter also ships a `/testing` subpath (`@sarrafjs/paymob/testing`, ...) with helpers that build correctly signed webhooks for your tests.
 
 ## Provider support
 
@@ -108,12 +108,12 @@ Each adapter also ships a `/testing` subpath (`@sarraf/paymob/testing`, ...) wit
 Requires **Node.js 22+**. Install core plus the adapters you use:
 
 ```bash
-npm install @sarraf/core @sarraf/paymob @sarraf/kashier @sarraf/fawry
+npm install @sarrafjs/core @sarrafjs/paymob @sarrafjs/kashier @sarrafjs/fawry
 # optional
-npm install @sarraf/express          # Express helpers
-npm install @sarraf/next             # Next.js App Router helpers
-npm install @sarraf/nestjs           # NestJS module
-npm install -D @sarraf/testing       # test helpers
+npm install @sarrafjs/express          # Express helpers
+npm install @sarrafjs/next             # Next.js App Router helpers
+npm install @sarrafjs/nestjs           # NestJS module
+npm install -D @sarrafjs/testing       # test helpers
 ```
 
 Every package ships ESM and CommonJS builds with type declarations for both.
@@ -123,10 +123,10 @@ Every package ships ESM and CommonJS builds with type declarations for both.
 ### 1. Create the client once
 
 ```ts
-import { Sarraf } from "@sarraf/core";
-import { paymob } from "@sarraf/paymob";
-import { kashier } from "@sarraf/kashier";
-import { fawry } from "@sarraf/fawry";
+import { Sarraf } from "@sarrafjs/core";
+import { paymob } from "@sarrafjs/paymob";
+import { kashier } from "@sarrafjs/kashier";
+import { fawry } from "@sarrafjs/fawry";
 
 export const pay = new Sarraf({
   providers: {
@@ -177,7 +177,7 @@ else showFawryCode(checkout.referenceCode!);         // Fawry cash: customer pay
 
 ```ts
 import express from "express";
-import { rawBody, webhookHandler } from "@sarraf/express";
+import { rawBody, webhookHandler } from "@sarrafjs/express";
 
 const app = express();
 app.post(
@@ -191,7 +191,7 @@ app.post(
 );
 ```
 
-Next.js (`@sarraf/next`) and NestJS (`@sarraf/nestjs`) have the same behaviour: see [Framework integration](#framework-integration). Without a helper:
+Next.js (`@sarrafjs/next`) and NestJS (`@sarrafjs/nestjs`) have the same behaviour: see [Framework integration](#framework-integration). Without a helper:
 
 ```ts
 const event = await pay.webhooks.verifyAndParse("kashier", {
@@ -239,7 +239,7 @@ Supported currencies: `EGP SAR AED QAR USD EUR` (2 decimals) and `KWD BHD OMR JO
 Conversions use string and `BigInt` math, never float division. They throw instead of rounding:
 
 ```ts
-import { toMinor, toMajorString } from "@sarraf/core";
+import { toMinor, toMajorString } from "@sarrafjs/core";
 toMinor("250.00", "EGP");       // 25000
 toMinor("1.250", "KWD");        // 1250
 toMinor("0.001", "EGP");        // throws INVALID_REQUEST: more than 2 decimal places
@@ -330,7 +330,7 @@ The [express-shop example](./examples/express-shop) has a `reconcilePending()` j
 
 ```ts
 import Redis from "ioredis";
-import { RedisStore } from "@sarraf/core/redis";
+import { RedisStore } from "@sarrafjs/core/redis";
 
 const pay = new Sarraf({ providers, idempotency: new RedisStore(new Redis(process.env.REDIS_URL)) });
 ```
@@ -342,7 +342,7 @@ const pay = new Sarraf({ providers, idempotency: new RedisStore(new Redis(proces
 Everything Sarraf throws on purpose is a `SarrafError`:
 
 ```ts
-import { isSarrafError } from "@sarraf/core";
+import { isSarrafError } from "@sarrafjs/core";
 
 try {
   await pay.refunds.create({ ... });
@@ -409,7 +409,7 @@ Everything passed to logs and hooks goes through `redact()` first. Any field who
 
 ### Server-side only
 
-`@sarraf/core` throws on import in a browser. Your secret keys must never ship to a client bundle. In Next.js, import it only from server code (route handlers, server actions, or files marked `import "server-only"`).
+`@sarrafjs/core` throws on import in a browser. Your secret keys must never ship to a client bundle. In Next.js, import it only from server code (route handlers, server actions, or files marked `import "server-only"`).
 
 ---
 
@@ -496,9 +496,9 @@ pnpm --filter example-nextjs-shop dev      # http://localhost:3002
 
 | Framework | Example | Key point |
 |---|---|---|
-| Express | [`examples/express-shop`](./examples/express-shop) | `@sarraf/express`: `rawBody()` + `webhookHandler()`, a reconcile job |
-| NestJS | [`examples/nestjs-shop`](./examples/nestjs-shop) | `@sarraf/nestjs`: `SarrafModule` + `@OnSarrafEvent()`, app created with `{ rawBody: true }` |
-| Next.js (App Router) | [`examples/nextjs-shop`](./examples/nextjs-shop) | `@sarraf/next`: `webhookRoute()`, `verifyRedirect()`, server actions, `import "server-only"` |
+| Express | [`examples/express-shop`](./examples/express-shop) | `@sarrafjs/express`: `rawBody()` + `webhookHandler()`, a reconcile job |
+| NestJS | [`examples/nestjs-shop`](./examples/nestjs-shop) | `@sarrafjs/nestjs`: `SarrafModule` + `@OnSarrafEvent()`, app created with `{ rawBody: true }` |
+| Next.js (App Router) | [`examples/nextjs-shop`](./examples/nextjs-shop) | `@sarrafjs/next`: `webhookRoute()`, `verifyRedirect()`, server actions, `import "server-only"` |
 
 **Using Kashier?** The [Kashier guide](./apps/docs/src/content/docs/guides/kashier.md) builds a complete integration in both Express and Next.js: checkout, webhooks, thank-you page, refunds, voids and reconciliation.
 
@@ -508,7 +508,7 @@ Next.js route handler:
 
 ```ts
 // app/api/webhooks/[provider]/route.ts
-import { webhookRoute } from "@sarraf/next";
+import { webhookRoute } from "@sarrafjs/next";
 import { pay } from "@/lib/pay";
 
 export const runtime = "nodejs";
@@ -538,8 +538,8 @@ export class OrdersService {
 ### Test your app without any provider: `fakeProvider`
 
 ```ts
-import { Sarraf } from "@sarraf/core";
-import { fakeProvider } from "@sarraf/testing";
+import { Sarraf } from "@sarrafjs/core";
+import { fakeProvider } from "@sarrafjs/testing";
 
 const paymob = fakeProvider("paymob");                           // stands in for the real adapter
 const pay = new Sarraf({ providers: { paymob } });
@@ -557,16 +557,16 @@ const event = await pay.webhooks.verifyAndParse("paymob", webhook);
 ### Test against real provider payloads: signed webhook builders
 
 ```ts
-import { paymobTransaction, signPaymobCallback } from "@sarraf/paymob/testing";
+import { paymobTransaction, signPaymobCallback } from "@sarrafjs/paymob/testing";
 const req = signPaymobCallback(paymobTransaction({ success: true }), process.env.TEST_HMAC!);
 ```
 
-Equivalent helpers: `signKashierWebhook` / `kashierWebhookData` (`@sarraf/kashier/testing`), `signFawryNotification` / `fawryNotification` (`@sarraf/fawry/testing`).
+Equivalent helpers: `signKashierWebhook` / `kashierWebhookData` (`@sarrafjs/kashier/testing`), `signFawryNotification` / `fawryNotification` (`@sarrafjs/fawry/testing`).
 
 ### Mock HTTP: `createMockFetch`
 
 ```ts
-import { createMockFetch } from "@sarraf/testing";
+import { createMockFetch } from "@sarrafjs/testing";
 
 const fetch = createMockFetch([
   { method: "POST", url: "/v1/intention/", respond: { status: 201, body: { id: "pi_1", client_secret: "cs" } } },
@@ -581,7 +581,7 @@ Unmatched requests throw with a helpful message instead of reaching the network.
 
 ## API reference (summary)
 
-Full generated reference: `pnpm --filter @sarraf/docs build` (TypeDoc output under `/api`).
+Full generated reference: `pnpm --filter @sarrafjs/docs build` (TypeDoc output under `/api`).
 
 ### `new Sarraf(options)`
 
@@ -639,21 +639,21 @@ Full generated reference: `pnpm --filter @sarraf/docs build` (TypeDoc output und
 ```mermaid
 flowchart LR
   App[Your app] -->|checkout.create / refunds.create / payments.get| Core
-  subgraph Core["@sarraf/core: Sarraf client"]
+  subgraph Core["@sarrafjs/core: Sarraf client"]
     V[validation<br/>zod] --> C[capability check<br/>supported / beta]
     C --> I[idempotency<br/>Memory / Redis]
     I --> A
   end
-  A{{PaymentProvider<br/>interface}} --> P["@sarraf/paymob"]
-  A --> K["@sarraf/kashier"]
-  A --> F["@sarraf/fawry"]
+  A{{PaymentProvider<br/>interface}} --> P["@sarrafjs/paymob"]
+  A --> K["@sarrafjs/kashier"]
+  A --> F["@sarrafjs/fawry"]
   P & K & F --> H[HttpClient<br/>timeouts · retries GET only · redaction]
   H --> Prov[(Provider APIs)]
   Prov -. webhook .-> W[webhooks.verifyAndParse]
   W -->|SarrafEvent| App
 ```
 
-1. **`@sarraf/core`** knows nothing about any specific provider. It owns the models, validation, capability checks, idempotency, money math, errors, the HTTP client and the `PaymentProvider` interface.
+1. **`@sarrafjs/core`** knows nothing about any specific provider. It owns the models, validation, capability checks, idempotency, money math, errors, the HTTP client and the `PaymentProvider` interface.
 2. **Adapters** implement `PaymentProvider` and register themselves in core's type registries through TypeScript module augmentation. That is how `providerOptions` gets a different type for each provider, and how a third-party adapter (say `@acme/sarraf-tap`) can plug in without changing core.
 3. **The HTTP client** is a thin `fetch` wrapper (Node 22+ has `fetch` built in). It adds per-request timeouts, retries only safe calls, maps a timeout on a money call to `TIMEOUT_UNKNOWN_OUTCOME`, and redacts everything it logs. Inject your own `fetch` for tests or proxies.
 
@@ -700,7 +700,7 @@ tests/sandbox/    contract tests against real sandboxes (skipped without credent
 - **Signature fixtures** (`fixtures/<provider>/*.json`) contain a payload, a test secret, the exact `signedString` and the `expectedSignature`. The expected signatures were computed with a separate script using plain `node:crypto`, not the SDK. If the SDK's recipe is wrong, the test fails instead of agreeing with itself.
 - **Tamper tests:** each signature is rejected when the amount, the status or the key changes, when the signature is missing, or when extra whitespace is added.
 - **Property tests** (fast-check) check money round-trips for every currency.
-- **Conformance suite** (`@sarraf/core/conformance`): every adapter runs the same lifecycle: create → webhook succeeded → get → refund → webhook refunded, plus tamper and idempotency checks.
+- **Conformance suite** (`@sarrafjs/core/conformance`): every adapter runs the same lifecycle: create → webhook succeeded → get → refund → webhook refunded, plus tamper and idempotency checks.
 - **Sandbox contract tests** (`pnpm test:sandbox`) make real calls when `.env.sandbox` exists, and run nightly in CI.
 - **Recorded fixtures** (`pnpm record-fixtures`) capture real webhooks, verify them with your real secret, then scrub PII and re-sign with a throwaway secret so they can be committed.
 
@@ -721,7 +721,7 @@ pnpm workspaces · Turborepo · TypeScript 6 (strictest settings, see below) · 
 
 ```bash
 cp .env.sandbox.example .env.sandbox   # sandbox keys only
-pnpm --filter @sarraf/dashboard dev    # http://localhost:4545
+pnpm --filter @sarrafjs/dashboard dev    # http://localhost:4545
 cloudflared tunnel --url http://localhost:4545   # point provider webhooks at <tunnel>/webhooks/<provider>
 ```
 
@@ -739,7 +739,7 @@ Without credentials, it runs on fake providers. It **refuses to start with live 
 ### Setup
 
 ```bash
-git clone https://github.com/sarraf-dev/sarraf.git
+git clone https://github.com/muhammedalaa1/sarraf.git
 cd sarraf
 pnpm install          # also installs git hooks (lefthook)
 pnpm build
@@ -764,7 +764,7 @@ pnpm check            # everything CI runs, locally
 | `pnpm record-fixtures ...` | Record real sandbox payloads as scrubbed fixtures (see below) |
 | `pnpm changeset` | Describe your change for the changelog and version bump |
 
-Run one package: `pnpm --filter @sarraf/paymob test`. Run one test file: `cd packages/paymob && pnpm vitest run test/signature.test.ts`.
+Run one package: `pnpm --filter @sarrafjs/paymob test`. Run one test file: `cd packages/paymob && pnpm vitest run test/signature.test.ts`.
 
 ### Working with real sandboxes
 
@@ -786,8 +786,8 @@ The recorder and the dashboard both default to port 4545, so run one at a time. 
 `apps/docs` is an Astro Starlight site, with the API reference generated by TypeDoc.
 
 ```bash
-pnpm --filter @sarraf/docs dev                     # http://localhost:4321
-pnpm turbo run build --filter=@sarraf/docs         # builds the packages first, then apps/docs/dist
+pnpm --filter @sarrafjs/docs dev                     # http://localhost:4321
+pnpm turbo run build --filter=@sarrafjs/docs         # builds the packages first, then apps/docs/dist
 ```
 
 **Deploying on Vercel:** import the repo, set **Root Directory** to `apps/docs` (the build settings come from `apps/docs/vercel.json`), and add the environment variables `ENABLE_EXPERIMENTAL_COREPACK=1` (use the pnpm version from `package.json`) and `LEFTHOOK=0`. Use Node.js 22.x. The site URL comes from Vercel; set `SITE_URL` for a custom domain. The docs need no secrets. Don't deploy `apps/dashboard`: it is a local sandbox tool that uses your keys and keeps its inbox in a local file.
@@ -912,8 +912,8 @@ Your Paymob keys come from different modes. Use all test keys (and test integrat
 **`TIMEOUT_UNKNOWN_OUTCOME` on a refund.**
 The provider didn't answer in time. The refund may have happened. Call `pay.payments.get(...)` and check `amountRefunded` before trying again.
 
-**`@sarraf/core is server-side only` in Next.js.**
-You imported a module that imports `@sarraf/core` into a client component. Move it to a route handler or server action, and add `import "server-only"` to the module.
+**`@sarrafjs/core is server-side only` in Next.js.**
+You imported a module that imports `@sarrafjs/core` into a client component. Move it to a route handler or server action, and add `import "server-only"` to the module.
 
 **ESLint reports "error typed value" or can't find types.**
 Run `pnpm build` first. ESLint resolves sibling packages through their built `dist/*.d.ts`.

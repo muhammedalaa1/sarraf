@@ -6,7 +6,7 @@ sidebar:
 ---
 
 ```bash
-npm install @sarraf/next
+npm install @sarrafjs/next
 ```
 
 Keep Sarraf on the server and out of client bundles:
@@ -14,7 +14,7 @@ Keep Sarraf on the server and out of client bundles:
 ```js
 // next.config.mjs
 export default {
-  serverExternalPackages: ["@sarraf/core", "@sarraf/next", "@sarraf/paymob", "@sarraf/kashier", "@sarraf/fawry"],
+  serverExternalPackages: ["@sarrafjs/core", "@sarrafjs/next", "@sarrafjs/paymob", "@sarrafjs/kashier", "@sarrafjs/fawry"],
 };
 ```
 
@@ -23,7 +23,7 @@ export default {
 `app/api/webhooks/[provider]/route.ts`:
 
 ```ts
-import { webhookRoute } from "@sarraf/next";
+import { webhookRoute } from "@sarrafjs/next";
 import { pay } from "@/lib/pay";
 
 export const runtime = "nodejs";
@@ -52,7 +52,7 @@ Options:
 
 ```tsx
 // app/thanks/[provider]/page.tsx
-import { verifyRedirect } from "@sarraf/next";
+import { verifyRedirect } from "@sarrafjs/next";
 
 export default async function Thanks({ params, searchParams }) {
   const { provider } = await params;
@@ -74,6 +74,6 @@ export async function checkout(formData: FormData) {
 }
 ```
 
-`@sarraf/next` only uses the Fetch API `Request` / `Response`, so `webhookRoute` also works in other Fetch-based frameworks (Hono, Remix, Bun).
+`@sarrafjs/next` only uses the Fetch API `Request` / `Response`, so `webhookRoute` also works in other Fetch-based frameworks (Hono, Remix, Bun).
 
-Full example: [`examples/nextjs-shop`](https://github.com/sarraf-dev/sarraf/tree/main/examples/nextjs-shop).
+Full example: [`examples/nextjs-shop`](https://github.com/muhammedalaa1/sarraf/tree/main/examples/nextjs-shop).

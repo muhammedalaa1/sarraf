@@ -1,4 +1,4 @@
-import type { Capabilities, CapabilityLevel } from "@sarraf/core";
+import type { Capabilities, CapabilityLevel } from "@sarrafjs/core";
 import { getSarraf } from "../../lib/sarraf";
 
 export const dynamic = "force-dynamic";

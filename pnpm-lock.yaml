@@ -181,19 +181,19 @@ importers:
       '@commitlint/config-conventional':
         specifier: 21.2.4
         version: 21.2.4
-      '@sarraf/core':
+      '@sarrafjs/core':
         specifier: workspace:*
         version: link:packages/core
-      '@sarraf/fawry':
+      '@sarrafjs/fawry':
         specifier: workspace:*
         version: link:packages/fawry
-      '@sarraf/kashier':
+      '@sarrafjs/kashier':
         specifier: workspace:*
         version: link:packages/kashier
-      '@sarraf/paymob':
+      '@sarrafjs/paymob':
         specifier: workspace:*
         version: link:packages/paymob
-      '@sarraf/testing':
+      '@sarrafjs/testing':
         specifier: workspace:*
         version: link:packages/testing
       '@types/node':
@@ -241,19 +241,19 @@ importers:
 
   apps/dashboard:
     dependencies:
-      '@sarraf/core':
+      '@sarrafjs/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@sarraf/fawry':
+      '@sarrafjs/fawry':
         specifier: workspace:*
         version: link:../../packages/fawry
-      '@sarraf/kashier':
+      '@sarrafjs/kashier':
         specifier: workspace:*
         version: link:../../packages/kashier
-      '@sarraf/paymob':
+      '@sarrafjs/paymob':
         specifier: workspace:*
         version: link:../../packages/paymob
-      '@sarraf/testing':
+      '@sarrafjs/testing':
         specifier: workspace:*
         version: link:../../packages/testing
       dotenv:
@@ -291,28 +291,28 @@ importers:
         specifier: 0.35.5
         version: 0.35.5(@types/node@26.6.5)
     devDependencies:
-      '@sarraf/core':
+      '@sarrafjs/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@sarraf/express':
+      '@sarrafjs/express':
         specifier: workspace:*
         version: link:../../packages/express
-      '@sarraf/fawry':
+      '@sarrafjs/fawry':
         specifier: workspace:*
         version: link:../../packages/fawry
-      '@sarraf/kashier':
+      '@sarrafjs/kashier':
         specifier: workspace:*
         version: link:../../packages/kashier
-      '@sarraf/nestjs':
+      '@sarrafjs/nestjs':
         specifier: workspace:*
         version: link:../../packages/nestjs
-      '@sarraf/next':
+      '@sarrafjs/next':
         specifier: workspace:*
         version: link:../../packages/next
-      '@sarraf/paymob':
+      '@sarrafjs/paymob':
         specifier: workspace:*
         version: link:../../packages/paymob
-      '@sarraf/testing':
+      '@sarrafjs/testing':
         specifier: workspace:*
         version: link:../../packages/testing
       typedoc:
@@ -321,22 +321,22 @@ importers:
 
   examples/express-shop:
     dependencies:
-      '@sarraf/core':
+      '@sarrafjs/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@sarraf/express':
+      '@sarrafjs/express':
         specifier: workspace:*
         version: link:../../packages/express
-      '@sarraf/fawry':
+      '@sarrafjs/fawry':
         specifier: workspace:*
         version: link:../../packages/fawry
-      '@sarraf/kashier':
+      '@sarrafjs/kashier':
         specifier: workspace:*
         version: link:../../packages/kashier
-      '@sarraf/paymob':
+      '@sarrafjs/paymob':
         specifier: workspace:*
         version: link:../../packages/paymob
-      '@sarraf/testing':
+      '@sarrafjs/testing':
         specifier: workspace:*
         version: link:../../packages/testing
       express:
@@ -364,22 +364,22 @@ importers:
       '@nestjs/platform-express':
         specifier: 12.2.0
         version: 12.2.0(@nestjs/common@12.2.0(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.2.0)(supports-color@7.2.0)
-      '@sarraf/core':
+      '@sarrafjs/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@sarraf/fawry':
+      '@sarrafjs/fawry':
         specifier: workspace:*
         version: link:../../packages/fawry
-      '@sarraf/kashier':
+      '@sarrafjs/kashier':
         specifier: workspace:*
         version: link:../../packages/kashier
-      '@sarraf/nestjs':
+      '@sarrafjs/nestjs':
         specifier: workspace:*
         version: link:../../packages/nestjs
-      '@sarraf/paymob':
+      '@sarrafjs/paymob':
         specifier: workspace:*
         version: link:../../packages/paymob
-      '@sarraf/testing':
+      '@sarrafjs/testing':
         specifier: workspace:*
         version: link:../../packages/testing
       reflect-metadata:
@@ -404,22 +404,22 @@ importers:
 
   examples/nextjs-shop:
     dependencies:
-      '@sarraf/core':
+      '@sarrafjs/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@sarraf/fawry':
+      '@sarrafjs/fawry':
         specifier: workspace:*
         version: link:../../packages/fawry
-      '@sarraf/kashier':
+      '@sarrafjs/kashier':
         specifier: workspace:*
         version: link:../../packages/kashier
-      '@sarraf/next':
+      '@sarrafjs/next':
         specifier: workspace:*
         version: link:../../packages/next
-      '@sarraf/paymob':
+      '@sarrafjs/paymob':
         specifier: workspace:*
         version: link:../../packages/paymob
-      '@sarraf/testing':
+      '@sarrafjs/testing':
         specifier: workspace:*
         version: link:../../packages/testing
       next:
@@ -453,11 +453,11 @@ importers:
 
   packages/express:
     dependencies:
-      '@sarraf/core':
+      '@sarrafjs/core':
         specifier: workspace:^
         version: link:../core
     devDependencies:
-      '@sarraf/testing':
+      '@sarrafjs/testing':
         specifier: workspace:*
         version: link:../testing
       '@types/express':
@@ -475,20 +475,20 @@ importers:
 
   packages/fawry:
     dependencies:
-      '@sarraf/core':
+      '@sarrafjs/core':
         specifier: workspace:^
         version: link:../core
       zod:
         specifier: 4.6.7
         version: 4.6.7
     devDependencies:
-      '@sarraf/testing':
+      '@sarrafjs/testing':
         specifier: workspace:*
         version: link:../testing
 
   packages/kashier:
     dependencies:
-      '@sarraf/core':
+      '@sarrafjs/core':
         specifier: workspace:^
         version: link:../core
       query-string:
@@ -498,13 +498,13 @@ importers:
         specifier: 4.6.7
         version: 4.6.7
     devDependencies:
-      '@sarraf/testing':
+      '@sarrafjs/testing':
         specifier: workspace:*
         version: link:../testing
 
   packages/nestjs:
     dependencies:
-      '@sarraf/core':
+      '@sarrafjs/core':
         specifier: workspace:^
         version: link:../core
     devDependencies:
@@ -520,7 +520,7 @@ importers:
       '@nestjs/testing':
         specifier: 12.2.0
         version: 12.2.0(@nestjs/common@12.2.0(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@7.2.0))(@nestjs/core@12.2.0)(@nestjs/platform-express@12.2.0)
-      '@sarraf/testing':
+      '@sarrafjs/testing':
         specifier: workspace:*
         version: link:../testing
       '@types/supertest':
@@ -538,30 +538,30 @@ importers:
 
   packages/next:
     dependencies:
-      '@sarraf/core':
+      '@sarrafjs/core':
         specifier: workspace:^
         version: link:../core
     devDependencies:
-      '@sarraf/testing':
+      '@sarrafjs/testing':
         specifier: workspace:*
         version: link:../testing
 
   packages/paymob:
     dependencies:
-      '@sarraf/core':
+      '@sarrafjs/core':
         specifier: workspace:^
         version: link:../core
       zod:
         specifier: 4.6.7
         version: 4.6.7
     devDependencies:
-      '@sarraf/testing':
+      '@sarrafjs/testing':
         specifier: workspace:*
         version: link:../testing
 
   packages/testing:
     dependencies:
-      '@sarraf/core':
+      '@sarrafjs/core':
         specifier: workspace:^
         version: link:../core
 

@@ -8,10 +8,10 @@ import * as index from "../src/index.js";
 import * as testing from "../src/testing.js";
 
 describe("public exports", () => {
-  it("@sarraf/kashier", () => {
+  it("@sarrafjs/kashier", () => {
     expect(Object.keys(index).sort()).toMatchSnapshot();
   });
-  it("@sarraf/kashier/testing", () => {
+  it("@sarrafjs/kashier/testing", () => {
     expect(Object.keys(testing).sort()).toMatchSnapshot();
   });
 });

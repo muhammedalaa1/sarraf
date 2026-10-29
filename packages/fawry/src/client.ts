@@ -6,7 +6,7 @@ import {
   SarrafError,
   type SarrafErrorCode,
   str,
-} from "@sarraf/core";
+} from "@sarrafjs/core";
 import type { FawryConfig } from "./config.js";
 import {
   type FawryExpressItem,

@@ -6,20 +6,20 @@ description: Accept your first sandbox payment in five minutes.
 ## 1. Install
 
 ```bash
-npm i @sarraf/core @sarraf/paymob @sarraf/kashier @sarraf/fawry @sarraf/express
+npm i @sarrafjs/core @sarrafjs/paymob @sarrafjs/kashier @sarrafjs/fawry @sarrafjs/express
 ```
 
-Node 22+. Server-side only: `@sarraf/core` throws if it is bundled for a browser.
+Node 22+. Server-side only: `@sarrafjs/core` throws if it is bundled for a browser.
 
 ## 2. Configure providers
 
 Use **sandbox / test** credentials from each provider's dashboard. Configure only the providers you use.
 
 ```ts
-import { Sarraf } from "@sarraf/core";
-import { paymob } from "@sarraf/paymob";
-import { kashier } from "@sarraf/kashier";
-import { fawry } from "@sarraf/fawry";
+import { Sarraf } from "@sarrafjs/core";
+import { paymob } from "@sarrafjs/paymob";
+import { kashier } from "@sarrafjs/kashier";
+import { fawry } from "@sarrafjs/fawry";
 
 export const pay = new Sarraf({
   providers: {
@@ -66,7 +66,7 @@ else showCode(checkout.referenceCode!, checkout.expiresAt);   // Fawry cash
 
 ```ts
 import express from "express";
-import { rawBody, webhookHandler } from "@sarraf/express";
+import { rawBody, webhookHandler } from "@sarrafjs/express";
 
 const app = express();
 app.post("/api/webhooks/:provider", rawBody(), webhookHandler(pay, async (event) => {
@@ -87,4 +87,4 @@ const payment = await pay.payments.reconcile({ provider: "fawry", reference: "or
 
 ## Try it without accounts
 
-`@sarraf/testing` ships a `fakeProvider()` that behaves like a provider and can simulate signed webhooks. All three [examples](https://github.com/sarraf-dev/sarraf/tree/main/examples) run in demo mode with no credentials.
+`@sarrafjs/testing` ships a `fakeProvider()` that behaves like a provider and can simulate signed webhooks. All three [examples](https://github.com/muhammedalaa1/sarraf/tree/main/examples) run in demo mode with no credentials.
