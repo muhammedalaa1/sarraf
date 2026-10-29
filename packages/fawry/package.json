@@ -1,6 +1,6 @@
 {
   "name": "@sarrafjs/fawry",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Fawry adapter for Sarraf: PayAtFawry reference codes, hosted card checkout, V2 notification verification.",
   "license": "Apache-2.0",
   "type": "module",

@@ -1,6 +1,6 @@
 {
   "name": "@sarrafjs/express",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Express helpers for Sarraf: raw-body middleware and a verified webhook handler.",
   "license": "Apache-2.0",
   "type": "module",
