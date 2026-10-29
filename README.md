@@ -88,12 +88,15 @@ Each adapter also ships a `/testing` subpath (`@sarraf/paymob/testing`, ...) wit
 
 | | Paymob | Kashier | Fawry |
 |---|---|---|---|
-| Checkout | ✅ redirect | ✅ redirect (hosted page) · 🧪 sessions | ✅ reference code · 🧪 hosted card/wallet |
+| Checkout | ✅ redirect · 🧪 kiosk reference code | ✅ redirect (hosted page) · 🧪 sessions | ✅ reference code · 🧪 hosted card/wallet |
 | Webhook verification | ✅ HMAC-SHA512 | ✅ HMAC-SHA256 | ✅ SHA-256 (V2) + status re-query |
 | Redirect verification | ✅ (UX only) | ✅ (UX only) | — |
 | Get payment / reconcile | ✅ (needs `apiKey`) | ✅ (needs `secretKey`, by `reference`) | ✅ |
 | Refund (full / partial) | ✅ | ✅ (needs `secretKey`; full refunds need `reference`) | 🧪 |
-| Void / cancel | ✅ | ✅ void, same day (needs `secretKey`, by `reference`) | 🧪 |
+| Void / cancel | ✅ same day, by id or `reference` | ✅ void, same day (needs `secretKey`, by `reference`) | 🧪 |
+| Capture (auth → capture) | 🧪 (needs `card_auth` integration) | — | — |
+| Saved cards | 🧪 `card.saved` events, checkout with saved cards, MOTO charges | — | — |
+| Provider-only APIs | subscriptions, payment links, intention update (`pay.provider("paymob").extras`) | — | — |
 | Currencies | region currency (EGP / SAR / AED / OMR) | configurable, default EGP | EGP |
 
 ✅ supported · 🧪 beta (requires `allowBeta: true`) · — not offered by the provider/adapter
@@ -182,7 +185,7 @@ app.post(
   rawBody(),                                         // keep the exact bytes: signatures need them
   webhookHandler(pay, async (event) => {
     // event.type: "payment.succeeded" | "payment.failed" | "refund.succeeded" | ...
-    // event.payment.reference === "order_8841"
+    // event.payment.reference === "order_8841" (narrow first: "card.saved" has no payment)
     await queue.add("payment-event", event, { jobId: event.id }); // dedupe on event.id
   }),
 );
@@ -268,7 +271,9 @@ Each adapter exports its mapping table (`PAYMOB_STATUS_TABLE`, `KASHIER_STATUS_T
 A `SarrafEvent` looks the same for every provider:
 
 ```ts
-interface SarrafEvent {
+type SarrafEvent = PaymentEvent | CardSavedEvent;
+
+interface PaymentEvent {
   id: string;            // stable dedupe key: "<provider>:<providerEventOrTxnId>:<status>"
   type: "payment.succeeded" | "payment.failed" | "payment.pending" | "payment.expired"
       | "payment.canceled" | "refund.succeeded" | "refund.failed";
@@ -277,7 +282,18 @@ interface SarrafEvent {
   receivedAt: string;
   raw: unknown;          // the provider's original payload
 }
+
+interface CardSavedEvent {
+  id: string;
+  type: "card.saved";    // Paymob saved-card callback
+  provider: "paymob";
+  card: SavedCard;       // token, last4, brand, expiry, holder name
+  receivedAt: string;
+  raw: unknown;
+}
 ```
+
+Narrow on `event.type` (or use `isPaymentEvent` / `assertPaymentEvent`) before reading `event.payment`.
 
 Rules that keep you safe:
 
@@ -406,19 +422,22 @@ The full guides live in the docs site (`apps/docs`): setup, credentials, flows, 
 ```ts
 paymob({
   region: "egypt",              // "egypt" | "ksa" | "uae" | "oman" (sets base URL and currency)
-  secretKey: "sk_test_...",     // creates intentions, refunds, voids
+  secretKey: "sk_test_...",     // creates intentions, refunds, voids, captures
   publicKey: "pk_test_...",     // builds the Unified Checkout URL
   hmacSecret: "...",            // verifies callbacks and redirects
-  apiKey: "...",                // legacy API key: transaction inquiry (getPayment / reconcile)
-  integrationIds: { card: 123, wallet: 456 },  // one per method; test/live must match keys
+  apiKey: "...",                // API key: lookups, full refunds, subscriptions, payment links
+  integrationIds: { card: 123, wallet: 456 },  // test/live must match keys; also cash_outlet (kiosk),
+                                               // card_auth, card_moto, apple_pay, bnpl, installments
   baseUrl: undefined,           // override (proxies, tests)
 });
 ```
 
-- **Checkout:** Intention API → Unified Checkout redirect URL.
+- **Checkout:** Intention API → Unified Checkout redirect URL, or a kiosk bill reference with `methods: ["cash_outlet"]` (beta). `payment.providerPaymentId` stays empty until the customer pays: the transaction id arrives with the webhook or `reconcile`.
 - **Callback signature:** HMAC-SHA512 (hex) with `hmacSecret`, over the concatenated values of these transaction fields, in this order: `amount_cents, created_at, currency, error_occured, has_parent_transaction, id, integration_id, is_3d_secure, is_auth, is_capture, is_refunded, is_standalone_payment, is_voided, order.id, owner, pending, source_data.pan, source_data.sub_type, source_data.type, success`. The expected value arrives in the `?hmac=` query parameter.
-- **Provider options:** `providerOptions: { paymentMethods, extras, billingData }`.
-- ⚠️ To confirm in sandbox: how `null` fields are stringified, refund response fields, and the transaction-inquiry-by-reference path.
+- **Saved cards:** `TOKEN` callbacks become `card.saved` events (HMAC over 8 card-token fields).
+- **Provider options:** `providerOptions: { paymentMethods, extras, billingData, capture: "manual", cardTokens, subscription, addCardToSubscription }`.
+- **Paymob-only APIs** on `pay.provider("paymob").extras`: `cards.charge` (MOTO), `cards.listForOrder`, `subscriptions.*` (plans, lifecycle, cards, `verifyWebhook`), `links.create / cancel`, `intentions.update / retrieve`. Payouts are a separate product and not covered.
+- ⚠️ To confirm in sandbox: how `null` fields are stringified, the kiosk and capture response fields. See the [Paymob guide](https://sarraf.dev/providers/paymob).
 
 ### Kashier
 
@@ -508,7 +527,7 @@ export class AppModule {}
 @Injectable()
 export class OrdersService {
   @OnSarrafEvent("payment.succeeded")       // POST /webhooks/:provider is registered for you
-  async paid(event: SarrafEvent) { /* dedupe on event.id, fulfil the order */ }
+  async paid(event: PaymentEvent) { /* dedupe on event.id, fulfil the order */ }
 }
 ```
 

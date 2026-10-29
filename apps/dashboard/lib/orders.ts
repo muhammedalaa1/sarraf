@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "
 import { dirname, resolve } from "node:path";
 import type { Money, Payment, ProviderId } from "@sarraf/core";
 
-export type OrderAction = "checkout" | "reconcile" | "refund" | "cancel" | "webhook";
+export type OrderAction = "checkout" | "reconcile" | "refund" | "cancel" | "capture" | "webhook";
 
 export interface OrderHistoryItem {
   at: string;

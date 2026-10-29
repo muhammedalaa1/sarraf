@@ -25,6 +25,7 @@ describe.skipIf(!hasPaymob())("@sandbox paymob", () => {
       returnUrl: "https://example.com/return",
     });
     expect(checkout.redirectUrl).toMatch(/\/unifiedcheckout\/\?publicKey=.+&clientSecret=.+/);
+    expect(checkout.payment.providerPaymentId).toBe("");
     const page = await fetch(checkout.redirectUrl!, { redirect: "manual" });
     expect(page.status).toBeLessThan(500);
   });
@@ -39,6 +40,61 @@ describe.skipIf(!hasPaymob())("@sandbox paymob", () => {
     });
     expect(p.providerPaymentId).toBe(env("PAYMOB_SANDBOX_TRANSACTION_ID"));
     expect(p.amount.value).toBeGreaterThan(0);
+  });
+
+  it("updates and retrieves an unpaid intention", async () => {
+    const pay = sandboxSarraf();
+    const checkout = await pay.checkout.create({
+      provider: "paymob",
+      amount,
+      reference: ref("pm"),
+      customer,
+    });
+    const { extras } = pay.provider("paymob");
+    const updated = await extras.intentions.update(checkout, {
+      amount: 1500,
+      items: [{ name: "Updated", amount: 1500, quantity: 1 }],
+    });
+    expect(updated.client_secret).toBeTruthy();
+    const read = await extras.intentions.retrieve(checkout);
+    expect(read).toBeTruthy();
+  });
+
+  it("issues a kiosk bill reference", { skip: !env("PAYMOB_KIOSK_INTEGRATION_ID") }, async () => {
+    const pay = sandboxSarraf();
+    const checkout = await pay.checkout.create({
+      provider: "paymob",
+      amount,
+      reference: ref("pm"),
+      customer,
+      methods: ["cash_outlet"],
+    });
+    expect(checkout.kind).toBe("reference_code");
+    expect(checkout.referenceCode).toMatch(/^\d+$/);
+    expect(checkout.payment.status).toBe("awaiting_payment");
+  });
+
+  it("creates and cancels a payment link", { skip: !env("PAYMOB_API_KEY") }, async () => {
+    const { extras } = sandboxSarraf().provider("paymob");
+    const link = await extras.links.create({
+      amount,
+      reference: ref("pm"),
+      expiresAt: new Date(Date.now() + 3600 * 1000),
+    });
+    expect(link.url).toMatch(/^https:\/\//);
+    await extras.links.cancel(link.id);
+  });
+
+  it("captures an authorization", {
+    skip: !env("PAYMOB_API_KEY") || !env("PAYMOB_SANDBOX_AUTH_TRANSACTION_ID"),
+  }, async () => {
+    const pay = sandboxSarraf();
+    const p = await pay.payments.capture({
+      provider: "paymob",
+      providerPaymentId: env("PAYMOB_SANDBOX_AUTH_TRANSACTION_ID")!,
+      amount: { value: 100, currency: "EGP" },
+    });
+    expect(p.status).toBe("succeeded");
   });
 
   it("rejects a bad secret key with AUTHENTICATION_FAILED", async () => {

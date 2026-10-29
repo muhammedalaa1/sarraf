@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { safeEqualHex, sha256Hex } from "../src/crypto.js";
-import { buildEvent, eventTypeForStatus, refundedStatus, sarrafId } from "../src/helpers.js";
+import {
+  assertPaymentEvent,
+  buildEvent,
+  eventTypeForStatus,
+  isPaymentEvent,
+  refundedStatus,
+  sarrafId,
+} from "../src/helpers.js";
 import { MemoryStore } from "../src/idempotency/memory.js";
 import { RedisStore } from "../src/idempotency/redis.js";
 import { consoleLogger, defaultLogger, silentLogger } from "../src/logger.js";
@@ -190,5 +197,38 @@ describe("runtime guard and loggers", () => {
     for (const l of [silentLogger, defaultLogger, consoleLogger]) {
       expect(typeof l.debug).toBe("function");
     }
+  });
+});
+
+describe("event narrowing", () => {
+  it("tells payment events from card.saved", () => {
+    const paid = buildEvent({
+      provider: "paymob",
+      providerEventId: 1,
+      payment: {
+        id: "paymob_1",
+        provider: "paymob",
+        providerPaymentId: "1",
+        reference: "r",
+        status: "succeeded",
+        amount: { value: 100, currency: "EGP" },
+        amountRefunded: { value: 0, currency: "EGP" },
+        raw: {},
+      },
+      receivedAt: new Date(0),
+      raw: {},
+    });
+    const saved = {
+      id: "paymob:1:card.saved",
+      type: "card.saved" as const,
+      provider: "paymob" as const,
+      card: { token: "t" },
+      receivedAt: new Date(0).toISOString(),
+      raw: {},
+    };
+    expect(isPaymentEvent(paid)).toBe(true);
+    expect(isPaymentEvent(saved)).toBe(false);
+    expect(() => assertPaymentEvent(paid)).not.toThrow();
+    expect(() => assertPaymentEvent(saved)).toThrow(/expected a payment event, got "card.saved"/);
   });
 });

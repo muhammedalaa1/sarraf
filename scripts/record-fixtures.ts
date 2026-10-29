@@ -1,12 +1,19 @@
 /**
  * Record real sandbox exchanges as scrubbed fixtures (fixtures/<provider>/sandbox-*.json).
  *
- *   pnpm record-fixtures checkout <paymob|kashier|fawry>      create a real checkout, save request/response
+ *   pnpm record-fixtures checkout <paymob|kashier|fawry> [--method <m>] [--capture manual]
+ *                                                              create a real checkout, save request/response
+ *                                                              (paymob: --method cash_outlet for kiosk,
+ *                                                              --capture manual to authorize only)
  *   pnpm record-fixtures status <provider> <reference|id>      save a status / transaction inquiry response
  *   pnpm record-fixtures refund <provider> <paymentId> [amount] [--reference <ref>]
  *                                                              refund a paid sandbox payment (amount in
  *                                                              major units, e.g. 3.00; omit for a full refund)
  *   pnpm record-fixtures cancel <provider> <reference>         void a paid sandbox payment (same day)
+ *   pnpm record-fixtures capture paymob <transactionId> [amount]
+ *                                                              capture an authorization (manual capture)
+ *   pnpm record-fixtures charge paymob <cardToken>             charge a saved card on the MOTO integration
+ *   pnpm record-fixtures link paymob                           create a payment link (QuickLink)
  *   pnpm record-fixtures webhook [--port 4545]                 capture webhooks at /webhooks/:provider
  *                                                              and customer redirects at /return/:provider
  *
@@ -21,6 +28,7 @@ import {
   asRecord,
   type FetchLike,
   isSarrafError,
+  type PaymentMethod,
   type ProviderId,
   type RawWebhookRequest,
   toMinor,
@@ -29,8 +37,13 @@ import { fawryNotificationSignature } from "@sarraf/fawry";
 import { signFawryNotification } from "@sarraf/fawry/testing";
 import { kashierRedirectSignedString, kashierWebhookSignedString } from "@sarraf/kashier";
 import { signKashierRedirect, signKashierWebhook } from "@sarraf/kashier/testing";
-import { paymobSignedString } from "@sarraf/paymob";
-import { signPaymobCallback, signPaymobRedirect } from "@sarraf/paymob/testing";
+import { paymobSignedString, paymobSubscriptionSignedString, paymobTokenSignedString } from "@sarraf/paymob";
+import {
+  signPaymobCallback,
+  signPaymobRedirect,
+  signPaymobSubscriptionCallback,
+  signPaymobTokenCallback,
+} from "@sarraf/paymob/testing";
 import { env, loadSandboxEnv, ROOT } from "./env.js";
 import { sandboxSarraf } from "./providers.js";
 import { scrub, scrubUrl } from "./scrub.js";
@@ -61,7 +74,8 @@ function recordingFetch(log: Exchange[]): FetchLike {
     }
     let requestBody: unknown = init.body;
     try {
-      requestBody = typeof init.body === "string" ? JSON.parse(init.body) : init.body;
+      if (init.body instanceof FormData) requestBody = Object.fromEntries(init.body.entries());
+      else if (typeof init.body === "string") requestBody = JSON.parse(init.body);
     } catch {
       // not JSON: keep the raw value
     }
@@ -95,7 +109,10 @@ const SAMPLE = {
   customer: { name: "Sandbox Tester", email: "tester@example.com", phone: "+201000000000" },
 };
 
-async function recordCheckout(provider: ProviderId) {
+async function recordCheckout(
+  provider: ProviderId,
+  flags: { method?: PaymentMethod | undefined; capture?: "manual" | undefined } = {},
+) {
   const log: Exchange[] = [];
   const pay = sandboxSarraf({ http: { fetch: recordingFetch(log) }, debug: true });
   const reference = `sarraf_fx_${Date.now()}`;
@@ -104,17 +121,78 @@ async function recordCheckout(provider: ProviderId) {
     provider,
     reference,
     ...SAMPLE,
+    methods: flags.method ? [flags.method] : undefined,
+    providerOptions: provider === "paymob" && flags.capture ? { capture: flags.capture } : undefined,
     returnUrl: publicUrl ? `${publicUrl}/return/${provider}` : "https://example.com/return",
     webhookUrl: publicUrl ? `${publicUrl}/webhooks/${provider}` : undefined,
   });
-  save(provider, "sandbox-checkout", {
+  const variant = flags.method ? `-${flags.method}` : flags.capture ? "-auth" : "";
+  save(provider, `sandbox-checkout${variant}`, {
     description: `Real ${provider} sandbox checkout (scrubbed).`,
     exchanges: scrubExchanges(log),
     data: { kind: checkout.kind, status: checkout.payment.status, reference },
   });
   console.log(`\n  reference: ${reference}`);
   if (checkout.redirectUrl) console.log(`  pay here:  ${checkout.redirectUrl}`);
-  if (checkout.referenceCode) console.log(`  Fawry reference code: ${checkout.referenceCode}`);
+  if (checkout.referenceCode) console.log(`  reference code: ${checkout.referenceCode}`);
+}
+
+/** Run a Paymob-only call and save its exchanges, also when Paymob rejects it. */
+async function recordPaymob(
+  scenario: string,
+  description: string,
+  run: (pay: ReturnType<typeof sandboxSarraf>) => Promise<unknown>,
+) {
+  const log: Exchange[] = [];
+  const pay = sandboxSarraf({ http: { fetch: recordingFetch(log) } });
+  let outcome: string;
+  let data: unknown;
+  try {
+    data = await run(pay);
+    outcome = String(
+      (data as { status?: string; state?: string }).status ?? (data as { state?: string }).state ?? "ok",
+    );
+    console.log(`  ${scenario} → ${outcome}`);
+  } catch (err) {
+    outcome = "error";
+    data = isSarrafError(err)
+      ? { code: err.code, message: err.message, status: err.status }
+      : { error: String(err) };
+    console.log(`  ${scenario} rejected: ${String(err)}`);
+  }
+  save("paymob", `sandbox-${scenario}-${outcome}`, {
+    description: `Real Paymob sandbox ${description} (scrubbed).`,
+    exchanges: scrubExchanges(log).filter((e) => !/auth\/tokens/.test(e.url)),
+    data: scrub(data),
+  });
+}
+
+async function recordCapture(transactionId: string, major?: string) {
+  const currency = SAMPLE.amount.currency;
+  const amount = major ? { value: toMinor(major, currency), currency } : undefined;
+  await recordPaymob(`capture-${major ? "partial" : "full"}`, "capture", async (pay) =>
+    pay.payments.capture({ provider: "paymob", providerPaymentId: transactionId, amount }),
+  );
+}
+
+async function recordCharge(token: string) {
+  await recordPaymob("charge-saved-card", "MOTO charge on a saved card", async (pay) =>
+    pay.provider("paymob").extras.cards.charge({ token, reference: `sarraf_fx_${Date.now()}`, ...SAMPLE }),
+  );
+}
+
+async function recordLink() {
+  const publicUrl = env("SANDBOX_PUBLIC_URL");
+  await recordPaymob("link", "payment link", async (pay) => {
+    const link = await pay.provider("paymob").extras.links.create({
+      amount: SAMPLE.amount,
+      reference: `sarraf_fx_${Date.now()}`,
+      expiresAt: new Date(Date.now() + 24 * 3600 * 1000),
+      notificationUrl: publicUrl ? `${publicUrl}/webhooks/paymob` : undefined,
+    });
+    console.log(`  pay here: ${link.url}`);
+    return link;
+  });
 }
 
 async function recordStatus(provider: ProviderId, idOrRef: string) {
@@ -197,6 +275,25 @@ export function resign(provider: ProviderId, req: RawWebhookRequest) {
     typeof req.rawBody === "string" ? req.rawBody : new TextDecoder().decode(req.rawBody),
   );
   const secret = TEST_SECRETS[provider];
+  if (provider === "paymob" && body.trigger_type) {
+    const { hmac: _drop, ...rest } = scrub(asRecord(body));
+    const signed = signPaymobSubscriptionCallback(rest, secret);
+    const expected = asRecord(JSON.parse(signed.rawBody as string)).hmac;
+    return {
+      webhook: signed,
+      signedString: paymobSubscriptionSignedString(rest),
+      expectedSignature: expected,
+    };
+  }
+  if (provider === "paymob" && body.type === "TOKEN") {
+    const obj = scrub(asRecord(body.obj));
+    const signed = signPaymobTokenCallback(obj, secret);
+    return {
+      webhook: signed,
+      signedString: paymobTokenSignedString(obj),
+      expectedSignature: signed.query!.hmac,
+    };
+  }
   if (provider === "paymob") {
     const obj = scrub(asRecord(body.obj));
     const signed = signPaymobCallback(obj as never, secret);
@@ -298,15 +395,22 @@ async function captureWebhooks(port: number) {
         query: Object.fromEntries(url.searchParams),
       };
       try {
-        const inspection = await pay.webhooks.inspect(provider, raw);
+        const subscription = provider === "paymob" && /"trigger_type"/.test(String(raw.rawBody));
+        const inspection = subscription
+          ? pay.provider("paymob").extras.subscriptions.inspectWebhook(raw)
+          : await pay.webhooks.inspect(provider, raw);
         console.log(
           `\n← ${provider} webhook: signature ${inspection.valid ? "✓ VALID" : `✗ INVALID (${inspection.reason ?? "mismatch"})`}`,
         );
         console.log(`  signed string: ${inspection.signedString}`);
         let status = "unverified";
-        if (inspection.valid) {
+        if (inspection.valid && subscription) {
+          const event = pay.provider("paymob").extras.subscriptions.verifyWebhook(raw);
+          status = `subscription-${event.trigger.toLowerCase().replace(/\W+/g, "-")}`;
+          console.log(`  subscription event: ${event.trigger} (${event.id})`);
+        } else if (inspection.valid) {
           const event = await pay.webhooks.verifyAndParse(provider, raw);
-          status = event.payment.status;
+          status = event.type === "card.saved" ? "card-saved" : event.payment.status;
           console.log(`  event: ${event.type} (${event.id})`);
         }
         counts[provider] = (counts[provider] ?? 0) + 1;
@@ -334,7 +438,19 @@ async function main() {
     process.exit(1);
   }
   const [cmd, a, b] = process.argv.slice(2);
-  if (cmd === "checkout" && a) return recordCheckout(a as ProviderId);
+  const flag = (name: string) => {
+    const i = process.argv.indexOf(`--${name}`);
+    return i > 0 ? process.argv[i + 1] : undefined;
+  };
+  if (cmd === "checkout" && a) {
+    return recordCheckout(a as ProviderId, {
+      method: flag("method") as PaymentMethod | undefined,
+      capture: flag("capture") === "manual" ? "manual" : undefined,
+    });
+  }
+  if (cmd === "capture" && a === "paymob" && b) return recordCapture(b, process.argv[5]);
+  if (cmd === "charge" && a === "paymob" && b) return recordCharge(b);
+  if (cmd === "link" && a === "paymob") return recordLink();
   if (cmd === "status" && a && b) return recordStatus(a as ProviderId, b);
   if (cmd === "cancel" && a && b) return recordCancel(a as ProviderId, b);
   if (cmd === "refund" && a && b) {
@@ -348,7 +464,7 @@ async function main() {
     return captureWebhooks(portIdx > 0 ? Number(process.argv[portIdx + 1]) : 4545);
   }
   console.log(
-    "Usage:\n  record-fixtures checkout <provider>\n  record-fixtures status <provider> <reference|id>\n  record-fixtures refund <provider> <paymentId> [amount] [--reference <ref>]\n  record-fixtures cancel <provider> <reference>\n  record-fixtures webhook [--port 4545]",
+    "Usage:\n  record-fixtures checkout <provider> [--method <m>] [--capture manual]\n  record-fixtures capture paymob <transactionId> [amount]\n  record-fixtures charge paymob <cardToken>\n  record-fixtures link paymob\n  record-fixtures status <provider> <reference|id>\n  record-fixtures refund <provider> <paymentId> [amount] [--reference <ref>]\n  record-fixtures cancel <provider> <reference>\n  record-fixtures webhook [--port 4545]",
   );
   process.exit(1);
 }

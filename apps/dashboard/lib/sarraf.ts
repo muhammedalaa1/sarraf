@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { type HttpEvent, type PaymentProvider, Sarraf, type SarrafOptions } from "@sarraf/core";
 import { fawry } from "@sarraf/fawry";
 import { kashier } from "@sarraf/kashier";
-import { paymob } from "@sarraf/paymob";
+import { paymob, paymobIntegrationIdsFromEnv } from "@sarraf/paymob";
 import { fakeProvider } from "@sarraf/testing";
 import { config } from "dotenv";
 
@@ -26,9 +26,7 @@ export function buildProviders(e: Record<string, string | undefined>): {
   assertNoLiveKeys(e);
   const providers: SarrafOptions["providers"] = {};
   if (e.PAYMOB_SECRET_KEY && e.PAYMOB_PUBLIC_KEY && e.PAYMOB_HMAC_SECRET) {
-    const integrationIds: Record<string, number> = {};
-    if (e.PAYMOB_CARD_INTEGRATION_ID) integrationIds.card = Number(e.PAYMOB_CARD_INTEGRATION_ID);
-    if (e.PAYMOB_WALLET_INTEGRATION_ID) integrationIds.wallet = Number(e.PAYMOB_WALLET_INTEGRATION_ID);
+    const integrationIds = paymobIntegrationIdsFromEnv(e);
     providers.paymob = paymob({
       region: (e.PAYMOB_REGION as "egypt" | undefined) ?? "egypt",
       secretKey: e.PAYMOB_SECRET_KEY,

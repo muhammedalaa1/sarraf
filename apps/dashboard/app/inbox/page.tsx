@@ -55,7 +55,9 @@ export default function InboxPage() {
             <span className="pill">{e.provider}</span>
             <span>
               {e.event
-                ? `${e.event.type} · ${e.event.payment.reference}`
+                ? e.event.type === "card.saved"
+                  ? `card.saved · ${e.event.card.brand ?? "card"} •••• ${e.event.card.last4 ?? "?"}`
+                  : `${e.event.type} · ${e.event.payment.reference}`
                 : (e.inspection.reason ?? e.error ?? "")}
             </span>
             <span className="muted">{new Date(e.receivedAt).toLocaleString()}</span>

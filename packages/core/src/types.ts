@@ -161,7 +161,16 @@ export interface Refund {
   raw: unknown;
 }
 
-export type SarrafEventType =
+export interface CaptureInput {
+  /** Provider transaction id of the authorization. */
+  providerPaymentId: string;
+  reference?: string | undefined;
+  /** Defaults to the full authorized amount. */
+  amount?: Money | undefined;
+  idempotencyKey?: string | undefined;
+}
+
+export type PaymentEventType =
   | "payment.succeeded"
   | "payment.failed"
   | "payment.pending"
@@ -170,15 +179,48 @@ export type SarrafEventType =
   | "refund.succeeded"
   | "refund.failed";
 
-export interface SarrafEvent {
+export type SarrafEventType = PaymentEventType | "card.saved";
+
+export interface PaymentEvent {
   /** Stable dedupe key: `"<provider>:<providerEventOrTxnId>:<status>"`. */
   id: string;
-  type: SarrafEventType;
+  type: PaymentEventType;
   provider: ProviderId;
   payment: Payment;
   receivedAt: string;
   raw: unknown;
 }
+
+/** A tokenized card, as reported by the provider. Display data only; never a PAN. */
+export interface SavedCard {
+  /** Provider card token, used to charge the card later. */
+  token: string;
+  last4?: string | undefined;
+  brand?: string | undefined;
+  expiryMonth?: string | undefined;
+  expiryYear?: string | undefined;
+  holderName?: string | undefined;
+  email?: string | undefined;
+}
+
+/** A customer saved a card during checkout. */
+export interface CardSavedEvent {
+  /** Stable dedupe key: `"<provider>:<tokenId>:card.saved"`. */
+  id: string;
+  type: "card.saved";
+  provider: ProviderId;
+  card: SavedCard;
+  /** Provider order id the card was saved on, when reported. */
+  providerOrderId?: string | undefined;
+  receivedAt: string;
+  raw: unknown;
+}
+
+/** Narrow on `type`: every type except `"card.saved"` carries a `payment`. */
+export type SarrafEvent = PaymentEvent | CardSavedEvent;
+
+/** The event shape for a given type, e.g. `EventOf<"payment.succeeded">` is a `PaymentEvent`. */
+export type EventOf<T extends SarrafEventType> = T extends "card.saved" ? CardSavedEvent : PaymentEvent;
 
 export type HeaderValue = string | string[] | undefined;
 
@@ -225,6 +267,8 @@ export interface Capabilities {
   refund: CapabilityLevel;
   partialRefund: CapabilityLevel;
   cancel: CapabilityLevel;
+  /** Capture a previously authorized payment. */
+  capture: CapabilityLevel;
   webhooks: CapabilityLevel;
   redirectVerification: CapabilityLevel;
   methods: Partial<Record<PaymentMethod, CapabilityLevel>>;
@@ -244,11 +288,15 @@ export interface PaymentProvider<Id extends ProviderId = ProviderId> {
   readonly id: Id;
   readonly capabilities: Capabilities;
 
+  /** Called once by `Sarraf` with its context, for adapters that expose extra APIs. */
+  attach?(ctx: Ctx): void;
   createCheckout(input: CreateCheckoutInput<Id>, ctx: Ctx): Promise<Checkout>;
   getPayment(lookup: PaymentLookup, ctx: Ctx): Promise<Payment>;
   refund?(input: RefundInput, ctx: Ctx): Promise<Refund>;
   /** Void a same-day payment or cancel an unpaid reference code. */
   cancel?(lookup: PaymentLookup, ctx: Ctx): Promise<Payment>;
+  /** Capture an authorized payment, fully or partially. */
+  capture?(input: CaptureInput, ctx: Ctx): Promise<Payment>;
 
   inspectWebhook(req: RawWebhookRequest, ctx: Ctx): Promise<WebhookInspection>;
   /** Throws `WEBHOOK_SIGNATURE_INVALID` when the signature does not match. */

@@ -7,6 +7,7 @@ import {
   type PaymentMethod,
   type PaymentStatus,
   refundedStatus,
+  type SavedCard,
   type StatusMappingRow,
   sarrafId,
   str,
@@ -25,10 +26,24 @@ export interface PaymobTransaction {
   is_refund?: boolean | undefined;
   is_voided?: boolean | undefined;
   is_void?: boolean | undefined;
+  is_auth?: boolean | undefined;
+  is_capture?: boolean | undefined;
+  captured_amount?: number | undefined;
   refunded_amount_cents?: number | undefined;
+  /** Original transaction id on refund / void / capture transactions. */
+  parent_transaction?: number | null | undefined;
+  integration_id?: number | undefined;
   order?: { id: number; merchant_order_id?: string | null } | number | undefined;
   source_data?: { pan?: string; sub_type?: string; type?: string } | undefined;
-  data?: { message?: string; txn_response_code?: string | number; [k: string]: unknown } | undefined;
+  data?:
+    | {
+        message?: string;
+        txn_response_code?: string | number;
+        /** Kiosk (Aman / Masary) payment reference. */
+        bill_reference?: string | number;
+        [k: string]: unknown;
+      }
+    | undefined;
   special_reference?: string | undefined;
   [key: string]: unknown;
 }
@@ -36,7 +51,24 @@ export interface PaymobTransaction {
 /** Status mapping table, exported for docs and the dashboard status explorer. */
 export const PAYMOB_STATUS_TABLE: StatusMappingRow[] = [
   { provider: "is_voided: true", status: "canceled", verified: true },
+  {
+    provider: "pending: true, source_data.type: aggregator (kiosk)",
+    status: "awaiting_payment",
+    note: "customer pays the bill reference at a kiosk",
+    verified: false,
+  },
   { provider: "pending: true", status: "pending", verified: true },
+  {
+    provider: "success: true, is_auth: true, is_capture: false, nothing captured",
+    status: "requires_action",
+    note: "authorized, needs capture",
+    verified: false,
+  },
+  {
+    provider: "success: true, is_capture: true (capture transaction)",
+    status: "succeeded",
+    verified: false,
+  },
   { provider: "success: true, is_refunded: false, is_voided: false", status: "succeeded", verified: true },
   {
     provider: "success: true, is_refunded: true, refunded_amount_cents < amount_cents",
@@ -48,7 +80,7 @@ export const PAYMOB_STATUS_TABLE: StatusMappingRow[] = [
   {
     provider: "is_refund: true (refund transaction callback)",
     status: "refunded",
-    note: "emitted as refund.succeeded / refund.failed",
+    note: "emitted as refund.succeeded / refund.failed with the parent payment's totals",
     verified: false,
   },
   {
@@ -59,7 +91,8 @@ export const PAYMOB_STATUS_TABLE: StatusMappingRow[] = [
   },
 ];
 
-const truthy = (v: unknown) => v === true || v === "true";
+/** Paymob sends booleans as JSON booleans in callbacks and as strings in redirects. */
+export const truthy = (v: unknown): boolean => v === true || v === "true";
 
 export function mapPaymobStatus(
   txn: Pick<PaymobTransaction, "pending" | "success"> & Partial<PaymobTransaction>,
@@ -67,8 +100,11 @@ export function mapPaymobStatus(
 ): PaymentStatus {
   if (truthy(txn.is_voided) || truthy(txn.is_void)) return "canceled";
   if (truthy(txn.is_refund)) return "refunded";
-  if (truthy(txn.pending)) return "pending";
+  if (truthy(txn.pending)) return isKiosk(txn) ? "awaiting_payment" : "pending";
   if (truthy(txn.success)) {
+    if (truthy(txn.is_auth) && !truthy(txn.is_capture) && !(Number(txn.captured_amount) > 0)) {
+      return "requires_action";
+    }
     if (truthy(txn.is_refunded)) {
       const refunded = Number(txn.refunded_amount_cents);
       return Number.isFinite(refunded) && refunded > 0
@@ -80,14 +116,24 @@ export function mapPaymobStatus(
   return "failed";
 }
 
+/** BNPL lenders Paymob offers (Egypt, KSA, UAE). Matched against `source_data.type` / `sub_type`. */
+const BNPL =
+  /valu|souhoola|sympl|premium|halan|klivvr|forsa|contact|seven|\btru\b|mogo|mylo|tabby|tamara|bnpl|aman/;
+
 export function mapPaymobMethod(sourceType: string | undefined): PaymentMethod | undefined {
   if (!sourceType) return undefined;
   const t = sourceType.toLowerCase();
-  if (t === "card") return "card";
+  if (t === "card" || t === "apple_pay" || t === "google_pay") return "card";
   if (t === "wallet") return "wallet";
   if (t === "aggregator" || t === "cash_present" || t === "kiosk") return "cash_outlet";
-  if (t.includes("valu") || t.includes("installment") || t.includes("bnpl")) return "installments";
+  if (t.includes("bank_installment")) return "installments";
+  if (BNPL.test(t)) return "bnpl";
+  if (t.includes("installment")) return "installments";
   return "other";
+}
+
+function isKiosk(txn: Partial<PaymobTransaction>): boolean {
+  return mapPaymobMethod(txn.source_data?.type) === "cash_outlet";
 }
 
 export function orderId(txn: PaymobTransaction): string | undefined {
@@ -136,4 +182,18 @@ export function toPaymobPayment(txn: PaymobTransaction, fallbackCurrency: Curren
     };
   }
   return payment;
+}
+
+/** A card-token object (callback `obj`, order card-token inquiry, subscription cards). */
+export function toSavedCard(obj: Record<string, unknown>): SavedCard {
+  const masked = str(obj.masked_pan);
+  return {
+    token: str(obj.token) ?? "",
+    last4: masked ? masked.replace(/\D/g, "").slice(-4) || undefined : undefined,
+    brand: str(obj.card_subtype),
+    expiryMonth: str(obj.expiry_month),
+    expiryYear: str(obj.expiry_year),
+    holderName: str(obj.cardholder_name),
+    email: str(obj.email),
+  };
 }

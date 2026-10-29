@@ -1,5 +1,6 @@
 import { isSarrafError, type PaymentMethod, type ProviderId, toMinor } from "@sarraf/core";
 import type { FakeProvider } from "@sarraf/testing";
+import { AUTHORIZE_ONLY } from "../../../lib/methods";
 import { orders, withoutRaw } from "../../../lib/orders";
 import { clientKey, limits, tooMany } from "../../../lib/rate-limit";
 import { getSarraf } from "../../../lib/sarraf";
@@ -10,7 +11,7 @@ export const dynamic = "force-dynamic";
 interface Body {
   provider: ProviderId;
   amount: string;
-  method?: PaymentMethod | undefined;
+  method?: PaymentMethod | typeof AUTHORIZE_ONLY | undefined;
   phone?: string | undefined;
   email?: string | undefined;
 }
@@ -29,7 +30,8 @@ export async function POST(req: Request) {
       email: body.email || undefined,
       name: "Sandbox Tester",
     },
-    methods: body.method ? [body.method] : undefined,
+    methods: body.method === AUTHORIZE_ONLY ? ["card" as const] : body.method ? [body.method] : undefined,
+    providerOptions: body.method === AUTHORIZE_ONLY ? { capture: "manual" as const } : undefined,
     returnUrl: `${origin}/inbox`,
     webhookUrl: `${origin}/webhooks/${body.provider}`,
     expiresInSeconds: 3600,

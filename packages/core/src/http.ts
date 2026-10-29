@@ -9,8 +9,8 @@ export interface HttpRequest {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   url: string;
   headers?: Record<string, string> | undefined;
-  query?: Record<string, string | number | boolean | undefined>;
-  /** JSON-serialized unless it is already a string. */
+  query?: Record<string, string | number | boolean | undefined> | undefined;
+  /** JSON-serialized unless it is a string, `FormData` or `URLSearchParams` (sent as is). */
   body?: unknown;
   timeoutMs?: number | undefined;
   /**
@@ -93,13 +93,7 @@ export class HttpClient {
   async request<T = unknown>(req: HttpRequest): Promise<HttpResponse<T>> {
     const url = buildUrl(req.url, req.query);
     const headers: Record<string, string> = { accept: "application/json", ...req.headers };
-    let body: string | undefined;
-    if (req.body !== undefined) {
-      body = typeof req.body === "string" ? req.body : JSON.stringify(req.body);
-      if (!Object.keys(headers).some((h) => h.toLowerCase() === "content-type")) {
-        headers["content-type"] = "application/json";
-      }
-    }
+    const body = encodeBody(req.body, headers);
     const retryable = !req.moneyMoving && (req.retryable ?? req.method === "GET");
     const maxAttempts = retryable ? this.maxRetries + 1 : 1;
 
@@ -111,7 +105,7 @@ export class HttpClient {
         url: redactUrl(url),
         attempt,
         requestHeaders: redactHeaders(headers),
-        requestBody: req.body === undefined ? undefined : redact(req.body),
+        requestBody: req.body === undefined ? undefined : redact(loggableBody(req.body)),
       };
       this.emit("onRequest", event);
       const started = Date.now();
@@ -177,6 +171,30 @@ export class HttpClient {
       this.logger.warn(`http ${hook} hook threw`, { error: String(err) });
     }
   }
+}
+
+/** JSON-encode `body` (setting content-type), or pass strings and form bodies through. */
+function encodeBody(
+  body: unknown,
+  headers: Record<string, string>,
+): string | FormData | URLSearchParams | undefined {
+  // fetch sets the multipart / urlencoded content-type (with its boundary) itself.
+  if (body === undefined || body instanceof FormData || body instanceof URLSearchParams) return body;
+  if (!Object.keys(headers).some((h) => h.toLowerCase() === "content-type")) {
+    headers["content-type"] = "application/json";
+  }
+  return typeof body === "string" ? body : JSON.stringify(body);
+}
+
+function loggableBody(body: unknown): unknown {
+  if (body instanceof FormData || body instanceof URLSearchParams) {
+    const out: Record<string, string> = {};
+    body.forEach((v, k) => {
+      out[k] = typeof v === "string" ? v : "[file]";
+    });
+    return out;
+  }
+  return body;
 }
 
 /** Throw a SarrafError for a non-2xx response using the default status mapping. */

@@ -48,6 +48,7 @@ export class FawryProvider implements PaymentProvider<"fawry"> {
     partialRefund: "beta",
     cancel: "beta",
     webhooks: "supported",
+    capture: "unsupported",
     redirectVerification: "unsupported",
     methods: { cash_outlet: "supported", card: "beta", wallet: "beta" },
     currencies: ["EGP"],

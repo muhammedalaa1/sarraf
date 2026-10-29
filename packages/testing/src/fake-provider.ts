@@ -71,6 +71,7 @@ export function fakeProvider<Id extends ProviderId>(
     partialRefund: "supported",
     cancel: "supported",
     webhooks: "supported",
+    capture: "unsupported",
     redirectVerification: "unsupported",
     methods: { card: "supported", wallet: "supported", cash_outlet: "supported" },
     currencies: ["EGP", "SAR", "AED", "KWD", "USD"],

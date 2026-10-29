@@ -94,7 +94,11 @@ describe("toPaymobPayment", () => {
     expect(mapPaymobMethod(undefined)).toBeUndefined();
     expect(mapPaymobMethod("CARD")).toBe("card");
     expect(mapPaymobMethod("aggregator")).toBe("cash_outlet");
-    expect(mapPaymobMethod("valu")).toBe("installments");
+    expect(mapPaymobMethod("valu")).toBe("bnpl");
+    expect(mapPaymobMethod("souhoola")).toBe("bnpl");
+    expect(mapPaymobMethod("bank_installments")).toBe("installments");
+    expect(mapPaymobMethod("aggregator")).toBe("cash_outlet");
+    expect(mapPaymobMethod("apple_pay")).toBe("card");
     expect(mapPaymobMethod("something")).toBe("other");
   });
 });

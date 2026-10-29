@@ -12,6 +12,7 @@ const caps = (over: Partial<Capabilities> = {}): Capabilities => ({
   partialRefund: "supported",
   cancel: "supported",
   webhooks: "supported",
+  capture: "unsupported",
   redirectVerification: "supported",
   methods: { card: "supported", wallet: "beta" },
   currencies: ["EGP"],
@@ -103,6 +104,14 @@ describe("Sarraf construction", () => {
   it("throws for unconfigured providers", () => {
     const pay = make();
     expect(() => pay.provider("fawry" as never)).toThrow(/not configured/);
+  });
+
+  it("attaches its context to adapters that ask for it", () => {
+    const attach = vi.fn();
+    const provider = fake({ attach });
+    const pay = make(provider);
+    expect(attach).toHaveBeenCalledWith(pay.ctx);
+    expect(pay.provider("paymob")).toBe(provider);
   });
 });
 
@@ -256,6 +265,27 @@ describe("payments, refunds, webhooks, redirects", () => {
         amount: { value: 1, currency: "EGP" },
       }),
     ).rejects.toThrow(/partialRefund/);
+  });
+
+  it("captures with capability check, validation and idempotency", async () => {
+    const capture = vi.fn(async () => payment("succeeded"));
+    const unsupported = make(fake({ capture }));
+    await expect(
+      unsupported.payments.capture({ provider: "paymob", providerPaymentId: "1" }),
+    ).rejects.toMatchObject({ code: "CAPABILITY_NOT_SUPPORTED" });
+    const pay = make(fake({ capture, capabilities: caps({ capture: "supported" }) }));
+    await expect(pay.payments.capture({ provider: "paymob", providerPaymentId: "" })).rejects.toMatchObject({
+      code: "INVALID_REQUEST",
+    });
+    const args = { provider: "paymob" as const, providerPaymentId: "1", idempotencyKey: "cap-1" };
+    expect((await pay.payments.capture(args)).status).toBe("succeeded");
+    await pay.payments.capture(args);
+    expect(capture).toHaveBeenCalledTimes(1);
+    expect(capture).toHaveBeenCalledWith({ providerPaymentId: "1", idempotencyKey: "cap-1" }, pay.ctx);
+    const noMethod = make(fake({ capabilities: caps({ capture: "supported" }) }));
+    await expect(
+      noMethod.payments.capture({ provider: "paymob", providerPaymentId: "1" }),
+    ).rejects.toMatchObject({ code: "CAPABILITY_NOT_SUPPORTED" });
   });
 
   it("routes webhooks and redirects", async () => {

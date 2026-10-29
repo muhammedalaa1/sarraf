@@ -97,7 +97,8 @@ export function Playground({ providers }: { providers: { id: string; methods: st
               </p>
             ) : result.checkout?.kind === "reference_code" ? (
               <p>
-                Fawry reference code <b className="code">{result.checkout.referenceCode}</b>
+                Reference code <b className="code">{result.checkout.referenceCode}</b> (pay it at a kiosk /
+                outlet)
                 {result.checkout.expiresAt && (
                   <> · expires {new Date(result.checkout.expiresAt).toLocaleString()}</>
                 )}

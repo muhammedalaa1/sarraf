@@ -2,11 +2,12 @@ import { SarrafError } from "./errors.js";
 import type {
   Money,
   Payment,
+  PaymentEvent,
+  PaymentEventType,
   PaymentLookup,
   PaymentStatus,
   ProviderId,
   SarrafEvent,
-  SarrafEventType,
 } from "./types.js";
 
 export function sarrafId(provider: ProviderId, providerId: string | number): string {
@@ -14,7 +15,7 @@ export function sarrafId(provider: ProviderId, providerId: string | number): str
 }
 
 /** The event type emitted for a payment that reached `status`. */
-export function eventTypeForStatus(status: PaymentStatus): SarrafEventType {
+export function eventTypeForStatus(status: PaymentStatus): PaymentEventType {
   switch (status) {
     case "succeeded":
       return "payment.succeeded";
@@ -36,10 +37,10 @@ export function buildEvent(args: {
   provider: ProviderId;
   providerEventId: string | number;
   payment: Payment;
-  type?: SarrafEventType | undefined;
+  type?: PaymentEventType | undefined;
   receivedAt: Date;
   raw: unknown;
-}): SarrafEvent {
+}): PaymentEvent {
   const type = args.type ?? eventTypeForStatus(args.payment.status);
   return {
     id: `${args.provider}:${args.providerEventId}:${args.payment.status}`,
@@ -49,6 +50,20 @@ export function buildEvent(args: {
     receivedAt: args.receivedAt.toISOString(),
     raw: args.raw,
   };
+}
+
+/** True for every event that carries a `payment` (all but `card.saved`). */
+export function isPaymentEvent(event: SarrafEvent): event is PaymentEvent {
+  return event.type !== "card.saved";
+}
+
+/** Throws when `event` is a `card.saved` event, so the rest of the code can read `event.payment`. */
+export function assertPaymentEvent(event: SarrafEvent): asserts event is PaymentEvent {
+  if (!isPaymentEvent(event)) {
+    throw new SarrafError("INVALID_REQUEST", `expected a payment event, got "${event.type}"`, {
+      provider: event.provider,
+    });
+  }
 }
 
 /** Refund status from refunded vs. captured amount. */

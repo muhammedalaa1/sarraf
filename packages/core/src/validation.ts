@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { SarrafError } from "./errors.js";
 import { CURRENCIES } from "./money.js";
-import type { CreateCheckoutInput, Currency, RefundInput } from "./types.js";
+import type { CaptureInput, CreateCheckoutInput, Currency, RefundInput } from "./types.js";
 
 const currency = z.enum(CURRENCIES as [Currency, ...Currency[]]);
 export const moneySchema = z.object({
@@ -70,12 +70,29 @@ export const refundSchema = z.object({
   idempotencyKey: z.string().min(1).max(255).optional(),
 });
 
+export const captureSchema = z.object({
+  providerPaymentId: z.string().min(1),
+  reference: z.string().optional(),
+  amount: moneySchema.refine((m) => m.value > 0, "must be greater than zero").optional(),
+  idempotencyKey: z.string().min(1).max(255).optional(),
+});
+
 export function validateCheckoutInput(input: CreateCheckoutInput): void {
   check(createCheckoutSchema, input, "checkout.create");
 }
 
 export function validateRefundInput(input: RefundInput): void {
   check(refundSchema, input, "refunds.create");
+}
+
+export function validateCaptureInput(input: CaptureInput): void {
+  check(captureSchema, input, "payments.capture");
+}
+
+/** Validate `input` against a zod schema, throwing `INVALID_REQUEST` with every issue. For adapters. */
+export function validateWith<T extends z.ZodTypeAny>(schema: T, input: unknown, op: string): z.output<T> {
+  check(schema, input, op);
+  return schema.parse(input);
 }
 
 function check(schema: z.ZodTypeAny, input: unknown, op: string) {

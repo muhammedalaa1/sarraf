@@ -7,6 +7,7 @@ export * from "./errors.js";
 export * from "./helpers.js";
 export * from "./http.js";
 export { MemoryStore } from "./idempotency/memory.js";
+export { type IdempotentCall, runIdempotent } from "./idempotency/run.js";
 export type { IdempotencyStore } from "./idempotency/store.js";
 export * from "./logger.js";
 export * from "./money.js";

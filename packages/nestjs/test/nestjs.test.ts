@@ -10,7 +10,7 @@ import {
   Scope,
 } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
-import { Sarraf, type SarrafEvent, silentLogger } from "@sarraf/core";
+import { type PaymentEvent, Sarraf, type SarrafEvent, silentLogger } from "@sarraf/core";
 import { type FakeProvider, fakeProvider } from "@sarraf/testing";
 import request from "supertest";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -32,7 +32,7 @@ class OrdersHandler {
   constructor(@InjectSarraf() readonly pay: Sarraf) {}
 
   @OnSarrafEvent("payment.succeeded")
-  async paid(event: SarrafEvent) {
+  async paid(event: PaymentEvent) {
     if (failWith) throw failWith;
     seen.push(`paid:${event.payment.reference}`);
   }

@@ -1,4 +1,4 @@
-import { Sarraf, silentLogger } from "@sarraf/core";
+import { assertPaymentEvent, Sarraf, silentLogger } from "@sarraf/core";
 import { runConformanceTests } from "@sarraf/core/conformance";
 import { createMockFetch, loadFixture, type MockRoute } from "@sarraf/testing";
 import { describe, expect, it, vi } from "vitest";
@@ -529,6 +529,7 @@ describe("kashier getPayment / refund (beta)", () => {
     const f = loadFixture("kashier", "sandbox-webhook-void");
     const { sarraf } = setup({ apiKey: f.secret! });
     const e = await sarraf.webhooks.verifyAndParse("kashier", f.webhook!);
+    assertPaymentEvent(e);
     expect(e.type).toBe("payment.canceled");
     expect(e.payment).toMatchObject({ status: "canceled", reference: "sarraf_fx_1792580710302" });
   });
@@ -595,6 +596,7 @@ describe("kashier getPayment / refund (beta)", () => {
       { method: "GET", url: /orders/, respond: { body: lookup?.responseBody } },
     ]);
     const e = await sarraf.webhooks.verifyAndParse("kashier", f.webhook!);
+    assertPaymentEvent(e);
     expect(e.type).toBe("refund.succeeded");
     expect(e.id).toBe("kashier:TX-3004573807:refund:refunded");
     expect(e.payment).toMatchObject({
@@ -611,6 +613,7 @@ describe("kashier webhooks", () => {
       const f = loadFixture("kashier", scenario);
       const { sarraf } = setup({ apiKey: f.secret! });
       const e = await sarraf.webhooks.verifyAndParse("kashier", f.webhook!);
+      assertPaymentEvent(e);
       expect(e.type).toBe("payment.succeeded");
     }
     const f = loadFixture("kashier", "webhook-refund-partial");
@@ -623,6 +626,7 @@ describe("kashier webhooks", () => {
       },
     ]);
     const e = await sarraf.webhooks.verifyAndParse("kashier", f.webhook!);
+    assertPaymentEvent(e);
     expect(e.type).toBe("refund.succeeded");
     expect(e.payment.status).toBe("partially_refunded");
     expect(e.payment.amountRefunded.value).toBe(10000);
@@ -634,6 +638,7 @@ describe("kashier webhooks", () => {
     const f = loadFixture("kashier", "sandbox-webhook-succeeded-1");
     const { sarraf } = setup({ apiKey: f.secret! });
     const e = await sarraf.webhooks.verifyAndParse("kashier", f.webhook!);
+    assertPaymentEvent(e);
     expect(e.type).toBe("payment.succeeded");
     expect(e.id).toBe("kashier:TX-3004573804:succeeded");
     expect(e.payment).toMatchObject({
@@ -677,6 +682,7 @@ describe("kashier webhooks", () => {
       { method: "GET", url: /orders/, respond: { body: lookup?.responseBody } },
     ]);
     const e = await sarraf.webhooks.verifyAndParse("kashier", f.webhook!);
+    assertPaymentEvent(e);
     expect(fetch.calls[0]!.url.searchParams.get("search")).toBe("sarraf_fx_1792578275748");
     expect(e.type).toBe("refund.succeeded");
     expect(e.id).toBe("kashier:TX-3004573805:refund:partially_refunded");
@@ -717,6 +723,7 @@ describe("kashier webhooks", () => {
       "kashier",
       signKashierWebhook("refund", kashierWebhookData({ status: "FAILURE" }), API_KEY),
     );
+    assertPaymentEvent(e);
     expect(e.type).toBe("refund.failed");
     expect(fetch.calls).toHaveLength(0);
   });
@@ -725,6 +732,7 @@ describe("kashier webhooks", () => {
     const f = loadFixture("kashier", "webhook-pay-failed");
     const { sarraf } = setup({ apiKey: f.secret! });
     const e = await sarraf.webhooks.verifyAndParse("kashier", f.webhook!);
+    assertPaymentEvent(e);
     expect(e.type).toBe("payment.failed");
     expect(e.payment.failure).toEqual({
       code: "PAYMENT_DECLINED",

@@ -1,4 +1,4 @@
-import { Sarraf, silentLogger } from "@sarraf/core";
+import { assertPaymentEvent, Sarraf, silentLogger } from "@sarraf/core";
 import { runConformanceTests } from "@sarraf/core/conformance";
 import { createMockFetch, loadFixture, type MockRoute } from "@sarraf/testing";
 import { describe, expect, it, vi } from "vitest";
@@ -364,6 +364,7 @@ describe("fawry notifications", () => {
     const f = loadFixture("fawry", "notification-paid");
     const { sarraf, fetch } = setup({ secureKey: f.secret! });
     const e = await sarraf.webhooks.verifyAndParse("fawry", f.webhook!);
+    assertPaymentEvent(e);
     expect(e).toMatchObject({ id: "fawry:970177:succeeded", type: "payment.succeeded" });
     expect(fetch.callsTo("GET", /status\/v2/)).toHaveLength(1);
   });
@@ -374,6 +375,7 @@ describe("fawry notifications", () => {
       logger: { ...silentLogger, warn },
     });
     const e = await sarraf.webhooks.verifyAndParse("fawry", signFawryNotification(fawryNotification(), KEY));
+    assertPaymentEvent(e);
     expect(e.payment.status).toBe("awaiting_payment");
     expect(e.type).toBe("payment.pending");
     expect(warn).toHaveBeenCalledWith(expect.stringContaining("differs"), expect.anything());
@@ -387,6 +389,7 @@ describe("fawry notifications", () => {
     expect(fetch.calls).toHaveLength(0);
     const card = loadFixture("fawry", "notification-card-paid");
     const c = await sarraf.webhooks.verifyAndParse("fawry", card.webhook!);
+    assertPaymentEvent(c);
     expect(c.payment).toMatchObject({ method: "card", amount: { value: 25050 } });
   });
 

@@ -18,7 +18,7 @@ export class OrdersService {
   constructor(@InjectSarraf() private readonly pay: Sarraf) {}
 
   @OnSarrafEvent("payment.succeeded")
-  async paid(event: SarrafEvent) {
+  async paid(event: PaymentEvent) {
     // dedupe on event.id, then fulfil the order
   }
 }

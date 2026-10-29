@@ -38,6 +38,7 @@ export const processedEvents = g.__events;
 export function applyEvent(event: SarrafEvent): void {
   if (processedEvents.has(event.id)) return; // dedupe: providers retry
   processedEvents.add(event.id);
+  if (event.type === "card.saved") return; // this shop does not keep saved cards
   const order = orders.get(event.payment.reference);
   if (!order) return;
   order.status = event.payment.status;

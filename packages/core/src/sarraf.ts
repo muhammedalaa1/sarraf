@@ -1,12 +1,13 @@
-import { sha256Hex } from "./crypto.js";
 import { SarrafError } from "./errors.js";
 import { HttpClient, type HttpClientOptions } from "./http.js";
 import { MemoryStore } from "./idempotency/memory.js";
+import { runIdempotent } from "./idempotency/run.js";
 import type { IdempotencyStore } from "./idempotency/store.js";
 import { consoleLogger, defaultLogger, type Logger } from "./logger.js";
 import type {
   Capabilities,
   CapabilityLevel,
+  CaptureInput,
   Checkout,
   CreateCheckoutInput,
   Ctx,
@@ -21,7 +22,7 @@ import type {
   SarrafEvent,
   WebhookInspection,
 } from "./types.js";
-import { validateCheckoutInput, validateRefundInput } from "./validation.js";
+import { validateCaptureInput, validateCheckoutInput, validateRefundInput } from "./validation.js";
 
 export type ProvidersConfig = { [K in ProviderId]?: PaymentProvider<K> };
 
@@ -41,10 +42,6 @@ export interface SarrafOptions<P extends ProvidersConfig = ProvidersConfig> {
 }
 
 type CapabilityKey = Exclude<keyof Capabilities, "methods" | "currencies" | "checkoutKinds" | "docsUrl">;
-
-type IdemRecord<T> =
-  | { state: "in_progress"; fingerprint: string }
-  | { state: "done"; fingerprint: string; result: T };
 
 export class Sarraf<P extends ProvidersConfig = ProvidersConfig> {
   readonly ctx: Ctx;
@@ -78,10 +75,15 @@ export class Sarraf<P extends ProvidersConfig = ProvidersConfig> {
     this.providers = options.providers;
     this.allowBeta = options.allowBeta ?? false;
     this.idemTtl = options.idempotencyTtlSeconds ?? 86_400;
+    for (const provider of Object.values(options.providers) as PaymentProvider[]) provider.attach?.(this.ctx);
   }
 
-  /** The adapter registered under `id`. */
-  provider<Id extends ProviderId & keyof P>(id: Id): PaymentProvider<Id> {
+  /** The adapter registered under `id`, with its concrete type (e.g. `PaymobProvider`). */
+  provider<Id extends ProviderId & keyof P>(id: Id): NonNullable<P[Id]> {
+    return this.adapter(id) as unknown as NonNullable<P[Id]>;
+  }
+
+  private adapter<Id extends ProviderId & keyof P>(id: Id): PaymentProvider<Id> {
     const p = this.providers[id];
     if (!p) {
       throw new SarrafError(
@@ -97,12 +99,12 @@ export class Sarraf<P extends ProvidersConfig = ProvidersConfig> {
   }
 
   capabilities(id: ProviderId & keyof P): Capabilities {
-    return this.provider(id).capabilities;
+    return this.adapter(id).capabilities;
   }
 
   readonly checkout = {
     create: async <Id extends ProviderId & keyof P>(input: CreateCheckoutInput<Id>): Promise<Checkout> => {
-      const provider = this.provider(input.provider);
+      const provider = this.adapter(input.provider);
       this.require(provider, "checkout");
       validateCheckoutInput(input);
       const caps = provider.capabilities;
@@ -122,7 +124,7 @@ export class Sarraf<P extends ProvidersConfig = ProvidersConfig> {
 
   readonly payments = {
     get: async (lookup: PaymentLookup & { provider: ProviderId & keyof P }): Promise<Payment> => {
-      const provider = this.provider(lookup.provider);
+      const provider = this.adapter(lookup.provider);
       this.require(provider, "getPayment");
       requireLookup(lookup);
       return provider.getPayment(stripProvider(lookup), this.ctx);
@@ -135,17 +137,29 @@ export class Sarraf<P extends ProvidersConfig = ProvidersConfig> {
       return this.payments.get(lookup);
     },
     cancel: async (lookup: PaymentLookup & { provider: ProviderId & keyof P }): Promise<Payment> => {
-      const provider = this.provider(lookup.provider);
+      const provider = this.adapter(lookup.provider);
       this.require(provider, "cancel");
       requireLookup(lookup);
       if (!provider.cancel) throw notSupported(provider, "cancel");
       return provider.cancel(stripProvider(lookup), this.ctx);
     },
+    /** Capture an authorized payment. Omit `amount` to capture the full authorization. */
+    capture: async (input: CaptureInput & { provider: ProviderId & keyof P }): Promise<Payment> => {
+      const provider = this.adapter(input.provider);
+      this.require(provider, "capture");
+      validateCaptureInput(input);
+      if (!provider.capture) throw notSupported(provider, "capture");
+      const capture = provider.capture.bind(provider);
+      const rest = stripProvider(input);
+      return this.idempotent(provider.id, "capture", input.idempotencyKey, rest, async () =>
+        capture(rest, this.ctx),
+      );
+    },
   };
 
   readonly refunds = {
     create: async (input: RefundInput & { provider: ProviderId & keyof P }): Promise<Refund> => {
-      const provider = this.provider(input.provider);
+      const provider = this.adapter(input.provider);
       this.require(provider, "refund");
       if (input.amount) this.require(provider, "partialRefund");
       validateRefundInput(input);
@@ -161,13 +175,13 @@ export class Sarraf<P extends ProvidersConfig = ProvidersConfig> {
   readonly webhooks = {
     /** Verify the signature and normalize the payload. Throws `WEBHOOK_SIGNATURE_INVALID`. */
     verifyAndParse: async (provider: ProviderId & keyof P, req: RawWebhookRequest): Promise<SarrafEvent> => {
-      const p = this.provider(provider);
+      const p = this.adapter(provider);
       const verified = await p.verifyWebhook(req, this.ctx);
       return p.parseWebhook(verified, this.ctx);
     },
     /** Signature diagnostics without throwing: the exact string hashed, expected vs received. */
     inspect: async (provider: ProviderId & keyof P, req: RawWebhookRequest): Promise<WebhookInspection> => {
-      return this.provider(provider).inspectWebhook(req, this.ctx);
+      return this.adapter(provider).inspectWebhook(req, this.ctx);
     },
     dedupeKey: (event: SarrafEvent): string => event.id,
   };
@@ -178,7 +192,7 @@ export class Sarraf<P extends ProvidersConfig = ProvidersConfig> {
       provider: ProviderId & keyof P,
       query: Record<string, string>,
     ): Promise<RedirectResult> => {
-      const p = this.provider(provider);
+      const p = this.adapter(provider);
       if (!p.verifyRedirect) throw notSupported(p, "redirectVerification");
       return p.verifyRedirect(query, this.ctx);
     },
@@ -208,44 +222,7 @@ export class Sarraf<P extends ProvidersConfig = ProvidersConfig> {
     input: unknown,
     run: () => Promise<T>,
   ): Promise<T> {
-    if (!key) return run();
-    const store = this.ctx.idempotency;
-    const storeKey = `${provider}:${operation}:${key}`;
-    const fingerprint = sha256Hex(stableStringify(input));
-    const claimed = await store.setIfAbsent(storeKey, { state: "in_progress", fingerprint }, 120);
-    if (!claimed) {
-      const existing = await store.get<IdemRecord<T>>(storeKey);
-      if (existing && existing.fingerprint !== fingerprint) {
-        throw new SarrafError(
-          "INVALID_REQUEST",
-          `idempotencyKey "${key}" was already used with different parameters`,
-          { provider, retryable: false },
-        );
-      }
-      if (existing?.state === "done") {
-        this.ctx.logger.debug("idempotent replay", { provider, operation, key });
-        return existing.result;
-      }
-      if (existing?.state === "in_progress") {
-        throw new SarrafError(
-          "INVALID_REQUEST",
-          `A request with idempotencyKey "${key}" is still in progress or ended with an unknown outcome. Query the payment status.`,
-          { provider, retryable: true },
-        );
-      }
-      // Expired between calls: try again once.
-      return this.idempotent(provider, operation, key, input, run);
-    }
-    try {
-      const result = await run();
-      await store.set(storeKey, { state: "done", fingerprint, result }, this.idemTtl);
-      return result;
-    } catch (err) {
-      // Keep the lock on an unknown outcome so a blind retry cannot double-charge.
-      if (!(err instanceof SarrafError && err.code === "TIMEOUT_UNKNOWN_OUTCOME"))
-        await store.delete(storeKey);
-      throw err;
-    }
+    return runIdempotent(this.ctx, { provider, operation, key, input, ttlSeconds: this.idemTtl, run });
   }
 }
 
@@ -272,11 +249,4 @@ function capitalize(s: string) {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-export function stableStringify(value: unknown): string {
-  if (value === null || typeof value !== "object") return JSON.stringify(value) ?? "null";
-  if (Array.isArray(value)) return `[${value.map(stableStringify).join(",")}]`;
-  const entries = Object.entries(value as Record<string, unknown>)
-    .filter(([, v]) => v !== undefined)
-    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
-  return `{${entries.map(([k, v]) => `${JSON.stringify(k)}:${stableStringify(v)}`).join(",")}}`;
-}
+export { stableStringify } from "./idempotency/run.js";
