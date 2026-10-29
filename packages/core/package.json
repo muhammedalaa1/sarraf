@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sarraf-dev/sarraf.git",
+    "url": "git+https://github.com/muhammedalaa1/sarraf.git",
     "directory": "packages/core"
   },
   "keywords": [

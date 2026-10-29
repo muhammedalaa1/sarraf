@@ -1,6 +1,6 @@
 # @sarraf/core
 
-The core of [Sarraf](https://github.com/sarraf-dev/sarraf): one payment API for Egypt and the Middle East.
+The core of [Sarraf](https://github.com/muhammedalaa1/sarraf): one payment API for Egypt and the Middle East.
 
 ```bash
 npm i @sarraf/core @sarraf/paymob @sarraf/kashier @sarraf/fawry
@@ -23,4 +23,4 @@ const event = await pay.webhooks.verifyAndParse("paymob", { headers, rawBody, qu
 
 Server-side only: importing it in a browser throws.
 
-> Not affiliated with any payment provider. Part of [Sarraf](https://github.com/sarraf-dev/sarraf). Apache-2.0.
+> Not affiliated with any payment provider. Part of [Sarraf](https://github.com/muhammedalaa1/sarraf). Apache-2.0.

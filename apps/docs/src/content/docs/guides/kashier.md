@@ -617,4 +617,4 @@ Those methods are still beta for Kashier. Pass `allowBeta: true` to `new Sarraf(
 - [Kashier provider reference](/providers/kashier/): signature recipes, status mapping, what was confirmed in the sandbox
 - [Express guide](/guides/express/) · [Next.js guide](/guides/nextjs/)
 - [Webhooks](/concepts/webhooks/) · [Reconciliation](/concepts/reconciliation/) · [Idempotency](/concepts/idempotency/)
-- Runnable examples: [`examples/express-shop`](https://github.com/sarraf-dev/sarraf/tree/main/examples/express-shop), [`examples/nextjs-shop`](https://github.com/sarraf-dev/sarraf/tree/main/examples/nextjs-shop)
+- Runnable examples: [`examples/express-shop`](https://github.com/muhammedalaa1/sarraf/tree/main/examples/express-shop), [`examples/nextjs-shop`](https://github.com/muhammedalaa1/sarraf/tree/main/examples/nextjs-shop)

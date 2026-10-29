@@ -87,4 +87,4 @@ const payment = await pay.payments.reconcile({ provider: "fawry", reference: "or
 
 ## Try it without accounts
 
-`@sarraf/testing` ships a `fakeProvider()` that behaves like a provider and can simulate signed webhooks. All three [examples](https://github.com/sarraf-dev/sarraf/tree/main/examples) run in demo mode with no credentials.
+`@sarraf/testing` ships a `fakeProvider()` that behaves like a provider and can simulate signed webhooks. All three [examples](https://github.com/muhammedalaa1/sarraf/tree/main/examples) run in demo mode with no credentials.

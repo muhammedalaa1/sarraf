@@ -76,4 +76,4 @@ export async function checkout(formData: FormData) {
 
 `@sarraf/next` only uses the Fetch API `Request` / `Response`, so `webhookRoute` also works in other Fetch-based frameworks (Hono, Remix, Bun).
 
-Full example: [`examples/nextjs-shop`](https://github.com/sarraf-dev/sarraf/tree/main/examples/nextjs-shop).
+Full example: [`examples/nextjs-shop`](https://github.com/muhammedalaa1/sarraf/tree/main/examples/nextjs-shop).

@@ -2,7 +2,7 @@
 
 **One payment API for Egypt, then the Middle East.** Sarraf is an open-source TypeScript SDK for Node.js. It puts **Paymob, Kashier and Fawry** behind one typed interface: one way to create a checkout, one webhook format, one status model, one error type.
 
-[![CI](https://github.com/sarraf-dev/sarraf/actions/workflows/ci.yml/badge.svg)](https://github.com/sarraf-dev/sarraf/actions/workflows/ci.yml)
+[![CI](https://github.com/muhammedalaa1/sarraf/actions/workflows/ci.yml/badge.svg)](https://github.com/muhammedalaa1/sarraf/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/@sarraf/core.svg)](https://www.npmjs.com/package/@sarraf/core)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](./LICENSE)
 
@@ -739,7 +739,7 @@ Without credentials, it runs on fake providers. It **refuses to start with live 
 ### Setup
 
 ```bash
-git clone https://github.com/sarraf-dev/sarraf.git
+git clone https://github.com/muhammedalaa1/sarraf.git
 cd sarraf
 pnpm install          # also installs git hooks (lefthook)
 pnpm build

@@ -55,7 +55,7 @@ Kashier POSTs `{ event, data }` with the signature in the **`x-kashier-signature
 3. Serialize **exactly like the `query-string` library's `stringify`**: strict RFC 3986 encoding (`*` → `%2A`, `(` → `%28`, …), arrays as repeated keys, and `null` as a bare key.
 4. HMAC-SHA256 with the **Payment API key**, hex.
 
-✅ Confirmed against a real sandbox webhook ([fixture](https://github.com/sarraf-dev/sarraf/blob/main/fixtures/kashier/sandbox-webhook-succeeded-1.json)). Kashier signs `amount, channel, currency, kashierOrderId, merchantOrderId, method, orderReference, status, transactionId, transactionResponseCode`; `channel` is `online | e-commerce`, so the signed string contains `channel=online%20%7C%20e-commerce`. `amount` arrives as a JSON number in major units (`10`) and is signed as-is.
+✅ Confirmed against a real sandbox webhook ([fixture](https://github.com/muhammedalaa1/sarraf/blob/main/fixtures/kashier/sandbox-webhook-succeeded-1.json)). Kashier signs `amount, channel, currency, kashierOrderId, merchantOrderId, method, orderReference, status, transactionId, transactionResponseCode`; `channel` is `online | e-commerce`, so the signed string contains `channel=online%20%7C%20e-commerce`. `amount` arrives as a JSON number in major units (`10`) and is signed as-is.
 
 Plain `encodeURIComponent` does not encode `* ( ) ' !`, and that is the #1 reported integration bug. Sarraf uses `query-string` itself, and its fixtures cover special characters and Arabic text.
 
@@ -63,7 +63,7 @@ Plain `encodeURIComponent` does not encode `* ( ) ' !`, and that is the #1 repor
 
 `merchantRedirect` gets query parameters plus `signature`. Sarraf signs every parameter except `signature` and `mode`, **in the order received**, as `key=value` pairs joined by `&`, using HMAC-SHA256 with the API key. Use this for the thank-you page only.
 
-✅ Confirmed against a real sandbox redirect ([fixture](https://github.com/sarraf-dev/sarraf/blob/main/fixtures/kashier/sandbox-redirect-succeeded.json)). Kashier sends `paymentStatus, cardDataToken, maskedCard, merchantOrderId, orderId, cardBrand, orderReference, transactionId, amount, currency, mode, signature`. Note that `amount` comes back trimmed (`10`) even when the checkout sent `10.00`.
+✅ Confirmed against a real sandbox redirect ([fixture](https://github.com/muhammedalaa1/sarraf/blob/main/fixtures/kashier/sandbox-redirect-succeeded.json)). Kashier sends `paymentStatus, cardDataToken, maskedCard, merchantOrderId, orderId, cardBrand, orderReference, transactionId, amount, currency, mode, signature`. Note that `amount` comes back trimmed (`10`) even when the checkout sent `10.00`.
 
 ## Status mapping
 
@@ -118,6 +118,6 @@ const payment = await pay.payments.cancel({ provider: "kashier", reference: "ord
 // payment.status === "canceled"
 ```
 
-✅ Confirmed in the sandbox ([fixture](https://github.com/sarraf-dev/sarraf/blob/main/fixtures/kashier/sandbox-void-succeeded.json)). Sarraf looks the order up by `reference`, finds the successful `pay` transaction and sends `PUT /v3/orders/:orderId` with `{ apiOperation: "VOID", transaction: { targetTransactionId, amount } }`. Kashier's docs say a full void can omit `transaction`; Sarraf always sends both fields, because the same "optional" fields make refunds fail with HTTP 500. It then returns the order as Kashier reports it (`CANCELLED` → `canceled`). Kashier also sends a `void` webhook, which becomes `payment.canceled`.
+✅ Confirmed in the sandbox ([fixture](https://github.com/muhammedalaa1/sarraf/blob/main/fixtures/kashier/sandbox-void-succeeded.json)). Sarraf looks the order up by `reference`, finds the successful `pay` transaction and sends `PUT /v3/orders/:orderId` with `{ apiOperation: "VOID", transaction: { targetTransactionId, amount } }`. Kashier's docs say a full void can omit `transaction`; Sarraf always sends both fields, because the same "optional" fields make refunds fail with HTTP 500. It then returns the order as Kashier reports it (`CANCELLED` → `canceled`). Kashier also sends a `void` webhook, which becomes `payment.canceled`.
 
 A void that Kashier does not accept throws `PAYMENT_DECLINED`.

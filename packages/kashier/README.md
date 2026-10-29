@@ -1,6 +1,6 @@
 # @sarraf/kashier
 
-Kashier adapter for [Sarraf](https://github.com/sarraf-dev/sarraf).
+Kashier adapter for [Sarraf](https://github.com/muhammedalaa1/sarraf).
 
 ```ts
 import { kashier } from "@sarraf/kashier";
@@ -21,4 +21,4 @@ kashier({
 - Same-day voids with `payments.cancel({ provider: "kashier", reference })`
 - Beta (`allowBeta: true`): Payment Sessions flow (`providerOptions: { flow: "session" }`)
 
-> Not affiliated with any payment provider. Part of [Sarraf](https://github.com/sarraf-dev/sarraf). Apache-2.0.
+> Not affiliated with any payment provider. Part of [Sarraf](https://github.com/muhammedalaa1/sarraf). Apache-2.0.

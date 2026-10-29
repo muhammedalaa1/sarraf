@@ -1,6 +1,6 @@
 # @sarraf/fawry
 
-Fawry adapter for [Sarraf](https://github.com/sarraf-dev/sarraf).
+Fawry adapter for [Sarraf](https://github.com/muhammedalaa1/sarraf).
 
 ```ts
 import { fawry } from "@sarraf/fawry";
@@ -19,4 +19,4 @@ fawry({
 - Status v2 by merchant reference
 - Beta: hosted card/wallet checkout, refund, cancel unpaid reference
 
-> Not affiliated with any payment provider. Part of [Sarraf](https://github.com/sarraf-dev/sarraf). Apache-2.0.
+> Not affiliated with any payment provider. Part of [Sarraf](https://github.com/muhammedalaa1/sarraf). Apache-2.0.

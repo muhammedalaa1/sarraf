@@ -12,7 +12,7 @@ jobs:
   sandbox:
     runs-on: ubuntu-latest
     # Secrets are only available on the main repository, never on forks.
-    if: github.repository_owner == 'sarraf-dev'
+    if: github.repository_owner == 'muhammedalaa1'
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -31,7 +31,11 @@ jobs:
           PAYMOB_API_KEY: ${{ secrets.PAYMOB_API_KEY }}
           PAYMOB_CARD_INTEGRATION_ID: ${{ secrets.PAYMOB_CARD_INTEGRATION_ID }}
           PAYMOB_WALLET_INTEGRATION_ID: ${{ secrets.PAYMOB_WALLET_INTEGRATION_ID }}
+          PAYMOB_KIOSK_INTEGRATION_ID: ${{ secrets.PAYMOB_KIOSK_INTEGRATION_ID }}
+          PAYMOB_CARD_AUTH_INTEGRATION_ID: ${{ secrets.PAYMOB_CARD_AUTH_INTEGRATION_ID }}
+          PAYMOB_CARD_MOTO_INTEGRATION_ID: ${{ secrets.PAYMOB_CARD_MOTO_INTEGRATION_ID }}
           PAYMOB_SANDBOX_TRANSACTION_ID: ${{ secrets.PAYMOB_SANDBOX_TRANSACTION_ID }}
+          PAYMOB_SANDBOX_AUTH_TRANSACTION_ID: ${{ secrets.PAYMOB_SANDBOX_AUTH_TRANSACTION_ID }}
           KASHIER_MERCHANT_ID: ${{ secrets.KASHIER_MERCHANT_ID }}
           KASHIER_API_KEY: ${{ secrets.KASHIER_API_KEY }}
           KASHIER_SECRET_KEY: ${{ secrets.KASHIER_SECRET_KEY }}

@@ -1,6 +1,6 @@
 # @sarraf/paymob
 
-Paymob adapter for [Sarraf](https://github.com/sarraf-dev/sarraf).
+Paymob adapter for [Sarraf](https://github.com/muhammedalaa1/sarraf).
 
 ```ts
 import { paymob, paymobIntegrationIdsFromEnv } from "@sarraf/paymob";
@@ -25,4 +25,4 @@ paymob({
 
 Full guide: [sarraf.dev/providers/paymob](https://sarraf.dev/providers/paymob).
 
-> Not affiliated with any payment provider. Part of [Sarraf](https://github.com/sarraf-dev/sarraf). Apache-2.0.
+> Not affiliated with any payment provider. Part of [Sarraf](https://github.com/muhammedalaa1/sarraf). Apache-2.0.

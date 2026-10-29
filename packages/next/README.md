@@ -1,6 +1,6 @@
 # @sarraf/next
 
-Next.js (App Router) helpers for [Sarraf](https://github.com/sarraf-dev/sarraf).
+Next.js (App Router) helpers for [Sarraf](https://github.com/muhammedalaa1/sarraf).
 
 ```ts
 // app/api/webhooks/[provider]/route.ts
@@ -31,4 +31,4 @@ export default async function Thanks({ params, searchParams }) {
 - `verifyRedirect()` never throws for providers that don't sign redirects (Fawry). It returns `authenticated: false`.
 - Only the Fetch API `Request` / `Response` is used, so it works in other Fetch-based frameworks too.
 
-> Not affiliated with any payment provider. Part of [Sarraf](https://github.com/sarraf-dev/sarraf). Apache-2.0.
+> Not affiliated with any payment provider. Part of [Sarraf](https://github.com/muhammedalaa1/sarraf). Apache-2.0.

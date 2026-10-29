@@ -44,4 +44,4 @@ const pay = new Sarraf({ providers, http: { fetch } });
 
 ## Contributing adapters
 
-Every adapter must pass `runConformanceTests()` from `@sarraf/core/conformance`. See [CONTRIBUTING](https://github.com/sarraf-dev/sarraf/blob/main/CONTRIBUTING.md).
+Every adapter must pass `runConformanceTests()` from `@sarraf/core/conformance`. See [CONTRIBUTING](https://github.com/muhammedalaa1/sarraf/blob/main/CONTRIBUTING.md).
