@@ -1,6 +1,6 @@
 {
   "name": "@sarrafjs/core",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "One payment API for Egypt and the Middle East. Core client, models, money, errors, HTTP, idempotency and webhook router.",
   "homepage": "https://sarraf-docs.vercel.app/",
   "bugs": {
