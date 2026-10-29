@@ -1,5 +1,5 @@
 {
-  "name": "@sarraf/core",
+  "name": "@sarrafjs/core",
   "version": "0.1.0",
   "description": "One payment API for Egypt and the Middle East. Core client, models, money, errors, HTTP, idempotency and webhook router.",
   "license": "Apache-2.0",

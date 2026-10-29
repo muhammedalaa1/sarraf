@@ -1,6 +1,6 @@
 ---
 name: sarraf-kashier
-description: Full context on the Kashier integration in the Sarraf SDK (packages/kashier) — signed hosted payment page (HPP) hash, Payment Sessions v3 (beta), order lookup by merchantOrderId, refunds and same-day voids on the FEP API, x-kashier-signature webhooks (HMAC-SHA256 over query-string-encoded signatureKeys), redirect signatures, and what was confirmed in the real Kashier sandbox. Use this whenever the task mentions Kashier, @sarraf/kashier, KASHIER_* env vars, MID-… merchant ids, hpp hash, signatureKeys, fixtures/kashier, or a Kashier webhook / refund / void problem — even if the user doesn't say "skill".
+description: Full context on the Kashier integration in the Sarraf SDK (packages/kashier) — signed hosted payment page (HPP) hash, Payment Sessions v3 (beta), order lookup by merchantOrderId, refunds and same-day voids on the FEP API, x-kashier-signature webhooks (HMAC-SHA256 over query-string-encoded signatureKeys), redirect signatures, and what was confirmed in the real Kashier sandbox. Use this whenever the task mentions Kashier, @sarrafjs/kashier, KASHIER_* env vars, MID-… merchant ids, hpp hash, signatureKeys, fixtures/kashier, or a Kashier webhook / refund / void problem — even if the user doesn't say "skill".
 ---
 
 # Kashier in Sarraf

@@ -1,7 +1,7 @@
-import { Sarraf, type SarrafOptions } from "@sarraf/core";
-import { type FawryProvider, fawry } from "@sarraf/fawry";
-import { type KashierProvider, kashier } from "@sarraf/kashier";
-import { type PaymobProvider, paymob, paymobIntegrationIdsFromEnv } from "@sarraf/paymob";
+import { Sarraf, type SarrafOptions } from "@sarrafjs/core";
+import { type FawryProvider, fawry } from "@sarrafjs/fawry";
+import { type KashierProvider, kashier } from "@sarrafjs/kashier";
+import { type PaymobProvider, paymob, paymobIntegrationIdsFromEnv } from "@sarrafjs/paymob";
 import { assertSandbox, env, hasFawry, hasKashier, hasPaymob } from "./env.js";
 
 /** Build sandbox adapters from process.env (see .env.sandbox.example). */

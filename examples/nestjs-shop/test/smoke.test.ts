@@ -1,9 +1,9 @@
 import "reflect-metadata";
 import type { INestApplication } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
-import type { Sarraf } from "@sarraf/core";
-import { SARRAF } from "@sarraf/nestjs";
-import type { FakeProvider } from "@sarraf/testing";
+import type { Sarraf } from "@sarrafjs/core";
+import { SARRAF } from "@sarrafjs/nestjs";
+import type { FakeProvider } from "@sarrafjs/testing";
 import request from "supertest";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { AppModule } from "../src/app.module.js";

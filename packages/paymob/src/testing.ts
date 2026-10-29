@@ -1,4 +1,4 @@
-import type { RawWebhookRequest } from "@sarraf/core";
+import type { RawWebhookRequest } from "@sarrafjs/core";
 import type { PaymobTransaction } from "./mappers.js";
 import {
   paymobRedirectHmac,

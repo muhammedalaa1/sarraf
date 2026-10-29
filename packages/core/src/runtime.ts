@@ -7,7 +7,7 @@ export function assertServerRuntime(g: Record<string, unknown> = globalThis): vo
   const isNodeLike = typeof proc?.versions?.node === "string";
   if (isBrowser && !isNodeLike) {
     throw new Error(
-      "@sarraf/core is server-side only: it uses secret API keys. Import it in your backend, never in browser code.",
+      "@sarrafjs/core is server-side only: it uses secret API keys. Import it in your backend, never in browser code.",
     );
   }
 }

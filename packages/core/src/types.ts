@@ -7,7 +7,7 @@ import type { Logger } from "./logger.js";
  * Registry of provider ids. Third-party adapters extend it with module augmentation:
  *
  * ```ts
- * declare module "@sarraf/core" { interface ProviderRegistry { tap: true } }
+ * declare module "@sarrafjs/core" { interface ProviderRegistry { tap: true } }
  * ```
  */
 export interface ProviderRegistry {

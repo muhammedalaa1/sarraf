@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`public exports > @sarraf/fawry 1`] = `
+exports[`public exports > @sarrafjs/fawry 1`] = `
 [
   "FAWRY_BASE_URLS",
   "FAWRY_DOCS_URL",
@@ -22,7 +22,7 @@ exports[`public exports > @sarraf/fawry 1`] = `
 ]
 `;
 
-exports[`public exports > @sarraf/fawry/testing 1`] = `
+exports[`public exports > @sarrafjs/fawry/testing 1`] = `
 [
   "fawryNotification",
   "signFawryNotification",

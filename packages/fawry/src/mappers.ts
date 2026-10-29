@@ -9,7 +9,7 @@ import {
   sarrafId,
   str,
   toMinor,
-} from "@sarraf/core";
+} from "@sarrafjs/core";
 import type { FawryNotificationV2 } from "./signature.js";
 
 export const FAWRY_STATUS_TABLE: StatusMappingRow[] = [

@@ -1,6 +1,6 @@
 ---
 name: sarraf-paymob
-description: Full context on the Paymob integration in the Sarraf SDK (packages/paymob) — Intention API / Unified Checkout, kiosk references, auth/capture, HMAC-SHA512 callbacks (transaction, card token, subscription), refunds, voids, saved cards (MOTO), subscriptions, payment links, sandbox verification state. Use this whenever the task mentions Paymob, Accept, @sarraf/paymob, PAYMOB_* env vars, intentions, integration ids, hmac callbacks, or fixtures/paymob — including debugging a Paymob webhook, recording Paymob sandbox fixtures, or changing anything Paymob does in the dashboard — even if the user doesn't say "skill".
+description: Full context on the Paymob integration in the Sarraf SDK (packages/paymob) — Intention API / Unified Checkout, kiosk references, auth/capture, HMAC-SHA512 callbacks (transaction, card token, subscription), refunds, voids, saved cards (MOTO), subscriptions, payment links, sandbox verification state. Use this whenever the task mentions Paymob, Accept, @sarrafjs/paymob, PAYMOB_* env vars, intentions, integration ids, hmac callbacks, or fixtures/paymob — including debugging a Paymob webhook, recording Paymob sandbox fixtures, or changing anything Paymob does in the dashboard — even if the user doesn't say "skill".
 ---
 
 # Paymob in Sarraf

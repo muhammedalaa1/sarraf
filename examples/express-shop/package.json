@@ -9,12 +9,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@sarraf/core": "workspace:*",
-    "@sarraf/express": "workspace:*",
-    "@sarraf/fawry": "workspace:*",
-    "@sarraf/kashier": "workspace:*",
-    "@sarraf/paymob": "workspace:*",
-    "@sarraf/testing": "workspace:*",
+    "@sarrafjs/core": "workspace:*",
+    "@sarrafjs/express": "workspace:*",
+    "@sarrafjs/fawry": "workspace:*",
+    "@sarrafjs/kashier": "workspace:*",
+    "@sarrafjs/paymob": "workspace:*",
+    "@sarrafjs/testing": "workspace:*",
     "express": "5.3.0"
   },
   "devDependencies": {

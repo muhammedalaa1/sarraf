@@ -23,7 +23,7 @@ interface PaymentProvider<Id extends ProviderId> {
 logging) and `ctx.now()` (testable time), never global `fetch` / `Date.now()`.
 
 Provider ids are registered through module augmentation of `ProviderRegistry`; typed
-`providerOptions` through `ProviderOptionsRegistry` (see the `declare module "@sarraf/core"` block
+`providerOptions` through `ProviderOptionsRegistry` (see the `declare module "@sarrafjs/core"` block
 in each adapter).
 
 ## Capabilities

@@ -1,4 +1,4 @@
-import { hmacHex, safeEqualHex } from "@sarraf/core";
+import { hmacHex, safeEqualHex } from "@sarrafjs/core";
 import queryString from "query-string";
 
 export interface KashierOrderHashInput {

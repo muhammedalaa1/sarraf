@@ -6,7 +6,7 @@ sidebar:
 ---
 
 ```bash
-npm i @sarraf/paymob
+npm i @sarrafjs/paymob
 ```
 
 ## Credentials
@@ -54,7 +54,7 @@ Card and wallet checkout, lookups, refunds, voids and webhooks are `"supported"`
 ### Embedding Paymob Pixel
 
 ```ts
-import { paymobEmbed } from "@sarraf/paymob";
+import { paymobEmbed } from "@sarrafjs/paymob";
 
 const { publicKey, clientSecret } = paymobEmbed(checkout); // send both to the browser
 ```

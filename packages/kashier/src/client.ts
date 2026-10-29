@@ -1,4 +1,4 @@
-import { asRecord, type Ctx, ensureOk, SarrafError, str } from "@sarraf/core";
+import { asRecord, type Ctx, ensureOk, SarrafError, str } from "@sarrafjs/core";
 import type { KashierConfig } from "./config.js";
 
 /** Thin wrappers around Kashier server APIs. Each one says whether it is confirmed in the sandbox. */

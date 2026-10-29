@@ -1,11 +1,11 @@
 /** @type {import('next').NextConfig} */
 export default {
   serverExternalPackages: [
-    "@sarraf/core",
-    "@sarraf/paymob",
-    "@sarraf/kashier",
-    "@sarraf/fawry",
-    "@sarraf/testing",
+    "@sarrafjs/core",
+    "@sarrafjs/paymob",
+    "@sarrafjs/kashier",
+    "@sarrafjs/fawry",
+    "@sarrafjs/testing",
   ],
   poweredByHeader: false,
 };

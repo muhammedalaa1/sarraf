@@ -1,8 +1,8 @@
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { Sarraf, silentLogger } from "@sarraf/core";
-import { paymobTransaction, signPaymobCallback } from "@sarraf/paymob/testing";
+import { Sarraf, silentLogger } from "@sarrafjs/core";
+import { paymobTransaction, signPaymobCallback } from "@sarrafjs/paymob/testing";
 import { describe, expect, it } from "vitest";
 import { Inbox, RETENTION_MS } from "../lib/inbox";
 import { clientKey, RateLimiter } from "../lib/rate-limit";

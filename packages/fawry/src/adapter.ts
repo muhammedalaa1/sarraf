@@ -17,7 +17,7 @@ import {
   toMajorFixed,
   type VerifiedWebhook,
   type WebhookInspection,
-} from "@sarraf/core";
+} from "@sarrafjs/core";
 import { cancelUnpaid, charge, expressInit, type FawryChargeItem, getStatus, refund } from "./client.js";
 import { type FawryConfig, type FawryOptions, resolveConfig } from "./config.js";
 import { toFawryMobile, toFawryPayment } from "./mappers.js";
@@ -30,7 +30,7 @@ export interface FawryProviderOptions {
   description?: string | undefined;
 }
 
-declare module "@sarraf/core" {
+declare module "@sarrafjs/core" {
   interface ProviderOptionsRegistry {
     fawry: FawryProviderOptions;
   }

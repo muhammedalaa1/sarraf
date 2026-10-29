@@ -20,7 +20,7 @@ import {
   str,
   type VerifiedWebhook,
   type WebhookInspection,
-} from "@sarraf/core";
+} from "@sarrafjs/core";
 import {
   captureTransaction,
   createIntention,
@@ -64,7 +64,7 @@ export interface PaymobProviderOptions {
   addCardToSubscription?: number | undefined;
 }
 
-declare module "@sarraf/core" {
+declare module "@sarrafjs/core" {
   interface ProviderOptionsRegistry {
     paymob: PaymobProviderOptions;
   }

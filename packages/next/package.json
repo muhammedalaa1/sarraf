@@ -1,5 +1,5 @@
 {
-  "name": "@sarraf/next",
+  "name": "@sarrafjs/next",
   "version": "0.0.0",
   "description": "Next.js App Router helpers for Sarraf: a verified webhook route handler and redirect verification.",
   "license": "Apache-2.0",
@@ -47,10 +47,10 @@
     "lint:package": "publint --strict"
   },
   "dependencies": {
-    "@sarraf/core": "workspace:^"
+    "@sarrafjs/core": "workspace:^"
   },
   "devDependencies": {
-    "@sarraf/testing": "workspace:*"
+    "@sarrafjs/testing": "workspace:*"
   },
   "publishConfig": {
     "access": "public",

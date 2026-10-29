@@ -1,5 +1,5 @@
 import { createHmac } from "node:crypto";
-import { loadFixture } from "@sarraf/testing";
+import { loadFixture } from "@sarrafjs/testing";
 import { describe, expect, it } from "vitest";
 import {
   kashierOrderHash,

@@ -6,7 +6,7 @@ sidebar:
 ---
 
 ```bash
-npm i @sarraf/kashier
+npm i @sarrafjs/kashier
 ```
 
 

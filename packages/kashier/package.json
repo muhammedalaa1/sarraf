@@ -1,5 +1,5 @@
 {
-  "name": "@sarraf/kashier",
+  "name": "@sarrafjs/kashier",
   "version": "0.1.0",
   "description": "Kashier adapter for Sarraf: hosted payment page, redirect and webhook signature verification.",
   "license": "Apache-2.0",
@@ -56,12 +56,12 @@
     "lint:package": "publint --strict"
   },
   "dependencies": {
-    "@sarraf/core": "workspace:^",
+    "@sarrafjs/core": "workspace:^",
     "query-string": "9.5.1",
     "zod": "4.6.7"
   },
   "devDependencies": {
-    "@sarraf/testing": "workspace:*"
+    "@sarrafjs/testing": "workspace:*"
   },
   "publishConfig": {
     "access": "public",

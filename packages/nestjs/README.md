@@ -1,4 +1,4 @@
-# @sarraf/nestjs
+# @sarrafjs/nestjs
 
 NestJS module for [Sarraf](https://github.com/muhammedalaa1/sarraf).
 
@@ -8,7 +8,7 @@ const app = await NestFactory.create(AppModule, { rawBody: true });
 ```
 
 ```ts
-import { InjectSarraf, OnSarrafEvent, SarrafModule } from "@sarraf/nestjs";
+import { InjectSarraf, OnSarrafEvent, SarrafModule } from "@sarrafjs/nestjs";
 
 @Module({ imports: [SarrafModule.forRoot({ client: { providers: { kashier: kashier({ ... }) } } })] })
 export class AppModule {}

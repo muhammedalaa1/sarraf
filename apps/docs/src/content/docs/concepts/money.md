@@ -20,7 +20,7 @@ Every amount in Sarraf is a `Money` object in **integer minor units**:
 Convert with string math, never `Number` division:
 
 ```ts
-import { toMinor, toMajorString } from "@sarraf/core";
+import { toMinor, toMajorString } from "@sarrafjs/core";
 
 toMinor("250.00", "EGP");      // 25000
 toMajorString(25000, "EGP");   // "250.00"

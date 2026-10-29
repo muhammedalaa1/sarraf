@@ -11,7 +11,7 @@ import {
   type StatusMappingRow,
   sarrafId,
   str,
-} from "@sarraf/core";
+} from "@sarrafjs/core";
 
 /** Paymob transaction object (callback `obj` and transaction inquiry response share this shape). */
 export interface PaymobTransaction {

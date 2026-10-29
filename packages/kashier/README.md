@@ -1,9 +1,9 @@
-# @sarraf/kashier
+# @sarrafjs/kashier
 
 Kashier adapter for [Sarraf](https://github.com/muhammedalaa1/sarraf).
 
 ```ts
-import { kashier } from "@sarraf/kashier";
+import { kashier } from "@sarrafjs/kashier";
 
 kashier({
   merchantId: process.env.KASHIER_MID!,

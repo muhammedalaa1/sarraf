@@ -7,7 +7,7 @@ sidebar:
 
 ```ts
 import express from "express";
-import { rawBody, webhookHandler } from "@sarraf/express";
+import { rawBody, webhookHandler } from "@sarrafjs/express";
 import { pay } from "./pay";
 
 const app = express();

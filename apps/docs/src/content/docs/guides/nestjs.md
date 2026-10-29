@@ -6,7 +6,7 @@ sidebar:
 ---
 
 ```bash
-npm install @sarraf/nestjs
+npm install @sarrafjs/nestjs
 ```
 
 Enable raw bodies when you bootstrap the app. Signatures are computed over the exact bytes:
@@ -18,7 +18,7 @@ const app = await NestFactory.create(AppModule, { rawBody: true });
 ## Register the module
 
 ```ts
-import { SarrafModule } from "@sarraf/nestjs";
+import { SarrafModule } from "@sarrafjs/nestjs";
 
 @Module({
   imports: [
@@ -56,7 +56,7 @@ export class CheckoutService {
 The module serves `POST /webhooks/:provider`. Verified events go to every method marked `@OnSarrafEvent()`:
 
 ```ts
-import { OnSarrafEvent } from "@sarraf/nestjs";
+import { OnSarrafEvent } from "@sarrafjs/nestjs";
 
 @Injectable()
 export class OrdersService {

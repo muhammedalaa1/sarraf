@@ -1,4 +1,4 @@
-import type { FakeProvider } from "@sarraf/testing";
+import type { FakeProvider } from "@sarrafjs/testing";
 import request from "supertest";
 import { describe, expect, it } from "vitest";
 import { createApp, type Order, reconcilePending, Store } from "../src/app.js";

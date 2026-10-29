@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`public exports > @sarraf/next 1`] = `
+exports[`public exports > @sarrafjs/next 1`] = `
 [
   "verifyRedirect",
   "webhookRoute",

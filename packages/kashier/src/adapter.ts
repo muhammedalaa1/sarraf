@@ -18,7 +18,7 @@ import {
   str,
   type VerifiedWebhook,
   type WebhookInspection,
-} from "@sarraf/core";
+} from "@sarrafjs/core";
 import { createSession, findOrder, refundOrder, voidOrder } from "./client.js";
 import { type KashierConfig, type KashierOptions, resolveConfig } from "./config.js";
 import { formatKashierAmount, KASHIER_METHOD_NAMES, toKashierOrderPayment } from "./mappers.js";
@@ -41,7 +41,7 @@ export interface KashierProviderOptions {
   extraParams?: Record<string, string> | undefined;
 }
 
-declare module "@sarraf/core" {
+declare module "@sarrafjs/core" {
   interface ProviderOptionsRegistry {
     kashier: KashierProviderOptions;
   }

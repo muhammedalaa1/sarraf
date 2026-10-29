@@ -8,7 +8,7 @@ import {
   type SarrafError,
   toMajorString,
   toMinor,
-} from "@sarraf/core";
+} from "@sarrafjs/core";
 import { type Order, type Orders, withoutRaw } from "./orders";
 
 export interface ActionBody {
@@ -159,7 +159,7 @@ function amountOf(body: ActionBody, known: Order | undefined): Money | undefined
 
 /**
  * `instanceof SarrafError` fails when Next bundles the adapters with their own copy of
- * `@sarraf/core`, so fall back to the error's name.
+ * `@sarrafjs/core`, so fall back to the error's name.
  */
 function toErrorJson(err: unknown): { code?: string; message: string } {
   if (isSarrafError(err) || (err instanceof Error && err.name === "SarrafError" && "toJSON" in err)) {

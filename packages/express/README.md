@@ -1,9 +1,9 @@
-# @sarraf/express
+# @sarrafjs/express
 
 Express helpers for [Sarraf](https://github.com/muhammedalaa1/sarraf).
 
 ```ts
-import { rawBody, webhookHandler } from "@sarraf/express";
+import { rawBody, webhookHandler } from "@sarrafjs/express";
 
 app.post("/api/webhooks/:provider", rawBody(), webhookHandler(pay, async (event) => {
   await queue.add("payment-event", event, { jobId: event.id }); // dedupe on event.id

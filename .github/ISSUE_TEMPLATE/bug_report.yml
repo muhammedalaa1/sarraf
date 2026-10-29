@@ -9,7 +9,7 @@ body:
     id: package
     attributes:
       label: Package
-      options: ["@sarraf/core", "@sarraf/paymob", "@sarraf/kashier", "@sarraf/fawry", "@sarraf/express", "@sarraf/testing", "dashboard", "docs"]
+      options: ["@sarrafjs/core", "@sarrafjs/paymob", "@sarrafjs/kashier", "@sarrafjs/fawry", "@sarrafjs/express", "@sarrafjs/testing", "dashboard", "docs"]
     validations: { required: true }
   - type: input
     id: version

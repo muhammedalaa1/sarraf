@@ -1,9 +1,9 @@
-# @sarraf/paymob
+# @sarrafjs/paymob
 
 Paymob adapter for [Sarraf](https://github.com/muhammedalaa1/sarraf).
 
 ```ts
-import { paymob, paymobIntegrationIdsFromEnv } from "@sarraf/paymob";
+import { paymob, paymobIntegrationIdsFromEnv } from "@sarrafjs/paymob";
 
 paymob({
   region: "egypt",                      // egypt | ksa | uae | oman
@@ -21,7 +21,7 @@ paymob({
 - Status: transaction inquiry using the API-key auth token, cached ~50 minutes
 - Refund (full or partial), same-day void by transaction id or reference
 - Paymob-only APIs on `pay.provider("paymob").extras`: saved-card charges (MOTO), subscriptions and plans, payment links, intention update / retrieve
-- Test helpers: `@sarraf/paymob/testing` (`paymobTransaction`, `signPaymobCallback`, `signPaymobTokenCallback`, `signPaymobSubscriptionCallback`)
+- Test helpers: `@sarrafjs/paymob/testing` (`paymobTransaction`, `signPaymobCallback`, `signPaymobTokenCallback`, `signPaymobSubscriptionCallback`)
 
 Full guide: [sarraf.dev/providers/paymob](https://sarraf.dev/providers/paymob).
 

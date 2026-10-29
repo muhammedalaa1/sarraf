@@ -12,7 +12,7 @@ import {
   toMajorString,
   toMajorTrimmed,
   toMinor,
-} from "@sarraf/core";
+} from "@sarrafjs/core";
 import type { KashierConfig } from "./config.js";
 
 /** Kashier webhook `data` (also the shape of order lookups). ⚠️ field names to confirm with fixtures. */

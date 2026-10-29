@@ -6,7 +6,7 @@ sidebar:
 ---
 
 ```bash
-npm i @sarraf/fawry
+npm i @sarrafjs/fawry
 ```
 
 ## Credentials

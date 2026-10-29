@@ -1,4 +1,4 @@
-import type { FakeProvider } from "@sarraf/testing";
+import type { FakeProvider } from "@sarrafjs/testing";
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));

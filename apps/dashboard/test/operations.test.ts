@@ -1,8 +1,8 @@
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { Sarraf, silentLogger } from "@sarraf/core";
-import { type FakeProvider, fakeProvider } from "@sarraf/testing";
+import { Sarraf, silentLogger } from "@sarrafjs/core";
+import { type FakeProvider, fakeProvider } from "@sarrafjs/testing";
 import { describe, expect, it } from "vitest";
 import { runAction } from "../lib/actions";
 import { Orders } from "../lib/orders";

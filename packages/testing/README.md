@@ -1,4 +1,4 @@
-# @sarraf/testing
+# @sarrafjs/testing
 
 Test helpers for [Sarraf](https://github.com/muhammedalaa1/sarraf).
 

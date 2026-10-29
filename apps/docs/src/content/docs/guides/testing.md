@@ -8,8 +8,8 @@ sidebar:
 ## Fake provider
 
 ```ts
-import { Sarraf } from "@sarraf/core";
-import { fakeProvider } from "@sarraf/testing";
+import { Sarraf } from "@sarrafjs/core";
+import { fakeProvider } from "@sarrafjs/testing";
 
 const fake = fakeProvider("paymob");                 // stands in for any provider id
 const pay = new Sarraf({ providers: { paymob: fake } });
@@ -24,9 +24,9 @@ const event = await pay.webhooks.verifyAndParse("paymob", webhook);
 Each adapter ships helpers under `/testing`:
 
 ```ts
-import { paymobTransaction, signPaymobCallback } from "@sarraf/paymob/testing";
-import { kashierWebhookData, signKashierWebhook } from "@sarraf/kashier/testing";
-import { fawryNotification, signFawryNotification } from "@sarraf/fawry/testing";
+import { paymobTransaction, signPaymobCallback } from "@sarrafjs/paymob/testing";
+import { kashierWebhookData, signKashierWebhook } from "@sarrafjs/kashier/testing";
+import { fawryNotification, signFawryNotification } from "@sarrafjs/fawry/testing";
 
 const req = signPaymobCallback(paymobTransaction({ success: false }), process.env.TEST_HMAC!);
 ```
@@ -34,7 +34,7 @@ const req = signPaymobCallback(paymobTransaction({ success: false }), process.en
 ## Mock HTTP
 
 ```ts
-import { createMockFetch } from "@sarraf/testing";
+import { createMockFetch } from "@sarrafjs/testing";
 
 const fetch = createMockFetch([
   { method: "POST", url: "/v1/intention/", respond: { status: 201, body: { id: "pi_1", client_secret: "cs" } } },
@@ -44,4 +44,4 @@ const pay = new Sarraf({ providers, http: { fetch } });
 
 ## Contributing adapters
 
-Every adapter must pass `runConformanceTests()` from `@sarraf/core/conformance`. See [CONTRIBUTING](https://github.com/muhammedalaa1/sarraf/blob/main/CONTRIBUTING.md).
+Every adapter must pass `runConformanceTests()` from `@sarrafjs/core/conformance`. See [CONTRIBUTING](https://github.com/muhammedalaa1/sarraf/blob/main/CONTRIBUTING.md).

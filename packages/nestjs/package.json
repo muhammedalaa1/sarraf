@@ -1,5 +1,5 @@
 {
-  "name": "@sarraf/nestjs",
+  "name": "@sarrafjs/nestjs",
   "version": "0.0.0",
   "description": "NestJS module for Sarraf: an injectable client, a verified webhook controller and @OnSarrafEvent() handlers.",
   "license": "Apache-2.0",
@@ -46,7 +46,7 @@
     "lint:package": "publint --strict"
   },
   "dependencies": {
-    "@sarraf/core": "workspace:^"
+    "@sarrafjs/core": "workspace:^"
   },
   "peerDependencies": {
     "@nestjs/common": ">=10",
@@ -57,7 +57,7 @@
     "@nestjs/core": "12.2.0",
     "@nestjs/platform-express": "12.2.0",
     "@nestjs/testing": "12.2.0",
-    "@sarraf/testing": "workspace:*",
+    "@sarrafjs/testing": "workspace:*",
     "@types/supertest": "7.2.1",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2",

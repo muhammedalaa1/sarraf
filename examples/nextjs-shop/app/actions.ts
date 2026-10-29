@@ -1,7 +1,7 @@
 "use server";
 
-import { isSarrafError, type Money, type ProviderId } from "@sarraf/core";
-import type { FakeProvider } from "@sarraf/testing";
+import { isSarrafError, type Money, type ProviderId } from "@sarrafjs/core";
+import type { FakeProvider } from "@sarrafjs/testing";
 import { redirect } from "next/navigation";
 import { applyEvent, getPay, orders, PUBLIC_URL } from "../lib/pay";
 import { MAX_QUANTITY, PRODUCT } from "../lib/shop";

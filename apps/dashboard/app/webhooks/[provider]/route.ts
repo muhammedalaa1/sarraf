@@ -1,4 +1,4 @@
-import type { ProviderId } from "@sarraf/core";
+import type { ProviderId } from "@sarrafjs/core";
 import { inbox } from "../../../lib/inbox";
 import { orders, withoutRaw } from "../../../lib/orders";
 import { clientKey, limits, tooMany } from "../../../lib/rate-limit";

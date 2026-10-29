@@ -1,4 +1,4 @@
-import type { PaymentStatus } from "@sarraf/core";
+import type { PaymentStatus } from "@sarrafjs/core";
 import { statusTone } from "../lib/shop";
 
 export function StatusBadge({ status }: { status: PaymentStatus }) {

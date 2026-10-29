@@ -1,4 +1,4 @@
-import { type Money, moneySchema, type PaymentMethod, str, validateWith } from "@sarraf/core";
+import { type Money, moneySchema, type PaymentMethod, str, validateWith } from "@sarrafjs/core";
 import { z } from "zod";
 import { authedRequest, toId } from "../client.js";
 import type { ExtrasDeps } from "./index.js";

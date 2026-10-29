@@ -1,9 +1,9 @@
-# @sarraf/fawry
+# @sarrafjs/fawry
 
 Fawry adapter for [Sarraf](https://github.com/muhammedalaa1/sarraf).
 
 ```ts
-import { fawry } from "@sarraf/fawry";
+import { fawry } from "@sarrafjs/fawry";
 
 fawry({
   merchantCode: process.env.FAWRY_MERCHANT_CODE!,

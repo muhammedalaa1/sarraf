@@ -1,4 +1,4 @@
-import { normalizeDecimal, safeEqualHex, sha256Hex } from "@sarraf/core";
+import { normalizeDecimal, safeEqualHex, sha256Hex } from "@sarrafjs/core";
 
 /**
  * Fawry signatures are plain SHA-256 (hex) of a concatenated string ending with the secure key.

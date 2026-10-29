@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
-import type { ProviderId, SarrafEvent, WebhookInspection } from "@sarraf/core";
+import type { ProviderId, SarrafEvent, WebhookInspection } from "@sarrafjs/core";
 
 export const RETENTION_MS = 7 * 24 * 60 * 60 * 1000;
 const MAX_ENTRIES = 500;

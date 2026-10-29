@@ -1,10 +1,10 @@
-# @sarraf/next
+# @sarrafjs/next
 
 Next.js (App Router) helpers for [Sarraf](https://github.com/muhammedalaa1/sarraf).
 
 ```ts
 // app/api/webhooks/[provider]/route.ts
-import { webhookRoute } from "@sarraf/next";
+import { webhookRoute } from "@sarrafjs/next";
 import { pay } from "@/lib/pay";
 
 export const runtime = "nodejs";
@@ -16,7 +16,7 @@ export const POST = webhookRoute(pay, async (event) => {
 
 ```tsx
 // app/thanks/[provider]/page.tsx: UX only, the webhook decides the order status
-import { verifyRedirect } from "@sarraf/next";
+import { verifyRedirect } from "@sarrafjs/next";
 
 export default async function Thanks({ params, searchParams }) {
   const { provider } = await params;

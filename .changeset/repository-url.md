@@ -1,12 +1,12 @@
 ---
-"@sarraf/core": patch
-"@sarraf/express": patch
-"@sarraf/fawry": patch
-"@sarraf/kashier": patch
-"@sarraf/nestjs": patch
-"@sarraf/next": patch
-"@sarraf/paymob": patch
-"@sarraf/testing": patch
+"@sarrafjs/core": patch
+"@sarrafjs/express": patch
+"@sarrafjs/fawry": patch
+"@sarrafjs/kashier": patch
+"@sarrafjs/nestjs": patch
+"@sarrafjs/next": patch
+"@sarrafjs/paymob": patch
+"@sarrafjs/testing": patch
 ---
 
-Point `repository`, `homepage` and `bugs` at github.com/muhammedalaa1/sarraf, the repository the packages are built and published from (npm provenance checks that they match).
+Packages are published under the `@sarrafjs` npm scope (`npm i @sarrafjs/core @sarrafjs/paymob`). Point `repository`, `homepage` and `bugs` at github.com/muhammedalaa1/sarraf, the repository the packages are built and published from (npm provenance checks that they match).

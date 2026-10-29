@@ -1,4 +1,4 @@
-import { type Currency, SarrafError } from "@sarraf/core";
+import { type Currency, SarrafError } from "@sarrafjs/core";
 import { z } from "zod";
 
 export const PAYMOB_REGIONS = {
