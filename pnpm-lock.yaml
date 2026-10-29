@@ -492,8 +492,8 @@ importers:
         specifier: workspace:^
         version: link:../core
       query-string:
-        specifier: 9.5.1
-        version: 9.5.1
+        specifier: 10.0.0
+        version: 10.0.0
       zod:
         specifier: 4.6.7
         version: 4.6.7
@@ -2516,10 +2516,6 @@ packages:
   decode-named-character-reference@1.3.0:
     resolution: {integrity: sha512-GtpQYB283KrPp6nRw50q3U9/VfOutZOe103qlN7BPP6Ad27xYnOIWv4lPzo8HCAL+mMZofJ9KEy30fq6MfaK6Q==}
 
-  decode-uri-component@0.5.0:
-    resolution: {integrity: sha512-1BiQVoK8C9gUbQU6NzAtO/tkz2qOFpEObMWpcFvhx4fYnj4Oc5yzaJN/LD36ihkVUdXyh5ZekzX+yM+ty/SrPg==}
-    engines: {node: '>=14.16'}
-
   deep-is@0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
 
@@ -2774,9 +2770,9 @@ packages:
     resolution: {integrity: sha512-sEB0oStmeLGtpmSAD88RDNuLsvhv4iC3u0lE25CUvfCULvj49xoQ3l3K525Vn+ZzsZ6DOLajQCV6RmhwwhqiJg==}
     engines: {node: '>=22'}
 
-  filter-obj@5.1.0:
-    resolution: {integrity: sha512-qWeTREPoT7I0bifpPUXtxkZJ1XJzxWtfoWWkdVGqa+eCr3SHW/Ocp89o8vLvbUuQnadybJpjOKu4V+RwO6sGng==}
-    engines: {node: '>=14.16'}
+  filter-obj@6.1.0:
+    resolution: {integrity: sha512-xdMtCAODmPloU9qtmPcdBV9Kd27NtMse+4ayThxqIHUES5Z2S6bGpap5PpdmNM56ub7y3i1eyr+vJJIIgWGKmA==}
+    engines: {node: '>=18'}
 
   finalhandler@2.1.1:
     resolution: {integrity: sha512-S8KoZgRZN+a5rNwqTxlZZePjT/4cnm0ROV70LedRHZ0p8u9fRID0hJUZQpkKLzro8LfmC8sx23bY6tVNxv8pQA==}
@@ -3711,9 +3707,9 @@ packages:
     resolution: {integrity: sha512-5Px6J7rfHBAGUhNQ3es4YzcOdBBw0SDcVtThJml4RdnKw4tKs2epA0kPZ+K8X+WiHktT93RHVcQ/3ym5aTCgtg==}
     engines: {node: '>=0.6'}
 
-  query-string@9.5.1:
-    resolution: {integrity: sha512-/zO3RwuRCMTIcEgq6YMv4OrtEE1XzBG7w5N6zc6ydYnkWYOWsnLI/5894hYEzfESfMOT4cHCsRTIdxsSl1KjGg==}
-    engines: {node: '>=18'}
+  query-string@10.0.0:
+    resolution: {integrity: sha512-QYodx/Ywk8lCcOmsyupXVN91yWPAdjq0xVqE2FE2BHFYnma71C8txR8JCBptjzoUpkfAK7Qjua9VjYRTru4LYg==}
+    engines: {node: '>=22'}
 
   radix3@1.1.2:
     resolution: {integrity: sha512-b484I/7b8rDEdSDKckSSBA8knMpcdsXudlE/LNL639wFoHKwLbEkQFZHWEYwDC0wa0FKUcCY+GAF73Z7wxNVFA==}
@@ -3896,9 +3892,9 @@ packages:
   space-separated-tokens@2.0.2:
     resolution: {integrity: sha512-PEGlAwrG8yXGXRjW32fGbg66JAlOAwbObuqVoJpv/mRgoWDQfgH1wDPvtzWyUSNAXBGSk8h755YDbbcEy3SH2Q==}
 
-  split-on-first@3.0.0:
-    resolution: {integrity: sha512-qxQJTx2ryR0Dw0ITYyekNQWpz6f8dGd7vffGNflQQ3Iqj9NJ6qiZ7ELpZsJ/QBhIVAiDfXdag3+Gp8RvWa62AA==}
-    engines: {node: '>=12'}
+  split-on-first@4.0.0:
+    resolution: {integrity: sha512-pyrgNqiEBHA9KlEtg9quYGagtrlTyukL3ryQ+RmjRn9SYmcNQmfa+sWIsI+hlcL4WrmFdrt7IfM6o8ktBAooDQ==}
+    engines: {node: '>=20'}
 
   statuses@2.0.2:
     resolution: {integrity: sha512-DvEy55V3DB7uknRo+4iOGT5fP1slR8wQohVdknigZPMpMstaKJQWhwiYBACJE3Ul2pTnATihhBYnRhZQHGBiRw==}
@@ -6255,8 +6251,6 @@ snapshots:
     dependencies:
       character-entities: 2.0.2
 
-  decode-uri-component@0.5.0: {}
-
   deep-is@0.1.4: {}
 
   defu@6.1.7: {}
@@ -6551,7 +6545,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  filter-obj@5.1.0: {}
+  filter-obj@6.1.0: {}
 
   finalhandler@2.1.1(supports-color@7.2.0):
     dependencies:
@@ -7586,11 +7580,10 @@ snapshots:
       es-define-property: 1.0.1
       side-channel: 1.1.1
 
-  query-string@9.5.1:
+  query-string@10.0.0:
     dependencies:
-      decode-uri-component: 0.5.0
-      filter-obj: 5.1.0
-      split-on-first: 3.0.0
+      filter-obj: 6.1.0
+      split-on-first: 4.0.0
 
   radix3@1.1.2: {}
 
@@ -7877,7 +7870,7 @@ snapshots:
 
   space-separated-tokens@2.0.2: {}
 
-  split-on-first@3.0.0: {}
+  split-on-first@4.0.0: {}
 
   statuses@2.0.2: {}
 
