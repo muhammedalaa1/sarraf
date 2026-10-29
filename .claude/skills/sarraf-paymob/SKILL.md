@@ -22,7 +22,7 @@ Paymob is the Egyptian (and KSA / UAE / Oman) gateway Sarraf treats as its refer
 | `src/extras/` | `pay.provider("paymob").extras`: `cards`, `intentions`, `subscriptions`, `links` |
 | `src/testing.ts` | `paymobTransaction`, `paymobCardToken`, `signPaymobCallback`, `signPaymobTokenCallback`, `signPaymobSubscriptionCallback`, `signPaymobRedirect` |
 | `test/adapter.test.ts`, `test/features.test.ts` | Conformance + unit tests (mock fetch) |
-| `apps/docs/src/content/docs/providers/paymob.md` | Public guide — keep in sync |
+| `apps/docs/src/content/docs/providers/paymob.md`, `guides/paymob.md`, `packages/paymob/README.md` | Public reference, step-by-step guide (https://sarraf-docs.vercel.app/guides/paymob/) and npm README — keep all three in sync |
 
 ## Things that are easy to get wrong
 

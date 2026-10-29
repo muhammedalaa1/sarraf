@@ -76,7 +76,7 @@ export function fakeProvider<Id extends ProviderId>(
     methods: { card: "supported", wallet: "supported", cash_outlet: "supported" },
     currencies: ["EGP", "SAR", "AED", "KWD", "USD"],
     checkoutKinds: [kind],
-    docsUrl: "https://sarraf.dev/testing",
+    docsUrl: "https://sarraf-docs.vercel.app/guides/testing/",
     ...options.capabilities,
   };
 

@@ -47,7 +47,7 @@ declare module "@sarrafjs/core" {
   }
 }
 
-export const KASHIER_DOCS_URL = "https://sarraf.dev/providers/kashier";
+export const KASHIER_DOCS_URL = "https://sarraf-docs.vercel.app/providers/kashier/";
 
 /** Refund outcomes that mean the money went back. */
 const REFUND_SUCCEEDED = new Set(["SUCCESS", "PARTIALLY_REFUNDED", "REFUNDED"]);

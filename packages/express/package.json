@@ -2,6 +2,10 @@
   "name": "@sarrafjs/express",
   "version": "0.2.0",
   "description": "Express helpers for Sarraf: raw-body middleware and a verified webhook handler.",
+  "homepage": "https://sarraf-docs.vercel.app/guides/express/",
+  "bugs": {
+    "url": "https://github.com/muhammedalaa1/sarraf/issues"
+  },
   "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,

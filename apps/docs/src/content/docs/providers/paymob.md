@@ -9,6 +9,8 @@ sidebar:
 npm i @sarrafjs/paymob
 ```
 
+> Building an app? Start with the step-by-step guide: [Accept payments with Paymob](/guides/paymob/) (Express and Next.js).
+
 ## Credentials
 
 | Option | Where to find it | Used for | Exposure |

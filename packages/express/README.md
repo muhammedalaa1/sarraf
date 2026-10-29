@@ -2,6 +2,12 @@
 
 Express helpers for [Sarraf](https://github.com/muhammedalaa1/sarraf).
 
+📖 **Docs:** [Express guide](https://sarraf-docs.vercel.app/guides/express/) · [Accept payments with Paymob](https://sarraf-docs.vercel.app/guides/paymob/) · [with Kashier](https://sarraf-docs.vercel.app/guides/kashier/)
+
+```bash
+npm i @sarrafjs/core @sarrafjs/express express
+```
+
 ```ts
 import { rawBody, webhookHandler } from "@sarrafjs/express";
 
@@ -12,5 +18,7 @@ app.post("/api/webhooks/:provider", rawBody(), webhookHandler(pay, async (event)
 
 - `rawBody()` keeps the exact bytes on `req.rawBody`, which signatures need. Use it *instead of* `express.json()` on webhook routes.
 - `webhookHandler()` answers 400 for invalid signatures, 404 for unknown providers, and 500 when your handler throws, so the provider retries. `mode: "ack-first"` answers 200 before running your handler.
+
+Requires Node.js 22+.
 
 > Not affiliated with any payment provider. Part of [Sarraf](https://github.com/muhammedalaa1/sarraf). Apache-2.0.

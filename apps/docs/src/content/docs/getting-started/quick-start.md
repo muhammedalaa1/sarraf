@@ -71,6 +71,7 @@ import { rawBody, webhookHandler } from "@sarrafjs/express";
 const app = express();
 app.post("/api/webhooks/:provider", rawBody(), webhookHandler(pay, async (event) => {
   // event.id is a stable dedupe key: store it with a unique index
+  if (event.type === "card.saved") return;   // Paymob saved card: no payment (see Webhooks)
   await orders.update(event.payment.reference, { status: event.payment.status });
 }));
 ```

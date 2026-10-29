@@ -23,7 +23,7 @@ several places the sandbox contradicts the docs (see `references/verification.md
 | `src/adapter.ts` | `KashierProvider`: capabilities, checkout (hpp / session), getPayment, refund, cancel |
 | `src/testing.ts` | Webhook/redirect builders and signers |
 | `test/adapter.test.ts`, `test/signature.test.ts` | Conformance + fixture-driven tests |
-| `apps/docs/src/content/docs/providers/kashier.md` | Public guide — keep in sync |
+| `apps/docs/src/content/docs/providers/kashier.md`, `guides/kashier.md`, `packages/kashier/README.md` | Public reference, step-by-step guide (https://sarraf-docs.vercel.app/guides/kashier/) and npm README — keep all three in sync |
 
 ## Things that are easy to get wrong
 
