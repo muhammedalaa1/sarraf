@@ -2,6 +2,9 @@
 // Format: type(scope): subject, e.g. "fix(kashier): sort keys before signing". The scope is optional.
 export default {
   extends: ["@commitlint/config-conventional"],
+  // Dependabot always writes "Bump" with a capital B (and grouped titles can be long). Its type and
+  // scope are already set in .github/dependabot.yml, so accept its titles as they are.
+  ignores: [(message) => /^(chore|ci)\(deps(-dev)?\): Bump /.test(message)],
   rules: {
     "type-enum": [
       2,
