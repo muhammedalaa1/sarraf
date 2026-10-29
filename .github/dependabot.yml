@@ -1,14 +1,31 @@
 version: 2
 updates:
+  # One grouped PR per month instead of one PR per package.
   # Titles follow commitlint.config.js: "chore(deps): bump …" / "chore(deps-dev): bump …"
   - package-ecosystem: npm
     directory: "/"
-    schedule: { interval: weekly }
-    commit-message: { prefix: chore, include: scope }
+    schedule: { interval: monthly }
+    open-pull-requests-limit: 5
+    commit-message: { prefix: chore, prefix-development: chore, include: scope }
     groups:
-      dev-dependencies: { dependency-type: development }
+      # Patch and minor updates: low risk, one PR.
+      dependencies:
+        dependency-type: production
+        update-types: [minor, patch]
+      dev-dependencies:
+        dependency-type: development
+        update-types: [minor, patch]
+      # Major updates still arrive one PR each, so a breaking change can't hide in a group.
+    ignore:
+      # typescript-eslint and tsup don't support TypeScript 7 yet. Remove this once they do.
+      - dependency-name: typescript
+        versions: [">=7"]
+
   # "ci(deps): bump …"
   - package-ecosystem: github-actions
     directory: "/"
     schedule: { interval: monthly }
     commit-message: { prefix: ci, include: scope }
+    groups:
+      github-actions:
+        patterns: ["*"]
