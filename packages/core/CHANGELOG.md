@@ -1,5 +1,11 @@
 # @sarrafjs/core
 
+## 0.2.1
+
+### Patch Changes
+
+- 0e0bd0d: Point `docsUrl` and every README at the docs site, https://sarraf-docs.vercel.app (the old sarraf.dev links were dead), add `homepage` and `bugs` to each package, and expand the npm READMEs with setup, options and examples.
+
 ## 0.2.0
 
 ### Minor Changes

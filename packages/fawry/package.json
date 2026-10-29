@@ -1,6 +1,6 @@
 {
   "name": "@sarrafjs/fawry",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Fawry adapter for Sarraf: PayAtFawry reference codes, hosted card checkout, V2 notification verification.",
   "homepage": "https://sarraf-docs.vercel.app/providers/fawry/",
   "bugs": {

@@ -1,6 +1,6 @@
 {
   "name": "@sarrafjs/testing",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Test helpers for Sarraf: fake provider, mock fetch router and fixture loader.",
   "homepage": "https://sarraf-docs.vercel.app/guides/testing/",
   "bugs": {
