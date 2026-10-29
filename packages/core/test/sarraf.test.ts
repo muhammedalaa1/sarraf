@@ -17,7 +17,7 @@ const caps = (over: Partial<Capabilities> = {}): Capabilities => ({
   methods: { card: "supported", wallet: "beta" },
   currencies: ["EGP"],
   checkoutKinds: ["redirect"],
-  docsUrl: "https://sarraf.dev/providers/paymob",
+  docsUrl: "https://sarraf-docs.vercel.app/providers/paymob/",
   ...over,
 });
 

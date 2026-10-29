@@ -21,6 +21,21 @@ npm i @sarrafjs/kashier
 | `secretKey` | Server APIs: order lookup, refunds, Payment Sessions (beta) |
 | `mode` | `"test"` or `"live"`. Test and live MIDs and keys are different |
 | `amountFormat` | `"fixed"` (`250.00`, default) or `"trimmed"` (`250`) |
+| `currencies` | Currencies your MID accepts. Default `["EGP", "USD"]` |
+| `urls` | Override the `checkout`, `api` and `fep` base URLs (proxies, tests). Defaults are in `KASHIER_URLS` |
+
+### Capabilities
+
+| Feature | Without `secretKey` | With `secretKey` |
+|---|---|---|
+| Hosted checkout, webhooks, redirect verification | ✅ supported | ✅ supported |
+| `payments.get` / `reconcile`, refunds, voids | unsupported | ✅ supported |
+| Methods `card`, `wallet` | ✅ supported | ✅ supported |
+| Methods `installments`, `bnpl` (valU) | beta | beta |
+| Payment Sessions (`flow: "session"`) | unsupported | beta |
+| Capture (`payments.capture`) | unsupported | unsupported |
+
+Beta features need `new Sarraf({ allowBeta: true, … })`.
 
 ## Checkout (hosted payment page)
 
@@ -35,6 +50,20 @@ hash = HMAC-SHA256(apiKey, "/?payment=" + merchantId + "." + orderId + "." + amo
 The **same amount string** goes into the hash and the URL. One mismatched character gives "invalid hash" on the hosted page. `orderId` (your `reference`) must be unique per attempt.
 
 `methods` maps to `allowedMethods`: `card`, `wallet`, `installments` → `bank_installments`, `bnpl` → `valu` (the last two are beta).
+
+### Checkout options
+
+| Input | Sent to Kashier as |
+|---|---|
+| `reference` | `orderId` (it comes back as `merchantOrderId` in webhooks). Unique per attempt |
+| `returnUrl` / `webhookUrl` | `merchantRedirect` / `serverWebhook` |
+| `locale` | `display` (`en` by default, or `ar`) |
+| `metadata` | `metaData` (JSON) |
+| `providerOptions.allowedMethods` | Raw `allowedMethods`, overriding `methods` |
+| `providerOptions.extraParams` | Extra query params, e.g. `brandColor` |
+| `providerOptions.customerReference` | `customerReference`, also appended to the hash (saved cards). ⚠️ unconfirmed |
+
+`checkout.payment.providerPaymentId` is your `reference` at checkout time. Kashier's own order id arrives in the webhook (`kashierOrderId`) and is what refunds use.
 
 ### Payment Sessions (beta)
 
@@ -121,3 +150,23 @@ const payment = await pay.payments.cancel({ provider: "kashier", reference: "ord
 ✅ Confirmed in the sandbox ([fixture](https://github.com/muhammedalaa1/sarraf/blob/main/fixtures/kashier/sandbox-void-succeeded.json)). Sarraf looks the order up by `reference`, finds the successful `pay` transaction and sends `PUT /v3/orders/:orderId` with `{ apiOperation: "VOID", transaction: { targetTransactionId, amount } }`. Kashier's docs say a full void can omit `transaction`; Sarraf always sends both fields, because the same "optional" fields make refunds fail with HTTP 500. It then returns the order as Kashier reports it (`CANCELLED` → `canceled`). Kashier also sends a `void` webhook, which becomes `payment.canceled`.
 
 A void that Kashier does not accept throws `PAYMENT_DECLINED`.
+
+## Testing helpers
+
+`@sarrafjs/kashier/testing` builds Kashier payloads signed the way Kashier signs them:
+
+```ts
+import { kashierWebhookData, signKashierRedirect, signKashierWebhook } from "@sarrafjs/kashier/testing";
+
+const webhook = signKashierWebhook("pay", kashierWebhookData({ merchantOrderId: "order_8841" }), apiKey);
+await pay.webhooks.verifyAndParse("kashier", webhook);   // → payment.succeeded
+
+const query = signKashierRedirect({ paymentStatus: "SUCCESS", merchantOrderId: "order_8841" }, apiKey);
+await pay.redirects.verify("kashier", query);              // → authenticated: true
+```
+
+## Not supported yet
+
+- Authorize then capture (`capture: "unsupported"`). Kashier's `authorize` webhook maps to `requires_action`, but there is no capture call.
+- Kiosk / reference-code payments, payment links and invoices, subscriptions, and charging saved cards without the customer. [Paymob](/providers/paymob/) covers those today.
+- The live base URLs come from Kashier's docs and haven't been confirmed with a live account. If Kashier gives you different ones, override them with `urls`.

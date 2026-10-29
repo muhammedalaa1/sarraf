@@ -18,6 +18,7 @@ app.post(
   rawBody(),
   webhookHandler(pay, async (event) => {
     await db.events.insertIgnoreDuplicate({ id: event.id });   // dedupe
+    if (event.type === "card.saved") return;                    // Paymob saved card: no payment
     await db.orders.update(event.payment.reference, { status: event.payment.status });
   }),
 );

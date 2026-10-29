@@ -70,7 +70,7 @@ declare module "@sarrafjs/core" {
   }
 }
 
-export const PAYMOB_DOCS_URL = "https://sarraf.dev/providers/paymob";
+export const PAYMOB_DOCS_URL = "https://sarraf-docs.vercel.app/providers/paymob/";
 
 /** Integrations that are not offered as their own method on the Unified Checkout. */
 const NOT_ON_CHECKOUT = new Set<PaymobIntegration>(["card_auth", "card_moto", "cash_outlet"]);

@@ -1,9 +1,9 @@
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 
-// The public URL: SITE_URL (e.g. a custom domain), else the Vercel production URL, else sarraf.dev.
+// The public URL: SITE_URL (e.g. a custom domain), else the Vercel production URL, else the public docs site.
 const vercelUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL;
-const site = process.env.SITE_URL ?? (vercelUrl ? `https://${vercelUrl}` : "https://sarraf.dev");
+const site = process.env.SITE_URL ?? (vercelUrl ? `https://${vercelUrl}` : "https://sarraf-docs.vercel.app");
 // The GitHub repo for the header link and "Edit page" links (same org as package.json `repository`).
 const repo = "https://github.com/muhammedalaa1/sarraf";
 

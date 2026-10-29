@@ -145,6 +145,7 @@ const processed = new Set<string>();                  // use a unique index on e
 
 export async function applyEvent(event: SarrafEvent): Promise<void> {
   if (processed.has(event.id)) return;                // Kashier retries: handle each event once
+  if (event.type === "card.saved") return;            // Paymob only; Kashier never sends it
   const order = orders.get(event.payment.reference);
   if (!order) return;                                 // not one of ours
 
@@ -534,6 +535,8 @@ const payment = await pay.payments.get({ provider: "kashier", reference });
 | `refund.failed` | A refund was rejected; no money moved | `failed` (the refund's outcome; the payment itself is unchanged) |
 | `payment.canceled` | A void went through | `canceled` |
 
+`SarrafEvent` is a union that also includes Paymob's `card.saved`, which has no `payment`. Kashier never sends it, but TypeScript needs the check above before you read `event.payment` (or use `isPaymentEvent(event)`).
+
 Every event has `event.id` (stable across retries, use it to dedupe), `event.payment.reference` (your order id), `event.payment.providerPaymentId` (Kashier's order id), `event.payment.amount` and `event.payment.amountRefunded` (integer minor units), and `event.raw` (Kashier's original payload).
 
 ## Money is integers
@@ -578,6 +581,27 @@ const info = await pay.webhooks.inspect("kashier", { rawBody, headers, query });
 // info.signedString: the exact string that was hashed; info.expected vs info.received
 ```
 
+## Customizing the hosted page
+
+| Option | What it does |
+|---|---|
+| `locale: "ar"` | Shows the hosted page in Arabic (`display=ar`); default `en` |
+| `metadata` | Sent as `metaData` |
+| `expiresInSeconds` | Sets `checkout.expiresAt` |
+| `providerOptions.allowedMethods` | Raw `allowedMethods` string, overriding `methods` (e.g. `"card,wallet"`) |
+| `providerOptions.extraParams` | Any extra hosted-page query parameters, e.g. `{ brandColor: "#0a7" }` |
+| `providerOptions.customerReference` | Your customer id, for Kashier's saved cards (included in the hash). ⚠️ Not confirmed in the sandbox yet |
+| `providerOptions.flow: "session"` | Payment Sessions API instead of the signed URL. Beta: needs `allowBeta: true` and `secretKey` |
+
+```ts
+await pay.checkout.create({
+  provider: "kashier",
+  /* … */
+  locale: "ar",
+  providerOptions: { extraParams: { brandColor: "#0a7" } },
+});
+```
+
 ## Going live checklist
 
 - [ ] Live Merchant ID, Payment API key and secret key, and `KASHIER_MODE=live`. Test and live keys are different.
@@ -611,6 +635,15 @@ Voids only work on the same day as the payment. Refund instead.
 
 **`CAPABILITY_NOT_SUPPORTED` for `installments` or `bnpl`.**
 Those methods are still beta for Kashier. Pass `allowBeta: true` to `new Sarraf()` if you accept that.
+
+**`CAPABILITY_NOT_SUPPORTED` for `payments.get`, `refunds.create` or `payments.cancel`.**
+They need `secretKey`. Without it, Kashier can still take payments and send webhooks, but Sarraf can't call Kashier's server APIs.
+
+**`payments.capture` throws `CAPABILITY_NOT_SUPPORTED`.**
+The adapter does not support Kashier's authorize-then-capture flow yet. Use [Paymob](/guides/paymob/#authorize-now-capture-later) if you need it.
+
+**The hosted page shows "invalid hash" or the payment fails on Pay.**
+The hash covers the merchant id, your `reference`, the amount string and the currency. Check that `apiKey` is the **Payment API key** and that the merchant id is from the same mode (test or live). Each `reference` must be unique per attempt.
 
 ## See also
 

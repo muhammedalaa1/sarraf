@@ -56,12 +56,13 @@ export class CheckoutService {
 The module serves `POST /webhooks/:provider`. Verified events go to every method marked `@OnSarrafEvent()`:
 
 ```ts
+import type { EventOf, SarrafEvent } from "@sarrafjs/core";
 import { OnSarrafEvent } from "@sarrafjs/nestjs";
 
 @Injectable()
 export class OrdersService {
   @OnSarrafEvent("payment.succeeded")
-  async paid(event: SarrafEvent) {
+  async paid(event: EventOf<"payment.succeeded">) {   // a PaymentEvent, so event.payment is typed
     await this.orders.markPaid(event.payment.reference); // dedupe on event.id
   }
 

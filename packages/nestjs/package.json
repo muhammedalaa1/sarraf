@@ -2,6 +2,10 @@
   "name": "@sarrafjs/nestjs",
   "version": "0.2.0",
   "description": "NestJS module for Sarraf: an injectable client, a verified webhook controller and @OnSarrafEvent() handlers.",
+  "homepage": "https://sarraf-docs.vercel.app/guides/nestjs/",
+  "bugs": {
+    "url": "https://github.com/muhammedalaa1/sarraf/issues"
+  },
   "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,

@@ -36,7 +36,7 @@ declare module "@sarrafjs/core" {
   }
 }
 
-export const FAWRY_DOCS_URL = "https://sarraf.dev/providers/fawry";
+export const FAWRY_DOCS_URL = "https://sarraf-docs.vercel.app/providers/fawry/";
 
 export class FawryProvider implements PaymentProvider<"fawry"> {
   readonly id = "fawry" as const;

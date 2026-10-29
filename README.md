@@ -5,6 +5,9 @@
 [![CI](https://github.com/muhammedalaa1/sarraf/actions/workflows/ci.yml/badge.svg)](https://github.com/muhammedalaa1/sarraf/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/@sarrafjs/core.svg)](https://www.npmjs.com/package/@sarrafjs/core)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](./LICENSE)
+[![Docs](https://img.shields.io/badge/docs-sarraf--docs.vercel.app-0a7)](https://sarraf-docs.vercel.app/)
+
+📖 **Documentation: [sarraf-docs.vercel.app](https://sarraf-docs.vercel.app/)**. Step-by-step guides: [Accept payments with Paymob](https://sarraf-docs.vercel.app/guides/paymob/) · [Accept payments with Kashier](https://sarraf-docs.vercel.app/guides/kashier/)
 
 > [!IMPORTANT]
 > **Sarraf is not affiliated with Paymob, Kashier, Fawry or any other payment provider.** It is an independent SDK. You bring your own provider accounts and keys, and money flows customer → provider → you. Sarraf never holds funds and never touches card data.
@@ -415,7 +418,7 @@ Everything passed to logs and hooks goes through `redact()` first. Any field who
 
 ## Provider guides
 
-The full guides live in the docs site (`apps/docs`): setup, credentials, flows, the complete status table and gotchas. This is the summary.
+The full guides live on the [docs site](https://sarraf-docs.vercel.app/) (source in `apps/docs`): setup, credentials, flows, the complete status table and gotchas. This is the summary.
 
 ### Paymob
 
@@ -437,7 +440,7 @@ paymob({
 - **Saved cards:** `TOKEN` callbacks become `card.saved` events (HMAC over 8 card-token fields).
 - **Provider options:** `providerOptions: { paymentMethods, extras, billingData, capture: "manual", cardTokens, subscription, addCardToSubscription }`.
 - **Paymob-only APIs** on `pay.provider("paymob").extras`: `cards.charge` (MOTO), `cards.listForOrder`, `subscriptions.*` (plans, lifecycle, cards, `verifyWebhook`), `links.create / cancel`, `intentions.update / retrieve`. Payouts are a separate product and not covered.
-- ⚠️ To confirm in sandbox: how `null` fields are stringified, the kiosk and capture response fields. See the [Paymob guide](https://sarraf.dev/providers/paymob).
+- ⚠️ To confirm in sandbox: how `null` fields are stringified, the kiosk and capture response fields. See the [Paymob guide](https://sarraf-docs.vercel.app/providers/paymob/).
 
 ### Kashier
 
@@ -500,7 +503,7 @@ pnpm --filter example-nextjs-shop dev      # http://localhost:3002
 | NestJS | [`examples/nestjs-shop`](./examples/nestjs-shop) | `@sarrafjs/nestjs`: `SarrafModule` + `@OnSarrafEvent()`, app created with `{ rawBody: true }` |
 | Next.js (App Router) | [`examples/nextjs-shop`](./examples/nextjs-shop) | `@sarrafjs/next`: `webhookRoute()`, `verifyRedirect()`, server actions, `import "server-only"` |
 
-**Using Kashier?** The [Kashier guide](./apps/docs/src/content/docs/guides/kashier.md) builds a complete integration in both Express and Next.js: checkout, webhooks, thank-you page, refunds, voids and reconciliation.
+**Using Paymob or Kashier?** The [Paymob guide](https://sarraf-docs.vercel.app/guides/paymob/) and the [Kashier guide](https://sarraf-docs.vercel.app/guides/kashier/) each build a complete integration in both Express and Next.js: checkout, webhooks, thank-you page, refunds, voids and reconciliation.
 
 All three helpers answer the same way: 200 once your handler finishes, 400 for an invalid signature, 404 for an unknown provider, and 500 when your handler throws so the provider retries.
 
@@ -604,6 +607,7 @@ Full generated reference: `pnpm --filter @sarrafjs/docs build` (TypeDoc output u
 | `payments.get({ provider, providerPaymentId \| reference })` | `Payment` | Current status from the provider |
 | `payments.reconcile(...)` | `Payment` | Same as `get`; name it this in scheduled jobs |
 | `payments.cancel(...)` | `Payment` | Void / cancel unpaid |
+| `payments.capture({ provider, providerPaymentId, amount? })` | `Payment` | Capture an authorization (Paymob, beta) |
 | `refunds.create({ provider, providerPaymentId, amount?, reason?, idempotencyKey? })` | `Refund` | Omit `amount` for a full refund (Kashier also needs `reference`) |
 | `webhooks.verifyAndParse(provider, req)` | `SarrafEvent` | Throws `WEBHOOK_SIGNATURE_INVALID` |
 | `webhooks.inspect(provider, req)` | `WebhookInspection` | Debug info, never throws on mismatch |

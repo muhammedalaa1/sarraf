@@ -2,6 +2,10 @@
   "name": "@sarrafjs/kashier",
   "version": "0.2.0",
   "description": "Kashier adapter for Sarraf: hosted payment page, redirect and webhook signature verification.",
+  "homepage": "https://sarraf-docs.vercel.app/providers/kashier/",
+  "bugs": {
+    "url": "https://github.com/muhammedalaa1/sarraf/issues"
+  },
   "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,
