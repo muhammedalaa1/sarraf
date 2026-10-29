@@ -1,6 +1,6 @@
 {
   "name": "@sarrafjs/kashier",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Kashier adapter for Sarraf: hosted payment page, redirect and webhook signature verification.",
   "license": "Apache-2.0",
   "type": "module",
